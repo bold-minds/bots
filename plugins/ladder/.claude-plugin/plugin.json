@@ -1,0 +1,16 @@
+{
+  "name": "ladder",
+  "version": "1.0.0",
+  "description": "Personal growth companion — turns intentions into externally-bound commitments, tracks progress with honest data, and refuses to let rationalizations go unchallenged. Calibrated to your personality via the Enneagram.",
+  "author": {
+    "name": "Bold Minds"
+  },
+  "license": "MIT",
+  "keywords": [
+    "personal-growth",
+    "accountability",
+    "goal-tracking",
+    "enneagram",
+    "coaching"
+  ]
+}

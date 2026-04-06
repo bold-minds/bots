@@ -1,0 +1,11 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "bots",
+  "plugins": [
+    {
+      "name": "ladder",
+      "source": "./plugins/ladder",
+      "category": "productivity"
+    }
+  ]
+}
