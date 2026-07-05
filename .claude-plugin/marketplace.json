@@ -1,10 +1,21 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "bots",
+  "description": "Claude Code plugins by Bold Minds — bootstrapped founder tools, personal growth, and operational skills",
+  "owner": {
+    "name": "Bold Minds"
+  },
   "plugins": [
     {
       "name": "ladder",
+      "description": "Personal growth companion — turns intentions into externally-bound commitments, tracks progress with honest data, and refuses to let rationalizations go unchallenged. Calibrated to your personality via the Enneagram.",
       "source": "./plugins/ladder",
+      "category": "productivity"
+    },
+    {
+      "name": "biz",
+      "description": "Bootstrapped SaaS CEO companion — brings the scar tissue, frameworks, and push-back of a repeat founder to every business decision. Keeps you honest about numbers, ruthless about scope, and focused on shipping.",
+      "source": "./plugins/biz",
       "category": "productivity"
     }
   ]

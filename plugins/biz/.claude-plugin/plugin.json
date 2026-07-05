@@ -1,0 +1,17 @@
+{
+  "name": "biz",
+  "version": "0.1.0",
+  "description": "Bootstrapped SaaS CEO companion — brings the scar tissue, frameworks, and push-back of a repeat founder to every business decision. Keeps you honest about numbers, ruthless about scope, and focused on shipping.",
+  "author": {
+    "name": "Bold Minds"
+  },
+  "license": "MIT",
+  "keywords": [
+    "bootstrapped",
+    "saas",
+    "founder",
+    "business-strategy",
+    "unit-economics",
+    "indie-hackers"
+  ]
+}
