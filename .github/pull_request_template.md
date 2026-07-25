@@ -5,7 +5,6 @@
 ## Type of change
 
 - [ ] Bug fix
-- [ ] New coach reference topic
 - [ ] Enneagram accuracy improvement
 - [ ] Calibration default adjustment
 - [ ] New feature

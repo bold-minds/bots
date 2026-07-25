@@ -1,0 +1,17 @@
+{
+  "name": "advice",
+  "version": "2.0.0",
+  "description": "Long-running advisor sessions, one per focus: life, money, story, software, business. Each focus is a persona, a bookshelf, and a knowledge base you supply; the engine is shared. Bookshelves ship empty — the canon is yours. Advises and prepares; never acts on your behalf.",
+  "author": {
+    "name": "Bold Minds"
+  },
+  "license": "MIT",
+  "keywords": [
+    "personal-growth",
+    "accountability",
+    "goal-tracking",
+    "coaching",
+    "bootstrapped",
+    "enneagram"
+  ]
+}

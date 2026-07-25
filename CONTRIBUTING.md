@@ -6,8 +6,8 @@ Thanks for your interest in contributing. Here's how to get involved.
 
 1. Fork and clone the repo
 2. Install [Claude Code](https://claude.ai/code)
-3. Install the plugin locally: `claude plugin add /path/to/your/clone`
-4. Run `/climb` to test the onboarding flow
+3. Install the plugin locally: `claude plugin marketplace add /path/to/your/clone`, then `claude plugin install advice@bots`
+4. Run `/life` to test the onboarding flow
 
 ## Repository structure
 
@@ -15,24 +15,32 @@ Thanks for your interest in contributing. Here's how to get involved.
 bots/
   .claude-plugin/           # Repo-level plugin discovery
     marketplace.json        # Registry of available plugins
-    plugin.json             # Repo metadata
+  scripts/
+    check-wiring.sh         # Wiring lint — run before a PR
   plugins/
-    ladder/                 # The Ladder personal growth plugin
+    advice/                 # Five focuses on a shared engine
       .claude-plugin/
         plugin.json         # Plugin metadata
+      shared/
+        focus-template.md   # The engine every focus inherits
       commands/
-        climb.md            # /climb entry point (onboarding + daily rhythm)
-        references/
-          enneagram-seed-patterns.md  # Seeded patterns for all 9 types
+        life.md             # Planning, check-ins, accountability
+        money.md            # Ledger, plans, documents
+        story.md            # True stories, any format
+        software.md         # Release scope, architecture, ship date
+        business.md         # Portfolio, unit economics, scope
       skills/
-        goals/              # Goal creation and revision
-          references/       # Goal file format template, research foundation
-        reflections/        # Weekly structured reviews
-          references/       # Reflection file format template
-        accountability/     # Commitment accountability
-        coach/              # Framework-based coaching (9 topic areas)
-          references/       # 9 curated reference files
+        calibrate/          # First-run setup for every focus
+          references/       # Enneagram seed patterns for all 9 types
+        aim/                # Goal creation and revision
+          references/       # Goal file format, research foundation
+        reflect/            # Weekly structured reviews
+          references/       # Reflection file format
+        confront/           # Commitment accountability
+        drill/              # "What's the number?" — reads the user's metrics reference
 ```
+
+Bookshelves are not in this repo. A focus reads its canon from `{kb_path}/bookshelf/<focus>/`, which the user owns.
 
 ## How skills work
 
@@ -42,18 +50,15 @@ Reference files under `references/` are loaded by explicit Read instructions in 
 
 ## Types of contributions
 
-### Adding a coach reference topic
+### Adding to a bookshelf
 
-The coach skill has 9 topic areas. To add a new one:
+Bookshelves ship empty and live in the user's knowledge base, not here. Whose thinking belongs in someone's ear is theirs to decide, and a shipped canon produces advice aimed at a stranger.
 
-1. Create `skills/coach/references/your-topic.md`
-2. Follow the existing format: topic header, intro line, author sections with "Apply when:" guidance
-3. Add the topic to the mapping table in `skills/coach/SKILL.md`
-4. Use published, attributed frameworks only — name the author and source
+If you want to contribute reading recommendations, they go in `plugins/advice/README.md` under the per-focus starting points — as suggestions a user can take or ignore, never as files the plugin loads.
 
 ### Improving Enneagram seed patterns
 
-The seed patterns at `commands/references/enneagram-seed-patterns.md` are hypotheses based on type psychology. If you have Enneagram expertise and see:
+The seed patterns at `skills/calibrate/references/enneagram-seed-patterns.md` are hypotheses based on type psychology. If you have Enneagram expertise and see:
 
 - A pattern assigned to the wrong type
 - A missing pattern that's core to a type's psychology
@@ -63,7 +68,7 @@ Open an issue or PR with your reasoning.
 
 ### Improving calibration defaults
 
-The Enneagram-to-calibration-defaults table in `commands/climb.md` maps each type to 7 settings. If a default doesn't fit (e.g., a type's accountability intensity is too high or too low), explain why in your PR.
+The Enneagram-to-calibration-defaults table in `skills/calibrate/SKILL.md` maps each type to six settings. If a default doesn't fit (e.g., a type's accountability intensity is too high or too low), explain why in your PR.
 
 ### Bug fixes and wiring issues
 
@@ -80,7 +85,9 @@ These are high-priority fixes. Please include evidence (grep output, file paths,
 - **No proprietary frameworks.** All coach reference content must be from published, publicly available sources with author attribution.
 - **No clinical language.** This is a personal growth tool, not therapy. Avoid clinical diagnoses, pathological framing, or language that implies the user has a disorder.
 - **Test the full flow.** If you change onboarding, run through it as a new user. If you change a skill, invoke it and verify it reads the files it claims to read.
+- **Run `scripts/check-wiring.sh`** before opening a PR. It catches dead reference files, frontmatter/filename mismatches, and missing template reads.
 - **Keep skills self-contained.** Every skill must resolve `kb_path` independently (Step 0: Load Config). Don't assume another skill already loaded the data.
+- **Skills declare an operating focus** in Step 0 — the focus whose write authority they use. A skill writes only that focus's territory plus the shared files (`profile.md`, `patterns.md`). Reads are unrestricted.
 
 ## Reporting issues
 
@@ -89,6 +96,8 @@ Open a GitHub issue with:
 - What actually happened
 - Which skill/command was involved
 - Your Enneagram type and calibration settings (if relevant to the issue)
+
+Share only what's relevant — never paste knowledge-base contents.
 
 ## Code of conduct
 

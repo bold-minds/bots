@@ -18,8 +18,6 @@ Describe the solution you'd like.
 - [ ] Daily rhythm
 - [ ] Weekly reflections
 - [ ] Accountability
-- [ ] Coaching
-- [ ] New coach reference topic
 - [ ] Enneagram integration
 - [ ] Other
 

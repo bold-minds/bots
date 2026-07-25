@@ -13,12 +13,16 @@ A clear description of the bug.
 What should have happened instead.
 
 **Which skill/command?**
-- [ ] /climb (onboarding)
-- [ ] /climb (daily rhythm)
-- [ ] goals
-- [ ] reflections
-- [ ] accountability
-- [ ] coach
+- [ ] /life
+- [ ] /money
+- [ ] /story
+- [ ] /software
+- [ ] /business
+- [ ] calibrate (onboarding)
+- [ ] aim
+- [ ] reflect
+- [ ] confront
+- [ ] drill
 
 **Your setup**
 - Enneagram type (if known):
@@ -30,4 +34,4 @@ What should have happened instead.
 2. ...
 
 **Additional context**
-Any other details, error messages, or screenshots.
+Any other details, error messages, or screenshots. Don't paste knowledge-base contents.
