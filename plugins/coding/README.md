@@ -28,7 +28,7 @@ Per-package multi-lens reviewer, dispatched by `fix-code` to review a batch of f
 
 ## Depends on `foundations`
 
-`write-code` invokes `capture-intent` before writing any code and `check-evidence` before claiming the work done. If `foundations` isn't installed, it does that work inline instead of skipping it.
+Both skills are invoked at two levels. `/software` opens its chain with `capture-intent` and closes it with `check-evidence`, before any claim that something is finished. `write-code` invokes both again around its own work — intent before the first line, evidence after the gate table. If `foundations` isn't installed, each does that work inline instead of skipping it.
 
 ```
 claude plugin install foundations@bots

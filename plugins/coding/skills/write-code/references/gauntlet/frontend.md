@@ -21,7 +21,7 @@ Gate 8 applies whenever the change has observable behavior, and its feature file
 
 ### Coverage targets
 
-**Defaults, adjustable by the user, not by a task in progress:**
+**Defaults, adjustable by the user, not by a task in progress** (a project records its own in `scope.md` — see `gauntlet/standards.md`):
 
 - **90%+** pure logic — stores, utils, validators, formatters, derived-state helpers
 - **80%+** components carrying behavior — forms, stateful widgets, anything with `$effect` or event handling

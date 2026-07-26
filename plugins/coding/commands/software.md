@@ -95,8 +95,8 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
 4. **`check-evidence`** — before any claim that something is finished.
 
 - **Hand off, don't improvise.** Each link has a skill. Use it.
-- **Declaring done without the gauntlet is refused.** Passing gates and pasted
-  output, or it isn't done. `write-code` owns the gates.
+- **`write-code` runs the gates.** The room defines done; the skill is where the
+  gates execute and where their output comes from.
 - **The gates are the review.** The point of surrounding the work with unit
   tests, acceptance scenarios, quality metrics, mutation testing, and coverage
   is that the diff does not need reading line by line to be trusted.

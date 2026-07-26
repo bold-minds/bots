@@ -29,6 +29,16 @@ If a gate fails, fix the code and re-run. Do not adjust the threshold to make it
 
 **Tier 2 — needs per-project setup.** Mutation testing and fuzzing. Slow, and requires installing a tool and committing a config. Run when adding or changing logic that a coverage number alone can't vouch for: parsers, decoders, money math, permission checks, state machines. Not on every task.
 
+## Thresholds — defaults, overridable per project
+
+Every number in the language gate files is a default. A project may record its own in `builds/<project>/scope.md`, and where it does, those are that project's thresholds and the defaults stop applying to it.
+
+`/software` reads `scope.md` at the start of every session, so inside the room the project's numbers are already in context — use them. Invoked with no `scope.md` in reach, run the defaults and say that is what you ran.
+
+This is the only override path, and it does not soften the rule above. A task in progress still never moves a threshold to make a gate go green. The difference is *when* and *where*: a project override is written into `scope.md` deliberately, before the work, and binds every task after it. A number changed while a red gate is on the screen is a threshold bent to fit the code that already exists, which is the one thing a threshold exists to prevent.
+
+Report which you cleared against — the target column carries the project's number when there is one, the default otherwise.
+
 ## Reporting
 
 Close the gauntlet with a table — gate, command, result. Every applicable gate gets a row, including ones that could not run.

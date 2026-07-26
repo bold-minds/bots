@@ -26,7 +26,7 @@ From `go/standards.md` — these are the existing numbers, not new ones:
 - **80%+** handlers
 - **70%+** infrastructure
 
-Report the actual percentage per package against its target. A single repo-wide average hides the package that dropped to 40%.
+Report the actual percentage per package against its target. A single repo-wide average hides the package that dropped to 40%. Like every threshold in this file, these are defaults a project may override in its `scope.md` — see `gauntlet/standards.md`.
 
 Generated files, `main.go` wiring, and vendored code are excluded from targets. Nothing else is.
 
