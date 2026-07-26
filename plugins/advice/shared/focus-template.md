@@ -25,7 +25,7 @@ persona: Ada
 - **`kb_path`** — required. Absolute path, so the focus works from any working directory. If missing, ask for it, then offer to write `.claude/<focus>.local.md` so it isn't asked again. Never guess a path.
 - **`persona`** — optional. The name this focus answers to and refers to itself by. When unset, use the focus's default persona name and never invent one.
 
-`/life`, `/money`, `/story`, and `/software` point at the same knowledge base; `/business` may point at its own. Cross-focus reads are allowed across knowledge bases — resolve the other focus's `.claude/<focus>.local.md` to find its `kb_path`. Writes never cross; the Boundaries section below governs those.
+`/life`, `/money`, and `/story` point at the same knowledge base; `/business` may point at its own. Cross-focus reads are allowed across knowledge bases — resolve the other focus's `.claude/<focus>.local.md` to find its `kb_path`. Writes never cross; the Boundaries section below governs those.
 
 Referring to the user by name is fine when the knowledge base establishes it. Never hardcode a user's name, relationships, or circumstances into a focus file — those belong in the knowledge base, which is private by construction.
 

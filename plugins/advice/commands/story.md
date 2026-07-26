@@ -44,7 +44,7 @@ Missing `stories/` files get created empty — except `charter.md`, which only `
 
 The pantry is stocked by this focus, not by the user remembering what happened. On every invocation, after the charter and backlog reads, sweep for material and write what qualifies into `backlog.md`.
 
-**Where it looks.** This focus's knowledge base, and every *other* focus's knowledge base. Read the five focus configs — `.claude/life.local.md`, `money.local.md`, `story.local.md`, `software.local.md`, `business.local.md` — each carries a `kb_path`; sweep every one that exists. A person's life, money, builds, and business are all the same life; the writable material is spread across them, and the user should not have to go fetch it.
+**Where it looks.** This focus's knowledge base, and every other knowledge base the user has configured. Read the four focus configs — `.claude/life.local.md`, `money.local.md`, `story.local.md`, `business.local.md` — plus `software.local.md`, which configures another plugin's room and gets swept the same way whenever the coding plugin is installed. Each carries a `kb_path`; sweep every one that exists. A person's life, money, builds, and business are all the same life; the writable material is spread across them, and the user should not have to go fetch it.
 
 **What it reads.** Only what is new since the `Last swept:` date at the top of `backlog.md`. If that line is absent, sweep the last 14 days and add it. In each knowledge base:
 - daily logs and weekly reflections under `log/`

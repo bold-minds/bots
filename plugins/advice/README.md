@@ -24,8 +24,9 @@ Nothing here assumes a particular life, business, or set of sources.
 | `/life` | Daily planning, check-ins, commitments, weekly reflection, the gap between stated intent and actual behavior. |
 | `/money` | Ledger, plans, tax math, simulator runs, documents prepared for humans. |
 | `/story` | True stories about your own life, any format, any destination. Drafts from the lived record, genre tests, the backlog. |
-| `/software` | Release scope, architectural decisions, debt, the ship date. |
-| `/business` | Portfolio-level operating conversation, unit economics, ruthless scope. |
+| `/business` | Portfolio-level operating conversation, unit economics, pricing, channels, decisions. |
+
+Release scope, architecture, the ship date, and the implementation itself are `/software`, which lives in the coding plugin. This plugin advises; that one builds.
 
 ## The skills
 
@@ -53,7 +54,7 @@ persona: Ada
 
 `kb_path` is required. `persona` falls back to a default.
 
-All of `/life`, `/money`, `/story`, and `/software` should point at the same knowledge base. `/business` may use its own — other focuses can still read it by resolving `.claude/business.local.md`. No focus ever writes outside its own territory, whichever knowledge base it's reading.
+All of `/life`, `/money`, and `/story` should point at the same knowledge base. `/business` may use its own — other focuses can still read it by resolving `.claude/business.local.md`. No focus ever writes outside its own territory, whichever knowledge base it's reading.
 
 Then invoke it. If the knowledge base is empty, `calibrate-profile` runs first — personality discovery, six calibration dimensions, life areas, and a profile it drafts for you to review and save.
 
@@ -67,7 +68,6 @@ That's too personal to guess at, so nothing is shipped. Put your own sources in 
 
 - **`life/`** — whoever has actually changed how you behave. If a framework is already in your head from a seminar, a book, or a therapist, write it down here so it can be invoked by name instead of re-explained.
 - **`story/`** — the highest-rated TED talks are a good spine: they are short, personal, and structurally ruthless. Add anything on storytelling craft, plus two or three pieces you'd point at and say "like that." Tone prototypes teach more than principles.
-- **`software/`** — writing on scope discipline and the economics of rewrites. Your own post-mortems earn their place fastest: specific, yours, and the ones you'll re-read.
 - **`money/`** — the bookkeeping method you follow and the tax rules where you live. Most of what matters here is your data, not doctrine.
 - **`business/`** — the operators whose economics resemble yours. A bakery and a bootstrapped SaaS should not share a shelf.
 

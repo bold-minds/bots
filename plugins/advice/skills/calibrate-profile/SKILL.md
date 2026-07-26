@@ -1,6 +1,6 @@
 ---
 name: calibrate-profile
-description: This skill should be used when a focus's knowledge base has not been set up — its gate file is missing (`profile.md` for /life, `portfolio.md` for /business, `money/ledger.md` for /money, `stories/charter.md` for /story, `builds/<project>/scope.md` for /software) — when the user asks to "set up", "onboard", "get started", "redo my profile", "recalibrate", or when the calibration no longer fits — the accountability is too soft or too harsh, the truth delivery lands wrong, or the motivation anchor has changed. Runs personality discovery, six calibration dimensions, life-area selection, and profile generation, with a disclaimer and safety gate up front.
+description: This skill should be used when a focus's knowledge base has not been set up — its gate file is missing (`profile.md` for /life, `portfolio.md` for /business, `money/ledger.md` for /money, `stories/charter.md` for /story) — when the user asks to "set up", "onboard", "get started", "redo my profile", "recalibrate", or when the calibration no longer fits — the accountability is too soft or too harsh, the truth delivery lands wrong, or the motivation anchor has changed. Runs personality discovery, six calibration dimensions, life-area selection, and profile generation, with a disclaimer and safety gate up front.
 ---
 
 # Calibrate Profile
@@ -23,7 +23,7 @@ If the user's responses at any point suggest they need professional support — 
 
 Do not continue setup until you are confident the user is in a safe place to engage with a self-directed tool.
 
-For the four short paths (`/business`, `/money`, `/story`, `/software`), present this before the first setup question — the `/life` path has its own longer version below:
+For the three short paths (`/business`, `/money`, `/story`), present this before the first setup question — the `/life` path has its own longer version below:
 
 > Quick note before we start: **this is an advice and accountability tool — not therapy, medical care, crisis support, or licensed financial or legal advice.** If you're in crisis, in the US the 988 Suicide & Crisis Lifeline takes calls and texts at 988; elsewhere, use a local crisis line.
 
@@ -37,9 +37,8 @@ Every focus has a gate file. If it's missing, that focus has not been set up, an
 | `/business` | `portfolio.md` | Who they are, ventures, scar tissue, operating principles, and one initiative seeded with `product.md`, `metrics.md`, `funnel.md`, `constraints.md`, `commitments.md` — see below |
 | `/money` | `money/ledger.md` | The books — see below |
 | `/story` | `stories/charter.md` | What the writing is for — see below |
-| `/software` | `builds/<project>/scope.md` | The release — see below |
 
-Only `/life` needs the full personality pass. The other four are short — ten minutes at most — and they exist so a focus starts from real context instead of re-asking the same questions every session. The safety gate above applies to all of them.
+Only `/life` needs the full personality pass. The other three are short — ten minutes at most — and they exist so a focus starts from real context instead of re-asking the same questions every session. The safety gate above applies to all of them.
 
 ### `/business` — first run
 
@@ -99,19 +98,6 @@ A conversation, not a form. The charter is what stops this focus optimizing for 
 6. **Name two or three pieces you'd point at and say "like that."** These become tone prototypes on the bookshelf, and they teach more than any rule here.
 
 Draft `stories/charter.md` in the user's own words where possible and present it for confirmation before saving — only this skill creates the charter. For each piece named in question 6, draft one file into `{kb_path}/bookshelf/story/` — title, where to find it, one line on what to imitate — and save after review. Then create `stories/backlog.md`, `published.md`, `process.md` with headers, and `stories/log/` as an empty directory.
-
-### `/software` — first run
-
-Per project, not per user. Runs again for each new build.
-
-1. **What is this, and what does "live" mean for it?** The definition of shipped, in one sentence.
-2. **What's in v1?** List it. Then ask what could come out and still count as live.
-3. **What's explicitly out?** Named, so it stops being re-proposed every session.
-4. **Is there a date?** If not, name the cost plainly — `/software`'s first principle is that a release needs a date — and ask for one.
-5. **What architectural decisions are already made?** Each with its reasoning and what new fact would reopen it. Becomes `builds/<project>/decisions.md`.
-6. **What shortcuts are already taken?** Written down with why, and what would force paying them back. Becomes `builds/<project>/debt.md`.
-
-Draft `builds/<project>/scope.md` — in, out, deferred, and the date — and present it for review before saving. Create `builds/<project>/log/` as an empty directory.
 
 ## Output for `/life`
 

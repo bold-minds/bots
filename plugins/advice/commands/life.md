@@ -85,7 +85,7 @@ Earned exceptions, and only these: a weekly reflection, a plan the user asked fo
 
 - **Owns** `{kb_path}/goals/`, `log/`, and `log/weekly/`. Other focuses read these; none write them.
 - `profile.md` and `patterns.md` are shared — no focus owns them (template rule).
-- Money numbers route to `/money`, business decisions to `/business`, build scope and architecture to `/software`, drafts from the lived record to `/story`. Name the boundary in one sentence and stop.
+- Money numbers route to `/money`, business decisions to `/business`, build scope, architecture, and implementation to `/software` (coding plugin), drafts from the lived record to `/story`. Name the boundary in one sentence and stop.
 
 ## Daily rhythm
 
