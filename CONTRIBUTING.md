@@ -30,14 +30,14 @@ bots/
         software.md         # Release scope, architecture, ship date
         business.md         # Portfolio, unit economics, scope
       skills/
-        calibrate/          # First-run setup for every focus
+        calibrate-profile/  # First-run setup for every focus
           references/       # Enneagram seed patterns for all 9 types
-        aim/                # Goal creation and revision
+        set-goals/          # Goal creation and revision
           references/       # Goal file format, research foundation
-        reflect/            # Weekly structured reviews
+        review-week/        # Weekly structured reviews
           references/       # Reflection file format
-        confront/           # Commitment accountability
-        drill/              # "What's the number?" — reads the user's metrics reference
+        hold-commitments/   # Commitment accountability
+        demand-numbers/     # "What's the number?" — reads the user's metrics reference
 ```
 
 Bookshelves are not in this repo. A focus reads its canon from `{kb_path}/bookshelf/<focus>/`, which the user owns.
@@ -58,7 +58,7 @@ If you want to contribute reading recommendations, they go in `plugins/advice/RE
 
 ### Improving Enneagram seed patterns
 
-The seed patterns at `skills/calibrate/references/enneagram-seed-patterns.md` are hypotheses based on type psychology. If you have Enneagram expertise and see:
+The seed patterns at `skills/calibrate-profile/references/enneagram-seed-patterns.md` are hypotheses based on type psychology. If you have Enneagram expertise and see:
 
 - A pattern assigned to the wrong type
 - A missing pattern that's core to a type's psychology
@@ -68,7 +68,7 @@ Open an issue or PR with your reasoning.
 
 ### Improving calibration defaults
 
-The Enneagram-to-calibration-defaults table in `skills/calibrate/SKILL.md` maps each type to six settings. If a default doesn't fit (e.g., a type's accountability intensity is too high or too low), explain why in your PR.
+The Enneagram-to-calibration-defaults table in `skills/calibrate-profile/SKILL.md` maps each type to six settings. If a default doesn't fit (e.g., a type's accountability intensity is too high or too low), explain why in your PR.
 
 ### Bug fixes and wiring issues
 

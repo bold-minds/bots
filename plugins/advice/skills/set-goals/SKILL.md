@@ -1,5 +1,5 @@
 ---
-name: aim
+name: set-goals
 description: This skill should be used when the user asks to "create a goal", "add a life area", "set up a new goal", "revise a goal", "update my commitments", "change my needle", "redefine what counts", "set a constraint", "add a boundary", "limit something", "stop doing something", mentions wanting to track a new area of their life, mentions needing to constrain or bound a behavior, or during first-time onboarding when no goals exist yet. Provides a structured 7-step goal creation process for both growth goals (push toward a target) and constraint goals (hold a line) that produces externally-bound commitments with binary accountability.
 ---
 
@@ -9,7 +9,7 @@ Guide the user through creating or revising goals using a structured 7-step proc
 
 ## Step 0: Load Config
 
-This skill operates as `/life` — it writes only `{kb_path}/goals/` and the shared files. Read `.claude/life.local.md` to resolve `kb_path`; if the file or `kb_path` is missing, ask — never guess a path. Then read `{kb_path}/profile.md` for the motivation anchor and structure preference; they shape how commitments get framed below. If `profile.md` does not exist, invoke `calibrate` first.
+This skill operates as `/life` — it writes only `{kb_path}/goals/` and the shared files. Read `.claude/life.local.md` to resolve `kb_path`; if the file or `kb_path` is missing, ask — never guess a path. Then read `{kb_path}/profile.md` for the motivation anchor and structure preference; they shape how commitments get framed below. If `profile.md` does not exist, invoke `calibrate-profile` first.
 
 ## When To Invoke
 

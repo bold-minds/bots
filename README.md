@@ -28,15 +28,15 @@ Invoked by a focus, and usable on their own.
 
 | Skill | Fires when |
 |---|---|
-| `calibrate` | The knowledge base isn't set up, or the calibration stopped fitting |
-| `aim` | Creating or revising a goal, growth or constraint |
-| `reflect` | Weekly review, or 7+ days since the last one |
-| `confront` | A commitment is being rationalized away in real time |
-| `drill` | Growth, retention, pricing, or revenue mentioned without a number |
+| `calibrate-profile` | The knowledge base isn't set up, or the calibration stopped fitting |
+| `set-goals` | Creating or revising a goal, growth or constraint |
+| `review-week` | Weekly review, or 7+ days since the last one |
+| `hold-commitments` | A commitment is being rationalized away in real time |
+| `demand-numbers` | Growth, retention, pricing, or revenue mentioned without a number |
 
 #### Calibration
 
-First run of any focus goes through `calibrate`. For `/life` that means Enneagram discovery — a 5-question quick pass or a 12-15 question full assessment — then six dials that set how the system talks to you.
+First run of any focus goes through `calibrate-profile`. For `/life` that means Enneagram discovery — a 5-question quick pass or a 12-15 question full assessment — then six dials that set how the system talks to you.
 
 | Dial | What it controls |
 |------|-----------------|
@@ -77,7 +77,7 @@ business-kb/              # /business may use its own knowledge base
   initiatives/<name>/     # Product, metrics, funnel, constraints, commitments, log
   decisions/              # Major decisions
   log/weekly/             # Portfolio weeklies
-  bookshelf/business/     # Your canon + the metrics reference calibrate drafts
+  bookshelf/business/     # Your canon + the metrics reference calibrate-profile drafts
 ```
 
 ## Install

@@ -1,9 +1,9 @@
 ---
-name: calibrate
+name: calibrate-profile
 description: This skill should be used when a focus's knowledge base has not been set up — its gate file is missing (`profile.md` for /life, `portfolio.md` for /business, `money/ledger.md` for /money, `stories/charter.md` for /story, `builds/<project>/scope.md` for /software) — when the user asks to "set up", "onboard", "get started", "redo my profile", "recalibrate", or when the calibration no longer fits — the accountability is too soft or too harsh, the truth delivery lands wrong, or the motivation anchor has changed. Runs personality discovery, six calibration dimensions, life-area selection, and profile generation, with a disclaimer and safety gate up front.
 ---
 
-# Calibrate
+# Calibrate Profile
 
 Set up or revise the knowledge base a focus reads from.
 
@@ -57,7 +57,7 @@ A conversation. Ask one at a time and write down what comes back:
 
 **Numbers gate.** Before finishing, get one real figure for the active initiative — revenue, customers, or whatever the business is actually measured by. A portfolio with no numbers produces advice aimed at a hypothetical company.
 
-**The metrics reference.** Last step: research the metrics that decide health for this kind of business and draft `{kb_path}/bookshelf/business/metrics.md` — the handful of numbers that matter, their formulas, healthy/warning/fatal thresholds, and the classic failure patterns for this business type. Present it for review; save only after the user confirms. `drill` reads this file — without it there is nothing to drill against.
+**The metrics reference.** Last step: research the metrics that decide health for this kind of business and draft `{kb_path}/bookshelf/business/metrics.md` — the handful of numbers that matter, their formulas, healthy/warning/fatal thresholds, and the classic failure patterns for this business type. Present it for review; save only after the user confirms. `demand-numbers` reads this file — without it there is nothing to drill against.
 
 ### `/money` — first run
 
@@ -381,7 +381,7 @@ After the profile is saved, dispatch the research below to a subagent running in
 
 If the user didn't name any preferred authors, skip step 2. If no patterns were confirmed, skip step 3. Step 1 always runs.
 
-Invoke the **aim** skill for first goal creation.
+Invoke the **set-goals** skill for first goal creation.
 
 ### Quick Start Path (Phase 0 option 2)
 
@@ -397,7 +397,7 @@ Compressed version:
 
 - Create a minimal profile with conservative defaults (mid-range accountability, observational truth delivery, rhythmic structure)
 - System observes behavior patterns and suggests Enneagram type after 2 weeks of interaction
-- Skip directly to goal creation via the **aim** skill
+- Skip directly to goal creation via the **set-goals** skill
 
 ## Calibration Over Time
 

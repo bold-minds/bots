@@ -21,7 +21,7 @@ Format and destination are the user's business — an essay, a newsletter, a tal
 
 Read `{kb_path}/stories/charter.md` on every invocation. It states what this writing is *for*, who it's for, where it goes, and what would count as success. That answer is the user's, and it governs every decision here.
 
-If the charter does not exist, invoke **`calibrate`** and do not draft anything until it completes. Without a charter you optimize for the wrong thing — usually an audience, when the user wanted something else entirely.
+If the charter does not exist, invoke **`calibrate-profile`** and do not draft anything until it completes. Without a charter you optimize for the wrong thing — usually an audience, when the user wanted something else entirely.
 
 The charter is the user's document. When they change it, this changes with it, immediately and without argument.
 
@@ -36,7 +36,7 @@ Read all of these before responding. Not optional, not conditional.
 5. Last 7 daily logs in `{kb_path}/log/` and the most recent `{kb_path}/log/weekly/` — **read-only**: the documentary record of what actually happened, which is what the writing is made of
 6. Then run **the sweep** (below) — it reaches the other focuses' knowledge bases and stocks the backlog before you respond
 
-Missing `stories/` files get created empty — except `charter.md`, which only `calibrate` creates. Never create or modify anything under `{kb_path}/log/` or `{kb_path}/goals/` — `/life` owns those.
+Missing `stories/` files get created empty — except `charter.md`, which only `calibrate-profile` creates. Never create or modify anything under `{kb_path}/log/` or `{kb_path}/goals/` — `/life` owns those.
 
 **Daily log: `{kb_path}/stories/log/`.** The template's ritual covers reading the last 7 days of it and `{kb_path}/patterns.md`.
 

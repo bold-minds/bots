@@ -1,5 +1,5 @@
 ---
-name: drill
+name: demand-numbers
 description: Use when the user mentions growth, retention, customer acquisition cost, pricing, or revenue without real numbers, or when an initiative's metrics.md hasn't been updated in 14+ days. Drills for actual figures, computes unit economics, flags kill-the-business thresholds.
 ---
 
@@ -13,7 +13,7 @@ This skill operates as `/business` — it writes only `/business`'s territory an
 
 ## The metrics reference
 
-Read `{kb_path}/bookshelf/business/metrics.md` before drilling. Onboarding built it for this specific business: which metrics decide health here, their formulas, healthy/warning/fatal thresholds, and the classic failure patterns for this business type. If it does not exist, invoke `calibrate` — without it there is nothing to drill against. No business type's metrics ship with the plugin.
+Read `{kb_path}/bookshelf/business/metrics.md` before drilling. Onboarding built it for this specific business: which metrics decide health here, their formulas, healthy/warning/fatal thresholds, and the classic failure patterns for this business type. If it does not exist, invoke `calibrate-profile` — without it there is nothing to drill against. No business type's metrics ship with the plugin.
 
 ## When to invoke
 

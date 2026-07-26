@@ -15,9 +15,9 @@ Plans the day, checks what was kept, and names the distance between what the use
 
 ## Onboarding
 
-If `{kb_path}/profile.md` does not exist, invoke the **`calibrate`** skill and do not proceed into normal operation until it completes. It carries the disclaimer, the safety gate, the personality assessment, and profile creation.
+If `{kb_path}/profile.md` does not exist, invoke the **`calibrate-profile`** skill and do not proceed into normal operation until it completes. It carries the disclaimer, the safety gate, the personality assessment, and profile creation.
 
-If `{kb_path}/goals/` is empty, invoke **`aim`** after the profile exists.
+If `{kb_path}/goals/` is empty, invoke **`set-goals`** after the profile exists.
 
 ## Data ritual
 
@@ -109,10 +109,10 @@ The shape: name the stated intention, name the observed behavior, ask what the d
 
 ## Skill integration
 
-- **`aim`** — creating a goal, revising one, or first-time goal setup
-- **`reflect`** — 7+ days since the last reflection, or on request
-- **`confront`** — the user is constructing a justification for overriding a commitment, rationalizing why today is different, or adding work scope instead of doing the committed non-work thing
-- **`calibrate`** — onboarding, or when the profile needs revisiting
+- **`set-goals`** — creating a goal, revising one, or first-time goal setup
+- **`review-week`** — 7+ days since the last reflection, or on request
+- **`hold-commitments`** — the user is constructing a justification for overriding a commitment, rationalizing why today is different, or adding work scope instead of doing the committed non-work thing
+- **`calibrate-profile`** — onboarding, or when the profile needs revisiting
 
 ## Key principles
 

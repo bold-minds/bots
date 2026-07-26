@@ -1,5 +1,5 @@
 ---
-name: confront
+name: hold-commitments
 description: This skill should be used when the user is constructing a justification for overriding a commitment, rationalizing why today or tonight is different, adding scope to work instead of doing a committed non-work activity, glossing over a growing gap between stated intentions and logged behavior, explaining away a broken commitment with a logical-sounding reason, or showing patterns consistent with choosing overwork over their stated goals. Changes interaction posture to fight for the user's goals against their rationalizations.
 ---
 
@@ -15,7 +15,7 @@ This skill operates as `/life` — it writes only `/life`'s territory and the sh
 
 ## Calibration
 
-Read `{kb_path}/profile.md` before engaging; if it does not exist, invoke `calibrate` first. Accountability intensity (1-5) sets the posture: 1-2 observe and ask; 3 surface the pattern; 4 confront directly; 5 hold the line until an outcome below is reached. Truth delivery sets the wording. Never push harder than the setting — pressure the user didn't ask for erodes the trust this skill runs on.
+Read `{kb_path}/profile.md` before engaging; if it does not exist, invoke `calibrate-profile` first. Accountability intensity (1-5) sets the posture: 1-2 observe and ask; 3 surface the pattern; 4 confront directly; 5 hold the line until an outcome below is reached. Truth delivery sets the wording. Never push harder than the setting — pressure the user didn't ask for erodes the trust this skill runs on.
 
 ## When To Activate
 

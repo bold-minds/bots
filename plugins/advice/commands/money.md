@@ -32,7 +32,7 @@ Earned exceptions: a document being prepared for a human, a simulator run with s
 
 ## Onboarding
 
-If `{kb_path}/money/ledger.md` does not exist, invoke **`calibrate`** and do not proceed until it completes. It builds the ledger, the watch-list, and the decisions file from what the user actually holds, and establishes which budgeting tool the authority order ranks below statements.
+If `{kb_path}/money/ledger.md` does not exist, invoke **`calibrate-profile`** and do not proceed until it completes. It builds the ledger, the watch-list, and the decisions file from what the user actually holds, and establishes which budgeting tool the authority order ranks below statements.
 
 ## Data ritual
 

@@ -33,11 +33,11 @@ Invoked by a focus, and usable on their own.
 
 | Skill | Fires when |
 |---|---|
-| `calibrate` | The knowledge base isn't set up, or the calibration stopped fitting |
-| `aim` | Creating or revising a goal, growth or constraint |
-| `reflect` | Weekly review, or 7+ days since the last one |
-| `confront` | A commitment is being rationalized away in real time |
-| `drill` | Growth, retention, pricing, or revenue mentioned without a number |
+| `calibrate-profile` | The knowledge base isn't set up, or the calibration stopped fitting |
+| `set-goals` | Creating or revising a goal, growth or constraint |
+| `review-week` | Weekly review, or 7+ days since the last one |
+| `hold-commitments` | A commitment is being rationalized away in real time |
+| `demand-numbers` | Growth, retention, pricing, or revenue mentioned without a number |
 
 ## Setup
 
@@ -55,7 +55,7 @@ persona: Ada
 
 All of `/life`, `/money`, `/story`, and `/software` should point at the same knowledge base. `/business` may use its own — other focuses can still read it by resolving `.claude/business.local.md`. No focus ever writes outside its own territory, whichever knowledge base it's reading.
 
-Then invoke it. If the knowledge base is empty, `calibrate` runs first — personality discovery, six calibration dimensions, life areas, and a profile it drafts for you to review and save.
+Then invoke it. If the knowledge base is empty, `calibrate-profile` runs first — personality discovery, six calibration dimensions, life areas, and a profile it drafts for you to review and save.
 
 ## Bookshelves ship empty
 

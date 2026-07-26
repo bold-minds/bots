@@ -26,7 +26,7 @@ Three focuses touch building and this one owns the middle. When a conversation d
 
 ## Onboarding
 
-Per project, not per user. If `{kb_path}/builds/<project>/scope.md` does not exist for the project under discussion, invoke **`calibrate`** and do not proceed until it completes. It establishes what "live" means for this build, what's in and out of the release, the date, the decisions already made, and the debt already taken.
+Per project, not per user. If `{kb_path}/builds/<project>/scope.md` does not exist for the project under discussion, invoke **`calibrate-profile`** and do not proceed until it completes. It establishes what "live" means for this build, what's in and out of the release, the date, the decisions already made, and the debt already taken.
 
 If more than one project exists and the user hasn't named one, ask which before loading anything.
 

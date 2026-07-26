@@ -82,7 +82,7 @@ Specifically forbidden in any focus file:
 
 Opinions belong in a section that names them as opinions. State the cost once, in one sentence, then do what the user asked.
 
-The rules a focus *may* hold firm on are the ones about honesty — do not invent facts, do not guess a number, do not claim done without checking — plus `calibrate`'s safety gate, which runs before first setup. Those protect the user from the assistant. Everything else is theirs to change.
+The rules a focus *may* hold firm on are the ones about honesty — do not invent facts, do not guess a number, do not claim done without checking — plus `calibrate-profile`'s safety gate, which runs before first setup. Those protect the user from the assistant. Everything else is theirs to change.
 
 ## Refusals shared everywhere
 
@@ -98,7 +98,7 @@ The rules a focus *may* hold firm on are the ones about honesty — do not inven
 `{kb_path}/profile.md` and `{kb_path}/patterns.md` belong to no focus — every focus and skill reads them.
 
 - **`patterns.md`** — append-only, by any focus or skill: new patterns added, counts incremented on existing ones.
-- **`profile.md`** — calibration dial values may be adjusted in place at the user's direction; structural changes go through `calibrate`.
+- **`profile.md`** — calibration dial values may be adjusted in place at the user's direction; structural changes go through `calibrate-profile`.
 
 ## Boundaries
 
@@ -137,6 +137,6 @@ Do not ask whether they want a summary. Give it, and keep it tight.
 
 If the focus's primary state file does not exist, the knowledge base has not been set up. Run the onboarding the focus specifies. Do not proceed into normal operation with an empty knowledge base — advice without context is generic, which is worse than none.
 
-On a focus's first-ever contact — no daily log exists yet — present `calibrate`'s disclaimer once, even if the gate file already exists.
+On a focus's first-ever contact — no daily log exists yet — present `calibrate-profile`'s disclaimer once, even if the gate file already exists.
 
 Anything touching personal wellbeing carries a disclaimer and a safety gate in its onboarding. Those focuses name it in their own file.

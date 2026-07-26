@@ -1,5 +1,5 @@
 ---
-name: reflect
+name: review-week
 description: This skill should be used when it's time for a weekly reflection, when 7+ days have passed since the last weekly reflection in the knowledge base's log/weekly/, when the user asks to "review my week", "do a reflection", "weekly check-in", "how did I do this week", or when the user asks to assess progress across life areas. Provides a structured 6-section weekly review using logged data.
 ---
 
@@ -9,7 +9,7 @@ Run a structured weekly reflection using data from daily logs, goal files, and p
 
 ## Step 0: Load Config
 
-This skill operates as `/life`, or as `/business` for the business branch — it writes only that focus's territory and the shared files. Read the operating focus's `.claude/<focus>.local.md` to resolve `kb_path`. Invoked standalone, ask which of the two. If `kb_path` is missing, ask — never guess a path. Operating as `/life` with no `{kb_path}/profile.md`, invoke `calibrate` first; the business branch handles a missing profile itself (defaults below).
+This skill operates as `/life`, or as `/business` for the business branch — it writes only that focus's territory and the shared files. Read the operating focus's `.claude/<focus>.local.md` to resolve `kb_path`. Invoked standalone, ask which of the two. If `kb_path` is missing, ask — never guess a path. Operating as `/life` with no `{kb_path}/profile.md`, invoke `calibrate-profile` first; the business branch handles a missing profile itself (defaults below).
 
 ## When To Invoke
 
@@ -49,7 +49,7 @@ If a needle didn't move, note it. Do not explain it away. The explanation comes 
 
 ### Section 2: Commitment Scorecard
 
-For each commitment across all life areas, show kept/broken for each day of the week. Binary. Score against the counts/doesn't-count definitions as written — changing a definition is `aim`'s job, after the scorecard, not during it.
+For each commitment across all life areas, show kept/broken for each day of the week. Binary. Score against the counts/doesn't-count definitions as written — changing a definition is `set-goals`'s job, after the scorecard, not during it.
 
 Display as a grid:
 
@@ -86,7 +86,7 @@ This is not generic. It uses specific data from this week, specific people from 
 
 Do not soften it. Do not add qualifiers. Ask it directly.
 
-Then engage with the response. If the user rationalizes, invoke the `confront` skill.
+Then engage with the response. If the user rationalizes, invoke the `hold-commitments` skill.
 
 ### Section 5: Next Week's Commitments
 
@@ -112,7 +112,7 @@ Focus on the obstacle step. The user may give surface-level answers. Push for th
 
 ## Business branch
 
-Invoked from `/business` — or 7+ days since the last entry in its knowledge base's `log/weekly/` — reflect reviews the portfolio instead of life areas:
+Invoked from `/business` — or 7+ days since the last entry in its knowledge base's `log/weekly/` — this skill reviews the portfolio instead of life areas:
 
 1. **Commitment scorecard** — per initiative, from `initiatives/*/commitments.md` against the week's logs
 2. **Metrics delta** — each initiative's `metrics.md` against the previous weekly; stale files named
@@ -125,7 +125,7 @@ Writes one portfolio-level file to `{kb_path}/log/weekly/YYYY-MM-DD.md`, section
 
 Save the complete reflection to `{kb_path}/log/weekly/YYYY-MM-DD.md`. Update `{kb_path}/patterns.md` with any new patterns. Update the "Current Status" section in relevant goal files.
 
-**Calibration check.** Every 4 weeks — every 2 for settings marked **unconfirmed** — present the current calibration values and ask if they still fit. Adjust the profile on the spot; anything more than a value change goes through `calibrate`.
+**Calibration check.** Every 4 weeks — every 2 for settings marked **unconfirmed** — present the current calibration values and ask if they still fit. Adjust the profile on the spot; anything more than a value change goes through `calibrate-profile`.
 
 ## Additional Resources
 
