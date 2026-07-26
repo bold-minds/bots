@@ -62,7 +62,7 @@ Read what changed, not whole files.
 
 **Killing a topic.** When the user rejects a backlog topic, move it under `## Killed` in `backlog.md` with the date. Create the heading at the bottom of the file if it doesn't exist yet.
 
-**What it says.** One line on open: how many were added, and from where. No unsolicited ranking, no pitching a topic the user did not ask about — a full pantry owes nothing.
+**What it says.** Nothing, unless something was added. Then one short sentence: how many, and from where. Never the sweep window, never how an entry was filed, never why one was folded into another — that is the log's. No unsolicited ranking, no pitching a topic the user did not ask about; a full pantry owes nothing.
 
 **When the user asks for ideas or for help choosing, help. That is the editorial job, not a violation of the line above.** Read the backlog against the charter and the tone prototypes, and say which candidates are actually ready: what the record already supports, what is missing a fact only the user can supply, which one is closest to how they already write. Offer several. Say what each would cost to write. The user picks — and until they do, there is no topic.
 

@@ -17,6 +17,9 @@ bots/
     marketplace.json        # Registry of available plugins
   scripts/
     check-wiring.sh         # Wiring lint — run before a PR
+    check-reply-shape.sh    # Reply-shape lint regression — run before a PR
+    lint-reply.py           # Lints one reply against the shape rules
+    fixtures/               # Anonymized replies, known-good and known-bad
   plugins/
     advice/                 # Four focuses on a shared engine
       .claude-plugin/
@@ -107,6 +110,7 @@ These are high-priority fixes. Please include evidence (grep output, file paths,
 - **No clinical language.** This is a personal growth tool, not therapy. Avoid clinical diagnoses, pathological framing, or language that implies the user has a disorder.
 - **Test the full flow.** If you change onboarding, run through it as a new user. If you change a skill, invoke it and verify it reads the files it claims to read.
 - **Run `scripts/check-wiring.sh`** before opening a PR. It catches dead reference files, frontmatter/filename mismatches, and missing template reads.
+- **Run `scripts/check-reply-shape.sh`** before opening a PR if you touched a shape rule in `focus-template.md` or `engine.md`. It lints anonymized fixtures — replies a user rejected, plus one they wrote — and fails if a rule change would let a rejected shape back through. Pipe a candidate reply through `scripts/lint-reply.py` to check it by hand. The lint decides only what the text settles: preamble, nesting, scorekeeping, packing. Whether the right items were selected, and whether a line is understandable, stay human.
 - **Keep skills self-contained.** Every skill must resolve `kb_path` independently (Step 0: Load Config). Don't assume another skill already loaded the data.
 - **Skills declare an operating focus** in Step 0 — the focus whose write authority they use. A skill writes only that focus's territory plus the shared files (`profile.md`, `patterns.md`). Reads are unrestricted.
 

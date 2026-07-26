@@ -1,0 +1,4 @@
+- The autopays still aren't set to full statement balance, 6 days open.
+- The card's feed has been dead since January and three bills still charge it.
+- The renewal switch is unconfirmed after five asks.
+- On the second item you're right, and I had it wrong twice.

@@ -1,0 +1,4 @@
+- Interest can still accrue on the credit cards. Update every card's autopay to full balance.
+- Are the two new tracking accounts the full total of what is owed?
+- If the card's feed is dead then the scheduled bills need to be moved.
+- Is the annual renewal still turned on? This hasn't been confirmed.
