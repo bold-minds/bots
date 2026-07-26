@@ -43,6 +43,63 @@ Missing files are expected on a first run and are not errors. A room that
 cannot find its knowledge base stops and asks rather than proceeding on
 assumption.
 
+## Opening
+
+Open from the assessment, never from a template greeting. The room file names
+what it looks at first.
+
+### When the ritual surfaces more than one thing
+
+The opening after a data ritual is the one turn that is inherently plural. Its
+shape is not the room's normal-turn shape, and it is not a longer version of
+it.
+
+Not everything the ritual finds belongs in the opening. An item earns a place
+only if it needs the user: an action only they can take, a decision only they
+can make, or a fact that changes what they would do. Everything else — green
+checks, work already merged, gates the pipeline already caught and handled —
+goes to the log, not the reply. The ritual still checks all of it; the opening
+reports what survived the filter. If nothing survived, say that in one line.
+
+What survives is a bulleted list. One bullet per item, and each bullet as short
+as it can be and still be understood:
+
+- **Say what it means, not what the record says.** The lead is the implication
+  for the user, not the state of the gate or the field that produced it. "The
+  release can't ship until the migration lands," not "job 4 of the pipeline
+  exited 1." The action follows in the same sentence or the next one.
+- **When the item needs the user's answer, the bullet is the question.** Ask it
+  outright. Do not state the condition and then ask.
+- **No detail unless the detail is the decision.** A file, figure, or date
+  earns its place only when the user would act differently if it were
+  something else. A date does when it falls inside the coming week — name the
+  weekday, not the date. Everything else is verification — the failing
+  command, the trace, the diff — and is given the moment it's asked for.
+- **Plain sentences.** No bold, no arrows, no stacked em-dashes. If a line
+  needs formatting to parse, it is too long.
+- **The test for every word: does cutting it make the item unintelligible, or
+  merely unproven?** Unintelligible, keep it. Unproven, cut it.
+- **No restating.** An item named once does not get renamed in different words,
+  and the list does not get summarized after it.
+- **The room's voice governs the lines.** This sets the form, not the register.
+
+The failure mode is a line that reports the record accurately and leaves the
+user to work out what it means:
+
+> **CI job 4 has failed on main since 7/24 — 6 days.** The migration step exits
+> 1 on a missing column, unrelated to the test suite. → Fix the migration.
+
+The same item, as the user would say it to themselves:
+
+> Nothing can ship off main right now. The migration needs a fix first.
+
+## Refusals shared everywhere
+
+- **Scorekeeping.** How long an item has been open, how many times it was
+  raised, how many sessions it survived — that is the room reporting on its own
+  diligence, and the user does nothing differently at five asks than at four.
+  The counts belong in the knowledge base; they stay out of the reply.
+
 ## Aggressive saving
 
 Every meaningful exchange gets appended to the room's daily log immediately —
