@@ -4,45 +4,67 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [2.1.0] - 2026-07-25
+Each plugin carries its own version in its `plugin.json`. This file records
+marketplace releases; the heading is the marketplace version.
 
-### Added
+## [1.0.0] - 2026-07-26
 
-- **Foundations plugin (1.0.0)** — `capture-intent` and `check-evidence`, the two bookends of any deliverable, domain-agnostic and model-triggered
-- **Coding plugin (1.0.0)** — the engineering room `/software`, plus `write-code`, `fix-code`, and the `code-reviewer` agent. Builds, gates, and proves; does not hand implementation elsewhere. Depends on `foundations` (documented, not declared in `plugin.json`)
+First release. Three plugins, each at `1.0.0`.
 
-### Changed
+### advice — long-running advisor sessions
 
-- **Five skills renamed** for clarity — `calibrate` → `calibrate-profile`, `aim` → `set-goals`, `reflect` → `review-week`, `confront` → `hold-commitments`, `drill` → `demand-numbers`
-- **Ship doctrine consolidated into `/software`** — release scope, architecture, the ship date, and the implementation itself now live in one room in the `coding` plugin, replacing the version of `/software` that lived in `advice`
-- **Marketplace description** — no longer "advisor sessions, one per focus"; now names three plugins across two realms: advice, coding, and the foundations that bracket both
+Four focuses on one shared engine: `/life`, `/money`, `/story`, `/business`. Each
+is a persona, a bookshelf, and a knowledge base you supply. Bookshelves ship
+empty; the canon is yours. Advises and prepares; never acts on your behalf.
 
-### Removed
-
-- **`/software` from the `advice` plugin** — advice now holds four focuses: `/life`, `/money`, `/story`, `/business`. Release scope and implementation moved to the `coding` plugin's `/software`
-
-## [2.0.0] - 2026-07-25
-
-### Added
-
-- **Advice plugin** — five focuses on one shared engine: `/life`, `/money`, `/story`, `/software`, `/business`
-- **`shared/focus-template.md`** — the engine every focus inherits: configuration, data ritual, voice floor, shared refusals, boundaries, saving, closing
+- **`shared/focus-template.md`** — the engine every focus inherits: configuration,
+  data ritual, voice floor, shared refusals, boundaries, aggressive saving, closing
 - **Configurable persona** — each focus answers to a name set in `.claude/<focus>.local.md`
-- **`calibrate` skill** — first-run setup for every focus, with the disclaimer and safety gate before anything else. `/life` gets the full Enneagram pass with six calibration dials; the other four are short
-- **`aim` skill** — 7-step goal creation and revision for growth and constraint goals, with external structure, binary accountability, and WOOP
-- **`reflect` skill** — weekly structured reviews with commitment scorecards, pattern analysis, and a harsh truth; includes a business branch
-- **`confront` skill** — commitment accountability calibrated to the user's intensity setting
-- **`drill` skill** — turns vague business claims into figures, computed against a metrics reference built for the user's actual business during onboarding
-- **Enneagram seed patterns** — 5-7 rationalization patterns per type, validated through observation over time
+- **`calibrate-profile`** — first-run setup for every focus, with the disclaimer and
+  safety gate before anything else. `/life` gets the full Enneagram pass and six
+  calibration dials; the other three are short
+- **`set-goals`** — 7-step creation and revision for growth goals and constraint
+  goals, producing externally-bound commitments with binary accountability and WOOP
+- **`review-week`** — structured weekly review with a commitment scorecard, pattern
+  analysis, and a harsh truth; a business branch writes one portfolio weekly
+- **`hold-commitments`** — accountability calibrated to your intensity setting, with
+  calendar-independent overwork detection
+- **`demand-numbers`** — turns vague business claims into figures against a metrics
+  reference researched for your actual business at onboarding
+- **Enneagram seed patterns** — 5–7 rationalization patterns per type, all nine covered
 - **Safety gate** — disclaimer and crisis redirect run before any setup, on every focus
 
-### Removed
+### coding — the engineering room and the tools it runs
 
-- **Ladder plugin** — superseded by advice; `/climb` became `/life`
-- **Biz plugin** — superseded by advice; `/earn` became `/business`, `metrics` became `drill`
+- **`/software`** — release scope, architecture, and the ship date, then builds it,
+  gates it, and proves it. Owns `scope.md` as a written contract, `decisions.md` with
+  reopens-if conditions, and `debt.md`. Does not hand implementation elsewhere
+- **`shared/engine.md`** — a short engine of its own: configuration, date, data
+  ritual, aggressive saving, closing
+- **`write-code`** — captures intent, writes the acceptance scenarios first, detects
+  the domain (Go, frontend, DevOps, SRE), loads the matching standards, and runs the
+  gauntlet. Gate thresholds ship as defaults a project can override in its own `scope.md`
+- **`fix-code`** — multi-lens review across nine expert lenses auto-selected per
+  package, a severity-phased fix plan, execution in isolated worktrees with a
+  self-review loop, and durable `.code-review/<run-id>/` artifacts
+- **`code-reviewer`** — the per-package reviewer agent `fix-code` dispatches
+- Depends on `foundations`, documented rather than declared — `plugin.json` has no
+  dependency field. `write-code` does the work inline when `foundations` is absent
 
-## [1.0.0] - 2026-04-05
+### foundations — the two bookends of any deliverable
 
-### Added
+- **`capture-intent`** — the intent contract before the work: quote the request,
+  enumerate every element including the implicit ones, and name for each whether
+  fulfillment is mechanical or depends on the model choosing to act
+- **`check-evidence`** — adversarial review before any completion claim:
+  intent-completion trace, artifact-wiring proof, deferral-language grep, time-decay
+  check, severity ranking, and a report shape that requires evidence per field
+- Domain-agnostic. Both apply to code, config, documents, strategy, and skill design
 
-- **Ladder plugin** — personal growth companion with the `/climb` command: Enneagram-based onboarding (quick or full assessment, with wings), calibration dimensions, 7-step goal creation with WOOP and binary accountability, weekly reflections, accountability and coach skills, seeded rationalization patterns, safety disclaimer with 988 redirect
+### Tooling
+
+- **`scripts/check-wiring.sh`** — lints all three plugins: reference files are named
+  by their skill, frontmatter matches directory names, commands read their engine,
+  gate files appear in their focus, skill writes stay inside their focus, bookshelf
+  paths are keyed by focus, `${CLAUDE_PLUGIN_ROOT}` paths resolve inside the
+  referencing plugin, and nothing personal ships
