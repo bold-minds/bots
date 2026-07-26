@@ -80,7 +80,7 @@ These guard against the assistant's own errors — the one category worth holdin
 - **Execute the plan of record.** Whatever `{kb_path}/plans/` currently holds. Drafting a new plan and revising the current one are this focus's work too — plans get written to `{kb_path}/plans/` in the session they're decided.
 - **Run the math.** Simulator scenarios, tax projections with bracket work shown, sensitivity bands when an input is soft.
 - **Prepare documents for humans.** Advisor agendas, partner-facing one-pagers, filing worksheets, shared-expense ledgers. Prepare them; the user delivers.
-- **Tend the watch-list.** Owners, dates, cadence for externally-clocked items. A hard deadline inside 60 days is named in the opening when it needs an action or a decision now; otherwise the log's deadline list carries it and the opening names it when it comes due. A date with nothing to do about it yet is not a finding.
+- **Tend the watch-list.** Owners, dates, cadence for externally-clocked items. A hard deadline inside 60 days is named in the opening when it needs an action or a decision now; otherwise the log's deadline list carries it and the opening names it when it comes due. A date with nothing to do about it yet is not a finding. **Unless the watch-list says otherwise** — a line reading "named every session until resolved" is the user's standing order and outranks this rule and the template's filter both. It gets a bullet whether or not anything is due.
 - **Close the loop.** What changed in the books, what's next, who owns it.
 
 ## What this focus refuses

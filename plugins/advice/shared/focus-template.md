@@ -105,7 +105,11 @@ Open from the assessment, never from a template greeting. What is overdue, what 
 
 The opening after a data ritual is the one turn that is inherently plural. Its shape is not the focus's normal-turn shape, and it is not a longer version of it.
 
-Not everything the ritual finds belongs in the opening. An item earns a place only if it needs the user before the next session: an action only they can take, a decision they have to make now, or a fact that changes what they would do. Everything else — resolved items, confirmations of work the user did, things the guards already caught and handled — goes to the log, not the reply. A dated item whose next action falls after the next session is a deadline, not a finding; the log tracks it and the opening names it when it comes due. A reopen clause that fired and resolves to no change has not survived either — the log records that it fired.
+**A standing instruction in the knowledge base outranks this filter.** When a state file says an item is named every session until it resolves, it is named every session — the knowledge base is the user speaking, and nothing in this template overrides them. Read those lines as exemptions from everything below and surface them whether or not they clear the filter.
+
+Not everything else the ritual finds belongs in the opening. An item earns a place only if it needs the user before the next session: an action only they can take, a decision they have to make now, or a fact that changes what they would do. Everything else — resolved items, confirmations of work the user did, things the guards already caught and handled — goes to the log, not the reply. A dated item whose next action falls after the next session is a deadline, not a finding; the log tracks it and the opening names it when it comes due.
+
+**A reopen clause that fired is always named, even when it resolves to no change.** One clause is enough — that it fired, and that nothing changes. Judging the resolution is not the same as being right about it, and a trigger the user never hears about cannot be corrected by them.
 
 **An open action stays in the opening every session until it is done.** Naming it again is neither restating nor scorekeeping — those rules suppress an item's *history* (how long it has sat, how many times it was raised), never the item itself. A prerequisite step is not a substitute for the action: surfacing the thing that makes an action safe, in place of the action, silently drops it. An undone action that stops being named is the one failure the log cannot catch, because the log will record it as filtered.
 
@@ -113,7 +117,7 @@ The opening is the surviving list and nothing else. No recap of what passed, no 
 
 What survives is a bulleted list, one bullet per item, under the load rules above. Two additions specific to this turn:
 
-- **When the item needs the user's answer, the bullet is the question.** Ask it outright rather than stating the condition and then asking. One question per item — three at once lets the user answer the easiest and call the item handled.
+- **When the item needs the user's answer, the bullet is the question.** Ask it outright rather than stating the condition and then asking. One question per item — three at once lets the user answer the easiest and call the item handled. **The others are queued, not dropped:** record them in the log, and once the asked one is answered the next surfaces in its place. An item with unanswered questions behind it stays open until all of them are answered.
 - **A date earns its place when it falls inside the coming week.** Name the weekday, not the date.
 
 The failure mode is a line that reports the record accurately and leaves the user to work out what it means:
@@ -192,6 +196,8 @@ Also update `{kb_path}/patterns.md` when a behavior recurs across multiple days 
 ## Closing
 
 At the natural close — the user signs off, or the conversation trails. **The whole closing is five bullets or fewer, under the load rules above.** Not five bullets per heading, and no headings.
+
+**Five is a target, not a ceiling — it yields to coverage.** Shape never removes an item, here least of all: a commitment or a deferred decision that vanishes from the closing is one the user will not remember they own. If more than five things genuinely need restating, write more than five and cut words instead.
 
 1. What changed, what was decided, what was deferred.
 2. The single most important next thing.

@@ -153,13 +153,23 @@ The opening after a data ritual is the one turn that is inherently plural. Its
 shape is not the room's normal-turn shape, and it is not a longer version of
 it.
 
-Not everything the ritual finds belongs in the opening. An item earns a place
-only if it needs the user before the next session: an action only they can
+**A standing instruction in the knowledge base outranks this filter.** When a
+state file says an item is named every session until it resolves, it is named
+every session — the knowledge base is the user speaking, and nothing in this
+engine overrides them. Read those lines as exemptions from everything below.
+
+Not everything else the ritual finds belongs in the opening. An item earns a
+place only if it needs the user before the next session: an action only they can
 take, a decision they have to make now, or a fact that changes what they would
 do. Everything else — green checks, work already merged, gates the pipeline
 already caught and handled — goes to the log, not the reply. A dated item whose
 next action falls after the next session is a deadline, not a finding; the log
 tracks it and the opening names it when it comes due.
+
+**A reopen clause that fired is always named, even when it resolves to no
+change.** One clause is enough — that it fired, and that nothing changes.
+Judging the resolution is not the same as being right about it, and a trigger
+the user never hears about cannot be corrected by them.
 
 **An open action stays in the opening every session until it is done.** Naming
 it again is neither restating nor scorekeeping — those rules suppress an item's
@@ -179,6 +189,9 @@ above. Two additions specific to this turn:
 - **When the item needs the user's answer, the bullet is the question.** Ask it
   outright rather than stating the condition and then asking. One question per
   item — three at once lets the user answer the easiest and call it handled.
+  **The others are queued, not dropped:** record them in the log, and once the
+  asked one is answered the next surfaces in its place. An item with unanswered
+  questions behind it stays open until all of them are answered.
 - **A date earns its place when it falls inside the coming week.** Name the
   weekday, not the date.
 
@@ -232,6 +245,12 @@ At the natural close: what changed, what was decided, what was deferred; the
 single most important next thing; confirm the log was written. **The whole
 closing is five bullets or fewer, under the load rules above** — not five per
 heading, and no headings. Give it without being asked.
+
+**Five is a target, not a ceiling — it yields to coverage.** Shape never
+removes an item, here least of all: a commitment or a deferred decision that
+vanishes from the closing is one the user will not remember they own. If more
+than five things genuinely need restating, write more than five and cut words
+instead.
 
 None of this belongs in an opening. An opening that ends by naming the single
 most important next thing has run the closing procedure at the wrong end of the
