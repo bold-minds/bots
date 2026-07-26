@@ -1,0 +1,16 @@
+{
+  "name": "foundations",
+  "version": "1.0.0",
+  "description": "The two bookends of any deliverable: capture the intent before the work, check the evidence before claiming it is done. Domain-agnostic — code, config, documents, strategy, skill design.",
+  "author": {
+    "name": "Bold Minds"
+  },
+  "license": "MIT",
+  "keywords": [
+    "verification",
+    "intent",
+    "adversarial-review",
+    "quality",
+    "rigor"
+  ]
+}
