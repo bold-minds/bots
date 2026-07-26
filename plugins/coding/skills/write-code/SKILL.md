@@ -40,7 +40,7 @@ Based on the task, identify which domains apply. Multiple domains can apply to a
 | CI/CD, Docker, GitHub Actions, deployment, infrastructure | **DevOps** | `references/devops/` |
 | Monitoring, alerting, incidents, runbooks, SLOs | **SRE** | `references/sre/` |
 
-**Always load `references/craft/` — these are language-agnostic standards that apply to all code.**
+**Always load `references/craft/standards.md` — language-agnostic standards that apply to all code.** Also load, when relevant: `references/craft/twelve-factor.md` for the twelve-factor app checklist (config, statelessness, dev/prod parity, and the rest of the SaaS deployment shape), and `references/craft/architecture-wisdom.md` for Bounded Context, Transitional Architecture, and architectural decision-making guidance.
 
 **Always load `references/gauntlet/standards.md` — the mechanical gates that decide whether the work is done.** Then load the language gate file for each domain touched: Go → `references/gauntlet/go.md`, Frontend → `references/gauntlet/frontend.md`. Load `references/gauntlet/bdd.md` whenever the change has observable behavior — its scenarios get written at step 1, before the code.
 
@@ -60,6 +60,7 @@ Read the standards file for each detected domain. These are the rules you follow
    - Quality/naming/style → `references/go/go-quality.md`
    - Design wisdom → `references/go/go-wisdom.md`
    - DDD patterns → `references/go/ddd-patterns.md`
+   - DSLs, parsers, ASTs, editor/language tooling → `references/go/editor-tooling.md`
 
 **For Frontend:**
 1. Read `references/craft/standards.md`

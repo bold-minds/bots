@@ -1,7 +1,7 @@
 # DDD, CQRS & Event Sourcing Patterns
 
 Distilled from Fowler, Evans, Stemmler, Chris Kiehl, Arkency, ThreeDots, Uncle Bob, and production war stories.
-Bounded Context basics are in `craft/references/architecture-wisdom.md` -- not repeated here.
+Bounded Context basics are in `references/craft/architecture-wisdom.md` -- not repeated here.
 
 ---
 

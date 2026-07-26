@@ -417,6 +417,6 @@ What are the positive, negative, and neutral effects?
 
 Build SaaS apps that are portable, scalable, and operationally sound. The twelve factors are: (I) one codebase, many deploys; (II) explicit dependency declaration and isolation; (III) config in environment variables; (IV) backing services as attached resources; (V) strict build/release/run separation; (VI) stateless processes; (VII) port binding; (VIII) concurrency via the process model; (IX) fast startup, graceful shutdown; (X) dev/prod parity; (XI) logs as event streams to stdout; (XII) admin tasks as one-off processes.
 
-See `references/twelve-factor.md` for the full detailed table.
+See `references/craft/twelve-factor.md` for the full detailed table.
 
-See `references/architecture-wisdom.md` for Bounded Context, Transitional Architecture, the Advice Process for decentralized architectural decision-making, and architectural decision heuristics.
+See `references/craft/architecture-wisdom.md` for Bounded Context, Transitional Architecture, the Advice Process for decentralized architectural decision-making, and architectural decision heuristics.
