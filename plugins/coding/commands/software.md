@@ -30,11 +30,13 @@ Per project, not per user. If `{kb_path}/builds/<project>/scope.md` does not exi
 
 Ask for those five things, then write `scope.md`, `decisions.md`, and `debt.md` from the answers and read the scope back. Never infer any of the five by reading the repository — a scope file assembled from inference is worse than no scope file, because the next session trusts it.
 
+Also ask whether the project overrides any gauntlet threshold. Overrides go in `scope.md` under a `## Gate thresholds` heading, one line per gate — the gate's name as the gauntlet names it, then the number: `- Coverage, handlers: 70%`. Anything not listed runs the default. Onboarding is the moment to set these; once the work is running, a threshold moved to turn a red gate green is refused.
+
 If more than one project exists and the user hasn't named one, ask which before loading anything.
 
 ## Data ritual
 
-1. `{kb_path}/builds/<project>/scope.md` — what's in this release, what's explicitly out
+1. `{kb_path}/builds/<project>/scope.md` — what's in this release, what's explicitly out, and any gauntlet threshold this project overrides
 2. `{kb_path}/builds/<project>/decisions.md` — architectural decisions with their reopens-if conditions
 3. `{kb_path}/builds/<project>/debt.md` — known shortcuts, why they were taken, what would force paying them
 

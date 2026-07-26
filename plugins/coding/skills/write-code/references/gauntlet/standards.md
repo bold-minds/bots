@@ -31,7 +31,7 @@ If a gate fails, fix the code and re-run. Do not adjust the threshold to make it
 
 ## Thresholds — defaults, overridable per project
 
-Every number in the language gate files is a default. A project may record its own in `builds/<project>/scope.md`, and where it does, those are that project's thresholds and the defaults stop applying to it.
+Every number in the language gate files is a default. A project may record its own in `builds/<project>/scope.md`, under a `## Gate thresholds` heading, one line per gate — the gate's name as those files name it, then the number. Where a project records one, that is its threshold and the default stops applying to it.
 
 `/software` reads `scope.md` at the start of every session, so inside the room the project's numbers are already in context — use them. Invoked with no `scope.md` in reach, run the defaults and say that is what you ran.
 
