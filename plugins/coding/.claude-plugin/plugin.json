@@ -1,0 +1,17 @@
+{
+  "name": "coding",
+  "version": "1.0.0",
+  "description": "The engineering room and the tools it runs. Decides release scope, architecture, and the ship date — then builds it, gates it, and proves it. Surround the agent with constraints instead of reading its diffs.",
+  "author": {
+    "name": "Bold Minds"
+  },
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "testing",
+    "quality-gates",
+    "release-scope",
+    "technical-debt",
+    "bdd"
+  ]
+}
