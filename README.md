@@ -15,8 +15,9 @@ These advise and prepare. They never act on your behalf: no publishing, no trans
 | `/life` | Daily planning, check-ins, commitments, weekly reflection, the gap between stated intent and actual behavior. |
 | `/money` | Ledger, plans, tax math, simulator runs, documents prepared for humans. |
 | `/story` | True stories about your own life, any format, any destination. Drafts from the lived record, genre tests, the backlog. |
-| `/software` | Release scope, architectural decisions, debt, the ship date. |
 | `/business` | Portfolio-level operating conversation, unit economics, ruthless scope. |
+
+Release scope, architecture, the ship date, and the implementation itself are `/software`, which lives in the **coding** plugin below. This plugin advises; that one builds.
 
 A focus is three things you supply and one thing the plugin provides: a **persona** (the name and voice that answers), a **bookshelf** (the canon it reasons from), a **knowledge base** (the data it reads and writes), and a shared **engine**.
 
@@ -60,7 +61,7 @@ The plugin README carries starting recommendations per focus.
 Everything lives in a knowledge base directory you choose during setup, outside this repo. Nothing is sent anywhere.
 
 ```
-your-kb/                  # shared by /life, /money, /story, /software
+your-kb/                  # shared by /life, /money, /story — /software (coding plugin) can point here too
   profile.md              # Type, calibration settings, life areas
   patterns.md             # Rationalization patterns, seeded and observed
   goals/                  # One file per life area
@@ -80,14 +81,36 @@ business-kb/              # /business may use its own knowledge base
   bookshelf/business/     # Your canon + the metrics reference calibrate-profile drafts
 ```
 
+### Foundations
+
+The two bookends of any deliverable, domain-agnostic: `capture-intent` runs before the work starts, `check-evidence` runs before it's claimed done. No commands — both are model-triggered, invoked directly or by another plugin's skill.
+
+Full documentation: [`plugins/foundations/README.md`](plugins/foundations/README.md).
+
+### Coding
+
+The engineering room and the tools it runs. `/software` owns release scope, architecture, and the ship date, then builds against the gauntlet, reviews through nine lenses, and proves the work is done — implementation doesn't hand off elsewhere.
+
+| Command | Scope |
+|---|---|
+| `/software` | Release scope, architectural decisions, debt, the ship date, and the implementation itself. |
+
+Depends on `foundations`: `/software` and `write-code` invoke `capture-intent` and `check-evidence` around their own work, and degrade gracefully — doing that work inline instead — if `foundations` isn't installed.
+
+Full documentation: [`plugins/coding/README.md`](plugins/coding/README.md).
+
 ## Install
 
 ```bash
 claude plugin marketplace add bold-minds/bots
 claude plugin install advice@bots
+claude plugin install foundations@bots
+claude plugin install coding@bots
 ```
 
-Then create a config file for the focus you want and invoke it. Point `/life`, `/money`, `/story`, and `/software` at the same knowledge base; `/business` may use its own. A focus can read another's knowledge base through that focus's config file — reads cross knowledge bases, writes never do.
+`foundations` is optional for `coding` but recommended — without it, `/software` and `write-code` do `capture-intent`/`check-evidence`'s work inline rather than skipping it.
+
+Then create a config file for the focus or room you want and invoke it. Point `/life`, `/money`, and `/story` at the same knowledge base; `/business` may use its own, and `/software` (in the `coding` plugin) resolves its own `kb_path` the same way — point it at the same knowledge base if you want builds sitting alongside the rest. A focus can read another's knowledge base through that focus's config file — reads cross knowledge bases, writes never do.
 
 ```markdown
 <!-- .claude/life.local.md -->

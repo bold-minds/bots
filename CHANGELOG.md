@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.1.0] - 2026-07-25
+
+### Added
+
+- **Foundations plugin (1.0.0)** — `capture-intent` and `check-evidence`, the two bookends of any deliverable, domain-agnostic and model-triggered
+- **Coding plugin (1.0.0)** — the engineering room `/software`, plus `write-code`, `fix-code`, and the `code-reviewer` agent. Builds, gates, and proves; does not hand implementation elsewhere. Depends on `foundations` (documented, not declared in `plugin.json`)
+
+### Changed
+
+- **Five skills renamed** for clarity — `calibrate` → `calibrate-profile`, `aim` → `set-goals`, `reflect` → `review-week`, `confront` → `hold-commitments`, `drill` → `demand-numbers`
+- **Ship doctrine consolidated into `/software`** — release scope, architecture, the ship date, and the implementation itself now live in one room in the `coding` plugin, replacing the version of `/software` that lived in `advice`
+- **Marketplace description** — no longer "advisor sessions, one per focus"; now names three plugins across two realms: advice, coding, and the foundations that bracket both
+
+### Removed
+
+- **`/software` from the `advice` plugin** — advice now holds four focuses: `/life`, `/money`, `/story`, `/business`. Release scope and implementation moved to the `coding` plugin's `/software`
+
 ## [2.0.0] - 2026-07-25
 
 ### Added

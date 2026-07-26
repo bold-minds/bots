@@ -6,7 +6,7 @@ Thanks for your interest in contributing. Here's how to get involved.
 
 1. Fork and clone the repo
 2. Install [Claude Code](https://claude.ai/code)
-3. Install the plugin locally: `claude plugin marketplace add /path/to/your/clone`, then `claude plugin install advice@bots`
+3. Install the plugins locally: `claude plugin marketplace add /path/to/your/clone`, then `claude plugin install advice@bots` (and `foundations@bots`, `coding@bots` if you're working on those)
 4. Run `/life` to test the onboarding flow
 
 ## Repository structure
@@ -18,7 +18,7 @@ bots/
   scripts/
     check-wiring.sh         # Wiring lint — run before a PR
   plugins/
-    advice/                 # Five focuses on a shared engine
+    advice/                 # Four focuses on a shared engine
       .claude-plugin/
         plugin.json         # Plugin metadata
       shared/
@@ -27,7 +27,6 @@ bots/
         life.md             # Planning, check-ins, accountability
         money.md            # Ledger, plans, documents
         story.md            # True stories, any format
-        software.md         # Release scope, architecture, ship date
         business.md         # Portfolio, unit economics, scope
       skills/
         calibrate-profile/  # First-run setup for every focus
@@ -38,7 +37,29 @@ bots/
           references/       # Reflection file format
         hold-commitments/   # Commitment accountability
         demand-numbers/     # "What's the number?" — reads the user's metrics reference
+    foundations/            # The two bookends of any deliverable, domain-agnostic
+      .claude-plugin/
+        plugin.json         # Plugin metadata
+      skills/
+        capture-intent/     # Understand the request before any work begins
+        check-evidence/     # Adversarial self-review before any completion claim
+    coding/                 # The engineering room and the tools it runs
+      .claude-plugin/
+        plugin.json         # Plugin metadata
+      shared/
+        engine.md           # The engine /software inherits
+      commands/
+        software.md         # Release scope, architecture, ship date, implementation
+      skills/
+        write-code/         # Captures intent, writes code, runs the gauntlet
+          references/       # Domain standards (Go, frontend, DevOps, SRE), gauntlet tiers
+        fix-code/           # Nine-lens review and fix, batched by package
+          references/       # Lens selection, lens definitions
+      agents/
+        code-reviewer.md    # Per-package multi-lens reviewer, dispatched by fix-code
 ```
+
+`coding` depends on `foundations` for `capture-intent` and `check-evidence`, documented in its README — there is no `dependencies` field in `plugin.json`.
 
 Bookshelves are not in this repo. A focus reads its canon from `{kb_path}/bookshelf/<focus>/`, which the user owns.
 

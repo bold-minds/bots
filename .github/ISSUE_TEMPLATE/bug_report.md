@@ -16,13 +16,17 @@ What should have happened instead.
 - [ ] /life
 - [ ] /money
 - [ ] /story
-- [ ] /software
 - [ ] /business
-- [ ] calibrate (onboarding)
-- [ ] aim
-- [ ] reflect
-- [ ] confront
-- [ ] drill
+- [ ] /software (coding plugin)
+- [ ] calibrate-profile (onboarding)
+- [ ] set-goals
+- [ ] review-week
+- [ ] hold-commitments
+- [ ] demand-numbers
+- [ ] write-code (coding plugin)
+- [ ] fix-code (coding plugin)
+- [ ] capture-intent (foundations plugin)
+- [ ] check-evidence (foundations plugin)
 
 **Your setup**
 - Enneagram type (if known):

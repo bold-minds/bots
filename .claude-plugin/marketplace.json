@@ -1,14 +1,26 @@
 {
   "name": "bots",
-  "description": "Claude Code plugins by Bold Minds — long-running advisor sessions, one per focus",
+  "description": "Claude Code plugins by Bold Minds. Advisor rooms that never act, an engineering room that does, and the two skills that bracket any deliverable.",
   "owner": {
     "name": "Bold Minds"
   },
   "plugins": [
     {
       "name": "advice",
-      "description": "Long-running advisor sessions, one per focus: life, money, story, software, business. Each focus is a persona, a bookshelf, and a knowledge base you supply, running on a shared engine. Bookshelves ship empty; the canon is yours.",
+      "description": "Long-running advisor sessions, one per focus: life, money, story, business. Each focus is a persona, a bookshelf, and a knowledge base you supply, running on a shared engine. Bookshelves ship empty; the canon is yours. Advises and prepares; never acts on your behalf.",
       "source": "./plugins/advice",
+      "category": "productivity"
+    },
+    {
+      "name": "foundations",
+      "description": "The two bookends of any deliverable: capture the intent before the work, check the evidence before claiming it is done. Domain-agnostic.",
+      "source": "./plugins/foundations",
+      "category": "productivity"
+    },
+    {
+      "name": "coding",
+      "description": "The engineering room and the tools it runs. Release scope, architecture, and the ship date — then build it, gate it, prove it. Surround the agent with constraints instead of reading its diffs.",
+      "source": "./plugins/coding",
       "category": "productivity"
     }
   ]
