@@ -4,9 +4,11 @@ description: >
   Review and fix code using a multi-lens review pipeline. Analyzes code through 9 expert lenses
   (Security, Performance, Staff Engineer, Architect, Product Owner, SRE, QA, Legal, UX),
   generates a fix plan, and executes fixes in parallel worktrees with self-review.
-  Three modes: /fix-code (full pipeline), /fix-code review (stop after REVIEW.md),
-  /fix-code plan (stop after PLAN.md). Use when: reviewing code before merge, auditing a
-  repo, fixing review findings, or running a full review-plan-fix cycle.
+  Three modes, chosen by what the user asks for: full pipeline by default; review-only
+  when the user wants just a report, stopping after REVIEW.md; plan-only when the user
+  already has a REVIEW.md and wants a fix plan from it, stopping after PLAN.md. Use when:
+  reviewing code before merge, auditing a repo, fixing review findings, or running a full
+  review-plan-fix cycle.
 ---
 
 # Fix Code — Review, Plan, Execute
@@ -15,14 +17,16 @@ Run a multi-lens code review pipeline. By default, runs the full cycle: review �
 
 ## Mode Detection
 
-Parse the first argument:
-- No argument → **Full pipeline** (review → plan → execute)
-- `review` → **Review only** — stop after producing REVIEW.md
-- `review branch` → Review mode, branch scope (default)
-- `review repo` → Review mode, full repo audit
-- `review feature "description"` → Review mode, trace a feature
-- `plan` → **Plan only** — expects existing REVIEW.md, stop after producing PLAN.md
-- `plan path/to/REVIEW.md` → Plan from specific review
+There is no command invocation to parse an argument from. Determine the mode from what the user is asking for:
+
+- Asked to review and fix, or gave no more specific scope than "look at this code" → **Full pipeline** (review → plan → execute)
+- Asked only for a review, an audit, or findings — no mention of fixing → **Review only** — stop after producing REVIEW.md
+  - No scope specified → branch scope (default): diff against main plus working-tree changes
+  - Asked to review the whole repo → repo scope: full repo audit
+  - Asked to review or trace a specific feature → feature scope: trace that feature through the codebase
+- Asked for a fix plan, referencing a review that was already produced → **Plan only** — expects existing REVIEW.md, stop after producing PLAN.md
+  - No REVIEW.md identified → use the most recent `.code-review/*/REVIEW.md`
+  - A specific REVIEW.md path given or implied → plan from that review
 
 ---
 
@@ -178,7 +182,7 @@ Generate a prioritized fix plan with parallel work streams from the review.
 
 If coming from Phase 1, use the REVIEW.md just written. Otherwise, look for the most recent `.code-review/*/REVIEW.md`. The user can pass an explicit path.
 
-If no REVIEW.md is found: "No review report found. Run `/fix-code review` first."
+If no REVIEW.md is found: "No review report found — ask for a review first."
 
 ### 2.2 Parse the report
 
@@ -274,7 +278,7 @@ Implement the fix plan using parallel worktree agents with self-review.
 
 If coming from Phase 2, use the PLAN.md just written. Otherwise, look for the most recent `.code-review/*/PLAN.md`. The user can pass an explicit path.
 
-If no PLAN.md is found: "No fix plan found. Run `/fix-code plan` first."
+If no PLAN.md is found: "No fix plan found — ask for a plan first."
 
 ### 3.2 Parse the plan
 
