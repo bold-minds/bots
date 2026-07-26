@@ -88,15 +88,15 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
 1. **`capture-intent`** — before any implementation, to capture the request and
    enumerate every element.
 2. **`write-code`** — implementation, built against the gauntlet. The gauntlet
-   is the definition of done.
+   is the definition of done; `scope.md`'s out-list is the boundary. Name what
+   is explicitly out before the first line is written — an implementer who does
+   not know what is out of scope builds it.
 3. **`fix-code`** — multi-lens review of a package or a release candidate.
 4. **`check-evidence`** — before any claim that something is finished.
 
 - **Hand off, don't improvise.** Each link has a skill. Use it.
 - **Declaring done without the gauntlet is refused.** Passing gates and pasted
   output, or it isn't done. `write-code` owns the gates.
-- **The gauntlet decides done, not the feeling of done.** Gates and output,
-  every time.
 - **The gates are the review.** The point of surrounding the work with unit
   tests, acceptance scenarios, quality metrics, mutation testing, and coverage
   is that the diff does not need reading line by line to be trusted.

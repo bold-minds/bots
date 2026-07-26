@@ -1,6 +1,14 @@
 # coding
 
-The engineering room and the tools it runs. `/software` (from the `advice` plugin) decides release scope, architecture, and the ship date, and owns the gates that decide whether a change is done. This plugin is what builds against those gates, checks the work through nine expert lenses, and fixes what it finds.
+The engineering room and the tools it runs. `/software` is this plugin's room: it decides release scope, architecture, and the ship date, then builds against the gates that decide whether a change is done, checks the work through nine expert lenses, and fixes what it finds. Surround the agent with constraints instead of reading its diffs.
+
+## Command
+
+### /software
+
+Owns the distance between a decision to build and a thing that is live: technical direction, release scope, the ship date, the implementation, and the gates that decide whether it is done. Its territory is `{kb_path}/builds/` and the working tree. Product judgment — whether to build at all, who pays, at what price — routes out to `/business` in the `advice` plugin.
+
+The only command in this plugin. Everything below is model-triggered from its own description: there is no wrapper command for any skill, and nothing else here for a user to type.
 
 ## Skills
 
