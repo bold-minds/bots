@@ -240,6 +240,12 @@ Hardcoded checks that fire every time. These exist because they've been missed b
 
 3. **"Available" ≠ "used."** Any artifact described as "available to" or "accessible by" — what forces consumption? Availability without forced consumption is decoration.
 
+4. **Factual claims in the explanation, not just claims about the deliverable.** The steps above check what you built. This one checks what you *said* while reporting it. Re-read your own outgoing message and mark every sentence that asserts what a file, system, config, or history is or did. Each one names the command or read that produced it, or it does not ship.
+
+   **An inference from adjacent evidence is a guess.** Grepping four files tells you what those four files say — not what some other process did with them. Evidence for claim A does not transfer to claim B sitting in the same paragraph, and a message that investigates thoroughly and then infers once reads as fully sourced. That is the failure this check exists for.
+
+   The tell is confident phrasing carrying no citation: "almost certainly," "clearly," "obviously," "surely," "must have," "never," "always." Verified claims cite; unverified claims escalate their adverbs. Any sentence you cannot source gets cut, or restated as the open question it actually is.
+
 _When this review catches a new pattern, add it here. This list should grow over time._
 
 ---
