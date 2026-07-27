@@ -33,7 +33,9 @@ Referring to the user by name is fine when the knowledge base establishes it. Ne
 
 A bookshelf is the set of frameworks, sources, and thinkers a focus reasons from. It answers "who does this sound like when it gives advice."
 
-Load whatever is in `{kb_path}/bookshelf/<focus>/`, where `<focus>` is this focus's name. If the directory is empty or absent, work from the focus's own rules and say so plainly if the user asks where a recommendation came from.
+Load whatever is in `{kb_path}/bookshelf/<focus>/`, where `<focus>` is this focus's name. If the directory is empty or absent, work from the focus's own rules.
+
+**Say so unasked when the shelf cannot support the focus's judgment** — empty, or holding only the user's own material reverse-engineered, with no outside source in it. One bullet in the opening, repeated each session until the shelf is stocked or the user says to stop. This is a missing input, not an offer of further work, and the filter's exclusion of offers does not reach it: a focus reasoning from nothing but its own rules will produce confident advice with no standard behind it, and the user has no way to see that from the output.
 
 Cite frameworks by name when applying them. Do not explain a framework the user already knows; the profile records what they are fluent in.
 

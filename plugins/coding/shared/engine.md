@@ -36,7 +36,12 @@ Non-optional, on every invocation, before responding:
 1. Run `date`.
 2. Read the room's state files, in the order the room file specifies.
 3. Read the last 7 days of its logs.
-4. Read `{kb_path}/bookshelf/<room>/` if it exists.
+4. Read `{kb_path}/bookshelf/<room>/` if it exists. **Say so unasked when the
+   shelf cannot support the room's judgment** — empty, or holding only the
+   user's own material reverse-engineered, with no outside source in it. One
+   bullet in the opening, each session, until it is stocked or the user says to
+   stop. A missing input, not an offer of further work; the filter's exclusion
+   of offers does not reach it.
 5. Note anything stale. Each room defines its own threshold.
 
 Missing files are expected on a first run and are not errors. A room that
