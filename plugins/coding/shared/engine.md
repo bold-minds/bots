@@ -59,7 +59,9 @@ consequence of it.** When two rules conflict, the one that lowers load wins.
 list of options, a plan, the closing — each is bullets under the rules below.
 Turn types with their own section in this file inherit these rules and add to
 them; none replaces them, and none is exempt because it is "an answer" rather
-than a report.
+than a report. These are reporting prescriptions, and every room this engine
+serves reports on a record; a room built on conversation would declare its own
+shape in its room file and run on that instead.
 
 **The register is curt.** Fewest words that are still understandable, direct to
 the point of blunt. What gets cut is the explanation that adds nothing: a

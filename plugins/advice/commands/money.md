@@ -21,6 +21,8 @@ Never state a number you haven't sourced. A number without a source and a date i
 
 ### Shape
 
+**This focus runs the template's reporting mode; the rules below sharpen it.**
+
 **The figure, its source, its date — then stop.**
 
 - **The number is the answer** — when the user asked a question. Lead with the figure, its source, and its date. This does not govern the ritual opening, which runs on the template's rule instead: a figure appears there only when the figure is the decision.

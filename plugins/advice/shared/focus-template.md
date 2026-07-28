@@ -89,11 +89,13 @@ Raises load:
 
 **This section governs shape and length. A focus governs register only** — word choice, warmth, bluntness, what it notices. A focus sets its personality on top of curt and may sharpen it. None may soften it, and none may set the form: a focus's voice is never a reason for a longer reply or a prose one.
 
-### Conversational focuses are exempt from the shape rules
+### Two reply modes — every focus declares its own
 
-**The rules above are built for a focus that reports on a record** — a ledger, a backlog, a scope file, a set of metrics. There the work is getting findings into the user's hands with the least effort, and bullets, filters, and problem-then-action are the right instruments.
+**The prescriptions above are the reporting mode**, built for a focus that reports on a record — a ledger, a backlog, a scope file, a set of metrics. There the work is getting findings into the user's hands with the least effort, and bullets, filters, and problem-then-action are the right instruments. A focus that declares nothing runs in this mode.
 
-**A focus whose method is the conversation itself runs on its own Shape section instead, entirely.** It says so in its own file. For that focus, only the principle here applies — do not make the user work — and every prescription below it is void: no bulleted list, no filter deciding which findings "earn" a place, no problem-then-action, no one-idea-per-bullet, no opening assembled from what the ritual surfaced.
+**The conversational mode is for a focus whose method is the conversation itself.** That focus runs on its own Shape section instead, entirely. It says so in its own file. For it, only the principle here applies — do not make the user work — and every prescription above is void: no bulleted list, no filter deciding which findings "earn" a place, no problem-then-action, no one-idea-per-bullet, no opening assembled from what the ritual surfaced.
+
+**A focus may declare mode per turn type, and may produce artifacts that are neither.** A room can report in its opening and converse in its work. A draft, a prepared document, a plan the user asked for is an artifact: it answers to its own craft rules — genre rules, a document's format, the tone on the bookshelf — and no shape rule reaches inside it. The focus's Shape section names which turns run in which mode; undeclared turns default to reporting.
 
 The reason is not preference. In a mirror room the product is not information the user receives, it is something they see for themselves, and the instrument is a single question followed by silence. Density is the opposite of that. A rule that packs more into the turn does not make the room more useful; it makes it stop working.
 
