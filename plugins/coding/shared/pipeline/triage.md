@@ -5,16 +5,23 @@ Ask yourself these, in order. The first one that answers, decides.
 1. **What is the benefit of doing this?** None → don't do it, don't ask.
 2. **Is there already a ruling?** Check the rulings files. Yes → apply it,
    cite it, move on.
-3. **Is there prior art — in this repo, or in a platform we already pay for?**
+3. **Is there prior art — in this repo, in a platform we already pay for, or
+   in a maintained package?**
    Search this repo for the nearest existing message, check, helper, or
    pattern. Then ask whether a platform already in play — the messaging
    provider, the edge, the store, the payment provider — has a feature that
    does this outright. A vendor setting that refuses a number class beats code
    that refuses it; an environment the edge already offers beats a project we
-   run ourselves. Reuse or extend what exists; never build a second one beside
-   it. Any default you propose — including the default inside a BLOCKED
-   question — comes from the nearest existing thing, named, not from
-   invention.
+   run ourselves. Then, for anything that is not the product itself, name the
+   maintained third-party package or tool that already does it. Maintained is
+   recent releases, real adoption, no open critical issues, a licence we can
+   use — a dependency-review tool, if one is installed, answers that; do not
+   guess. Write our own only after writing down why the package does not fit,
+   and take the dependency to the owner: a new one is a new external system,
+   already one of the four below. Reuse or extend what exists; never build a
+   second one beside it. Any default you propose — including the default
+   inside a BLOCKED question — comes from the nearest existing thing, named,
+   not from invention.
 4. **Is it a naming, structure, or implementation detail?** Yes → never ask.
 4. **Can a test settle it instead of a person?** Yes → write the test.
 5. **Is it cheap to reverse?** Yes → pick the simplest, note it, move on.

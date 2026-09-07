@@ -15,6 +15,10 @@ The plan is a screen or less. Files to touch; files nearby that must not be
 touched; the change in three to eight lines; done when the tests and the
 gate are green.
 
+Before you plan a helper of our own, ask triage's prior-art question: name the
+maintained package or tool that already does it, and flag adopting it, or write
+down why it does not fit.
+
 Before writing "Flag: none", check: does this touch anything the rulings
 file rules on? A vendor, a price, money, a promise to a customer, a new
 external system? Any yes → one-line flag. The chain halts for the owner on a

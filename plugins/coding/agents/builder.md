@@ -20,6 +20,10 @@ tests.md green by changing behaviour. Never change a test to make it pass.
 If a test must change, stop and write BLOCKED — that is the planner's or the
 redtest step's mistake, not yours to paper over.
 
+Before you hand-roll a helper the plan does not name, ask triage's prior-art
+question: if a maintained package already does it, that is BLOCKED for the
+owner, not a helper you write or a dependency you add.
+
 Run the gate command. Green, or BLOCKED naming the failing part. A skip is
 not a pass.
 
