@@ -47,7 +47,7 @@ phase('Lenses')
 const LENSES = [['architecture', 'opus'], ['sre', 'opus'], ['performance', 'sonnet'], ['database', 'sonnet'], ['qa', 'opus'], ['staff', 'opus']]
 const lenses = await parallel(LENSES.map(([l, m]) => () => { count(m); return agent(
   `Lens: ${l}. Read ${dir}/spec.md. Load ${SHARED}/lenses/${l}.md; if ${P}/lenses/${l}.md exists, load it too — it is this repo's history for this lens. Nothing about other lenses. Write ${dir}/lens-${l}.md from ${TPL('lens')}. Return the number of findings and nothing else. ${BLOCK_RULE(dir)}`,
-  { agentType: 'lens', phase: 'Lenses', label: `lens: ${l}`, model: m }) }))
+  { agentType: 'coding:lens', phase: 'Lenses', label: `lens: ${l}`, model: m }) }))
 const dead = lenses.findIndex(r => !r)
 if (dead >= 0) return { halted: 'Lenses', block: `BLOCKED: the ${LENSES[dead][0]} lens agent died before writing its file` }
 const lensBlock = lenses.find(isBlocked)
@@ -58,14 +58,14 @@ phase('Pre-mortem')
 count('opus')
 const pm = await agent(
   `Read ${dir}/spec.md and every ${dir}/lens-*.md. Write ${dir}/premortem.md from ${TPL('premortem')}. Return the number of kept cases and nothing else. ${BLOCK_RULE(dir)}`,
-  { agentType: 'premortem', phase: 'Pre-mortem' })
+  { agentType: 'coding:premortem', phase: 'Pre-mortem' })
 if (bad(pm)) return { halted: 'Pre-mortem', block: pm || 'BLOCKED: the pre-mortem agent died before writing its file' }
 
 phase('Break down')
 count('sonnet')
 const bdText = await agent(
   `Read ${dir}/spec.md, every ${dir}/lens-*.md, ${dir}/premortem.md, ${A.requirements} and ${A.decisions}. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, then delete the lens-*.md and premortem.md files. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
-  { agentType: 'breakdown', phase: 'Break down' })
+  { agentType: 'coding:breakdown', phase: 'Break down' })
 if (bad(bdText)) return { halted: 'Break down', block: bdText || 'BLOCKED: the breakdown agent died before writing any task' }
 const tasks = bdText.split('\n').map(s => s.trim()).filter(s => /^[0-9]{2}-[a-z0-9-]+$/.test(s))
 if (!tasks.length) return { halted: 'Break down', block: `BLOCKED: breakdown returned no task names. It returned: ${bdText.slice(0, 200)}` }
@@ -79,16 +79,16 @@ const guard = (t, stage) => (r) => bad(r) ? halt(t, stage, r) : r
 const results = await pipeline(tasks,
   (_, t) => { count('sonnet'); return agent(
     `Read ${T(t)}/criteria.md. Rule each criterion TRUE or FALSE against the code at the repo's default branch, with a file:line or a command you ran as evidence — never a document. Trace from a real entry point: ${ENTRY}. Write ${T(t)}/state.md from ${TPL('state')}, then git add and commit it. Return "to build: N, to guard: M" and nothing else. ${BLOCK_RULE(T(t))}`,
-    { agentType: 'state', phase: 'Tasks', label: `${t}: state` }).then(guard(t, 'state')) },
+    { agentType: 'coding:state', phase: 'Tasks', label: `${t}: state` }).then(guard(t, 'state')) },
   (_, t) => { count('opus'); return agent(
     `Read ${T(t)}/criteria.md and ${T(t)}/state.md. Write the tests and ${T(t)}/tests.md from ${TPL('tests')}. Run tests with: ${A.test}. Journey tests use ${STUB}. Every FALSE criterion's test must be red now. Every TRUE criterion's test must go red when you break the behaviour on purpose, then be restored. Then git add and commit the tests and tests.md. Return the tests.md table and nothing else. ${BLOCK_RULE(T(t))}`,
-    { agentType: 'redtest', phase: 'Tasks', label: `${t}: red tests` }).then(guard(t, 'red tests')) },
+    { agentType: 'coding:redtest', phase: 'Tasks', label: `${t}: red tests` }).then(guard(t, 'red tests')) },
   (_, t) => { count('opus'); return agent(
     `Read ${T(t)}/criteria.md, ${T(t)}/tests.md, the test files, the code they exercise, and ${A.decisions}. Write ${T(t)}/plan.md from ${TPL('plan')}, then git add and commit it. Return the Flag line exactly as written and nothing else. ${BLOCK_RULE(T(t))}`,
-    { agentType: 'planner', phase: 'Tasks', label: `${t}: plan` }).then(r => (bad(r) || !/^Flag:\s*none\s*$/mi.test(r)) ? halt(t, 'plan', r) : r) },
+    { agentType: 'coding:planner', phase: 'Tasks', label: `${t}: plan` }).then(r => (bad(r) || !/^Flag:\s*none\s*$/mi.test(r)) ? halt(t, 'plan', r) : r) },
   (_, t) => { count('opus'); return agent(
     `Implement ${T(t)}/plan.md. Work in your own worktree from local HEAD on a branch named pipeline/${f}/${t}. Make every test in ${T(t)}/tests.md green without weakening any test, using: ${A.test}. Then run the gate to green: ${A.gate}. Commit. Push and open a PR only if ${P}/config.md contains the line "push: confirmed". Return exactly one line — "branch: pipeline/${f}/${t}", or the PR URL if you pushed — and nothing else. ${BLOCK_RULE(T(t))}`,
-    { agentType: 'builder', phase: 'Tasks', label: `${t}: build` }).then(r => (bad(r) || !/^(branch: |https?:\/\/)/m.test(r)) ? halt(t, 'build', r) : r) },
+    { agentType: 'coding:builder', phase: 'Tasks', label: `${t}: build` }).then(r => (bad(r) || !/^(branch: |https?:\/\/)/m.test(r)) ? halt(t, 'build', r) : r) },
   // Stage 9 is two fresh contexts that never saw the builder's reasoning, in
   // parallel: fix-code's lensed code review, and a verifier for what a code
   // review does not do — mutation re-runs, the gate, the rulings, the touched
@@ -96,10 +96,10 @@ const results = await pipeline(tasks,
   (built, t) => { count('opus'); count('opus'); const b = built.trim(); return parallel([
     () => agent(
       `Branch-mode review of ${b} in ${ROOT}: diff it against the default branch. Read every CLAUDE.md in the repo and hold the code to it. File manifest: every file the diff touches — read each in full. Apply the lens prompt templates in ${CODE_LENSES}: the always-on baseline plus whatever ${LENS_RULES} selects for these files. Report findings by severity as your agent definition says, then end with exactly one line: "VERDICT: PASS" if there is no P0 or P1 finding, otherwise "VERDICT: BLOCK: <the top P0/P1 in one sentence>".`,
-      { agentType: 'code-reviewer', phase: 'Tasks', label: `${t}: code review` }),
+      { agentType: 'coding:code-reviewer', phase: 'Tasks', label: `${t}: code review` }),
     () => agent(
       `Verify ${b} against ${T(t)}/criteria.md, ${T(t)}/tests.md and ${T(t)}/plan.md. Check the branch out in your own worktree; re-run every test and every mutation yourself with: ${A.test}; run the gate: ${A.gate}; read ${A.decisions} and confirm nothing is reversed; confirm only plan.md's files changed. Write ${T(t)}/verdict.md from ${TPL('verdict')} at that absolute path — your worktree is discarded. Return its first line exactly — "# PASS" or "# BLOCK: <one sentence>" — and nothing else. ${BLOCK_RULE(T(t))}`,
-      { agentType: 'verifier', phase: 'Tasks', label: `${t}: verify` }),
+      { agentType: 'coding:verifier', phase: 'Tasks', label: `${t}: verify` }),
   ]).then(([cr, vf]) => {
     const crPass = typeof cr === 'string' && /^VERDICT:\s*PASS/m.test(cr)
     const vfPass = !bad(vf) && /^#?\s*PASS\b/m.test(vf)
