@@ -104,14 +104,28 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    merge or one BLOCKED question in plain language. Pass, as a JSON object:
    `feature`; `root` (`git rev-parse --show-toplevel`); `plugin`
    (`${CLAUDE_PLUGIN_ROOT}`); and from `<root>/.claude/pipeline/config.md`:
-   `decisions`, `requirements`, `gate`, `test`, `entry`, `stub`. Keep the
-   `runId`. A blocked run is answered by writing the owner's one line under
-   `Answer:` in that BLOCKED.md and resuming with `{ scriptPath,
-   resumeFromRunId }` — never a fresh run. After the owner merges a task,
-   dispatch `cleaner` with the task directory; after they deploy, run the
-   config's `live:` command. Report a run in three lines: done / ready to
-   merge / waiting on you. The whole of it:
-   `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/README.md`.
+   `decisions`, `requirements`, `gate`, `test`, `entry`, `stub`. Before the
+   first run of a feature, create its branch: `git branch pipeline/<name>
+   <default branch>` if it does not exist — tasks land on it, and the feature
+   is what ships. Keep the `runId` and `scriptPath` from every result.
+
+   The run stops twice on purpose. **After breakdown** it returns
+   `awaiting: confirm` with the task names: read each task's `criteria.md`
+   first line and show the owner one line per task, in their words — that is
+   their "what counts as success" check — then resume with
+   `{ scriptPath, resumeFromRunId }` and `confirmTasks: false`; the finished
+   steps return cached. **On BLOCKED** it returns the block: relay the file's
+   three lines verbatim, write the owner's one line under `Answer:` in that
+   BLOCKED.md, and resume the same way — never a fresh run, which re-runs
+   every lens. If they said earlier not to be asked, pass `confirmTasks:
+   false` from the start.
+
+   When the whole feature passes it returns the feature branch and, if the
+   config's `push:` line permits, the remote ref — one push per feature. The
+   owner merges to the default branch. After they merge, dispatch `cleaner`
+   with the feature directory; after they deploy, run the config's `live:`
+   command. Report a run in three lines: done / ready to merge / waiting on
+   you. The whole of it: `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/README.md`.
 
    **The owner does not have to describe features one by one.** The
    requirements file named in `config.md` is a pile of specs already written:

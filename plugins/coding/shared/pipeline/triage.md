@@ -3,9 +3,19 @@
 Ask yourself these, in order. The first one that answers, decides.
 
 1. **What is the benefit of doing this?** None → don't do it, don't ask.
-2. **Is there already a ruling?** Check `requirements.md` and `decisions.md`.
-   Yes → apply it, cite it, move on.
-3. **Is it a naming, structure, or implementation detail?** Yes → never ask.
+2. **Is there already a ruling?** Check the rulings files. Yes → apply it,
+   cite it, move on.
+3. **Is there prior art — in this repo, or in a platform we already pay for?**
+   Search this repo for the nearest existing message, check, helper, or
+   pattern. Then ask whether a platform already in play — the messaging
+   provider, the edge, the store, the payment provider — has a feature that
+   does this outright. A vendor setting that refuses a number class beats code
+   that refuses it; an environment the edge already offers beats a project we
+   run ourselves. Reuse or extend what exists; never build a second one beside
+   it. Any default you propose — including the default inside a BLOCKED
+   question — comes from the nearest existing thing, named, not from
+   invention.
+4. **Is it a naming, structure, or implementation detail?** Yes → never ask.
 4. **Can a test settle it instead of a person?** Yes → write the test.
 5. **Is it cheap to reverse?** Yes → pick the simplest, note it, move on.
 6. **Would any sensible engineer pick the same answer?** Yes → pick it.

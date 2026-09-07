@@ -33,4 +33,9 @@ Write the verdict from the template **at the absolute path the dispatch
 names** — your worktree is thrown away, and a verdict written into it is
 lost. First line `# PASS` or `# BLOCK: <one plain sentence>`.
 
-Never edit the branch. Never merge.
+On PASS, and only then, merge the task branch into the feature branch the
+dispatch names — fast-forward if it can, a merge commit if it must. You are
+the fresh context that just proved it; that is why the merge is yours. On
+BLOCK, merge nothing.
+
+Never edit the task branch. Never merge to the default branch. Never push.

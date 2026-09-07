@@ -18,20 +18,28 @@ a step genuinely cannot decide.
 
 | # | step | agent | model | writes |
 |---|------|-------|-------|--------|
-| 1 | spec | `/software` | — | `features/<f>/spec.md` |
-| 2 | lenses | `lens` ×6 — architecture, sre, qa, staff on opus; performance, database on sonnet | mixed | `features/<f>/lens-<x>.md` |
-| 3 | pre-mortem | `premortem` | opus | `features/<f>/premortem.md` |
-| 4 | break down | `breakdown` | sonnet | `features/<f>/tasks/<t>/criteria.md`; deletes 2–3's files |
-| 5 | current state | `state` | sonnet | `tasks/<t>/state.md`, committed |
-| 6 | red tests | `redtest` | opus | test files, `tasks/<t>/tests.md`, committed |
-| 7 | plan | `planner` | opus | `tasks/<t>/plan.md`, committed |
-| 8 | build | `builder` | opus | a branch, gate green |
-| 9 | review | `code-reviewer` (fix-code's nine lenses, branch mode) ∥ `verifier` (mutations, gate, rulings, touched files) | opus ×2 | `tasks/<t>/verdict.md`; PASS needs both |
-| 10 | clean | `cleaner` | haiku | deletes `tasks/<t>/`; one index line on ship |
-| 11 | prove | `/software` runs config's `live:` command | — | pass/fail |
+| 1 | spec | `/software` | — | `features/<f>/spec.md`; creates branch `pipeline/<f>` |
+| 2 | feature plan | `featureplan` | opus | `features/<f>/plan.md` — approach, state, outside calls, the journey, structural rules |
+| 3 | lenses | `lens` ×6 — architecture, sre, qa, staff on opus; performance, database on sonnet | mixed | `features/<f>/lens-<x>.md` |
+| 4 | pre-mortem | `premortem` | opus | `features/<f>/premortem.md` |
+| 5 | break down | `breakdown` | sonnet | `features/<f>/tasks/<t>/criteria.md`; deletes 3–4's files |
+| — | **stop** | `/software` | — | shows the owner one line per task; resumes on their go |
+| 6 | current state | `state` | sonnet | `tasks/<t>/state.md`, committed on `pipeline/<f>` |
+| 7 | red tests | `redtest` | opus | test files, `tasks/<t>/tests.md`, committed |
+| 8 | plan | `planner` | opus | `tasks/<t>/plan.md`, committed |
+| 9 | build | `builder` | opus | branch `pipeline/<f>/<t>` from the feature branch, gate green |
+| 10 | review | `code-reviewer` (fix-code's nine lenses) ∥ `verifier` (mutations, gate, rulings, touched files) | opus ×2 | `tasks/<t>/verdict.md`; PASS needs both; on PASS the verifier merges the task into `pipeline/<f>` |
+| 11 | feature | `featureverify` | opus | `features/<f>/verdict.md` — the journey end to end, every fitness test, every task's tests together, the gate; on PASS, the one push if config permits |
+| 12 | clean | `cleaner` | haiku | deletes the feature directory; one index line |
+| 13 | prove | `/software` runs config's `live:` command | — | pass/fail |
 
-Steps 5–9 run per task, in order. Tasks in a feature run in parallel. 10 and
-11 run after the owner merges and deploys.
+Steps 6–10 run per task, in order. Tasks in a feature run in parallel, each on
+its own branch off the feature branch. 11 runs once, after every task has
+merged. 12 and 13 run after the owner merges and deploys.
+
+Branches: `main` → `pipeline/<feature>` → `pipeline/<feature>/<task>`. The
+feature is the unit that ships and the unit that gets the end-to-end and
+fitness tests. Merging the feature to the default branch is the owner's.
 
 The six lenses at step 2 review the *spec*, before code exists. `fix-code`'s
 nine lenses at step 9 review the *code*. Different stage, different questions.
@@ -59,8 +67,10 @@ push: not confirmed
 `/software` reads it and hands every value to the runner as arguments. No
 agent knows a path of its own.
 
-`push:` is the owner's switch. `push: confirmed` and the builder pushes and
-opens a PR; anything else and it commits locally and returns a branch.
+`push:` is the owner's switch. `push: feature` (or `confirmed`) and the
+feature branch is pushed once, when the whole feature passes — never a task,
+never the default branch. Anything else and nothing is pushed; the owner
+pushes.
 
 ## Repo-specific lens history
 

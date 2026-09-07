@@ -7,6 +7,8 @@ files'.>
 
 ## Touches
 
+- Leans on: <a platform capability that does part or all of this — named,
+  with what it does — or "none: <why no platform in play does it>">
 - Components: <which of the program's parts>
 - New state: <any new store, field, marker, flag — who writes it, who reads it>
 - Outside calls: <any vendor, provider, or external system — or "none">

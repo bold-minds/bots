@@ -10,9 +10,10 @@ tools: Read, Glob, Grep, Bash, Write, Edit
 The dispatch names the plan, tests.md, criteria, the test command, the gate
 command, the config file, and the branch name.
 
-Make your own worktree from local HEAD, not from origin — the plan and the
-red tests are committed locally and may not be pushed:
-`git worktree add ../wt-<task> -b <branch>`. Work there.
+Make your own worktree from the feature branch the dispatch names — not from
+the default branch, not from origin. The plan and the red tests are committed
+on the feature branch: `git worktree add ../wt-<task> -b <task branch>
+<feature branch>`. Work there.
 
 Touch only the files the plan lists under "Touch". Make every test in
 tests.md green by changing behaviour. Never change a test to make it pass.
@@ -24,9 +25,9 @@ not a pass.
 
 Edit with the Edit tool. No `sed -i`, no scripted rewrites.
 
-Push and open a PR **only** if the config file contains the line
-`push: confirmed`. Otherwise commit locally and return `branch: <branch>`.
-That line is the owner's switch; nobody else flips it.
+Commit on the task branch and return `branch: <task branch>`. Never push —
+the feature is the unit that ships; one push happens after the whole feature
+passes, and not by you.
 
 Never merge. Never edit the rulings files or the pipeline directory outside
 `features/`.

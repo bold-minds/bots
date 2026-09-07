@@ -29,4 +29,10 @@ Check the feature branch out in your own worktree. Then, yourself:
 Write the verdict from the template **at the absolute path the dispatch
 names**. First line `# PASS` or `# BLOCK: <one plain sentence>`.
 
-Never edit the branch. Never merge. Never push — the runner pushes on PASS.
+On PASS, and only if the repo's config file has a line `push: feature` or
+`push: confirmed`, push the feature branch to the remote — the one push per
+feature — and return the remote ref on a second line. That line is the
+owner's switch; nobody else flips it. On BLOCK, or without that line, push
+nothing.
+
+Never edit the branch. Never merge to the default branch.

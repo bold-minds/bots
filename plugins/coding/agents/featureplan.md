@@ -12,6 +12,13 @@ template, the output path, and the triage rules. Read them, and enough of the
 code to know what already exists — a plan that rebuilds something present is
 the default failure.
 
+Before you design anything: list the platforms in play for this feature —
+the messaging provider, the edge, the store, the payment provider, whatever
+the code already calls — and what each one already does for this exact need.
+Read their docs if you must. A capability we already pay for and merely have
+to switch on beats code we write, test, and keep. The plan says what it
+leans on and why the rest is ours.
+
 Write the plan from the template. It is a screen, not a document:
 
 - **Approach** in five to ten lines, in the names of the components the
