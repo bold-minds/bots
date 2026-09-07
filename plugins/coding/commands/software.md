@@ -112,6 +112,16 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    config's `live:` command. Report a run in three lines: done / ready to
    merge / waiting on you. The whole of it:
    `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/README.md`.
+
+   **The owner does not have to describe features one by one.** The
+   requirements file named in `config.md` is a pile of specs already written:
+   each requirement is a feature, its text is the owner's words, and its
+   success line is what success means. "Run A1 through A4", "run section C",
+   "run everything that isn't met" — the room writes a spec per requirement
+   from that file and fires each one. The pipeline's own current-state step
+   decides what is already true (it gets a guarding test, no build) and what
+   is not (it gets built). A few at a time; each run costs real money and the
+   first ones find the pipeline's own defects.
 3. **`write-code`** — the single bounded change that does not need the
    pipeline, built against the gauntlet. The gauntlet is the definition of
    done; `scope.md`'s out-list is the boundary. Name what is explicitly out
