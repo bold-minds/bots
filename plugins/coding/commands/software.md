@@ -18,6 +18,7 @@ Owns the distance between a decision to build and a thing that is live: technica
 | Question | Room |
 |---|---|
 | Should we build this at all? Who pays? Which features does the buyer need? | `/business` (advice plugin) |
+| What should the user experience be — flows, screens, states? | `/ux` (advice plugin) |
 | **What's in this release, what's the architecture, when does it ship?** | **`/software`** |
 | **Write it, gate it, prove it** | **`/software`, via `write-code` and `fix-code`** |
 | Is building eating the rest of your life? | `/life` (advice plugin) |
@@ -39,6 +40,7 @@ If more than one project exists and the user hasn't named one, ask which before 
 1. `{kb_path}/builds/<project>/scope.md` — what's in this release, what's explicitly out, and any gauntlet threshold this project overrides
 2. `{kb_path}/builds/<project>/decisions.md` — architectural decisions with their reopens-if conditions
 3. `{kb_path}/builds/<project>/debt.md` — known shortcuts, why they were taken, what would force paying them
+4. When `.claude/ux.local.md` exists, resolve its `kb_path` and read `ux/<project>/specs/` — a spec marked handed off and absent from `scope.md` is input to the scope conversation, and it enters through the same four questions as any addition
 
 **Daily log: `{kb_path}/builds/<project>/log/`.** The engine's ritual covers reading the last 7 days of it.
 
@@ -89,12 +91,35 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
 
 1. **`capture-intent`** — before any implementation, to capture the request and
    enumerate every element.
-2. **`write-code`** — implementation, built against the gauntlet. The gauntlet
-   is the definition of done; `scope.md`'s out-list is the boundary. Name what
-   is explicitly out before the first line is written — an implementer who does
-   not know what is out of scope builds it.
-3. **`fix-code`** — multi-lens review of a package or a release candidate.
-4. **`check-evidence`** — before any claim that something is finished.
+2. **`/feature`** — for anything larger than one bounded change: a feature the
+   owner describes. The room writes
+   `<root>/.claude/pipeline/features/<name>/spec.md` from
+   `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/templates/spec.md`, in their words,
+   as they talk. It fires the pipeline when two things are true: the spec has
+   their definition of success, and they said go — or said earlier not to ask.
+   Otherwise it shows three lines (the feature, what success means, what is
+   not this feature) and waits for one word. The pipeline runs unattended —
+   six lenses, a pre-mortem, breakdown into small tasks, then per task red
+   tests, a plan, a build, and a two-sided review — and returns branches to
+   merge or one BLOCKED question in plain language. Pass, as a JSON object:
+   `feature`; `root` (`git rev-parse --show-toplevel`); `plugin`
+   (`${CLAUDE_PLUGIN_ROOT}`); and from `<root>/.claude/pipeline/config.md`:
+   `decisions`, `requirements`, `gate`, `test`, `entry`, `stub`. Keep the
+   `runId`. A blocked run is answered by writing the owner's one line under
+   `Answer:` in that BLOCKED.md and resuming with `{ scriptPath,
+   resumeFromRunId }` — never a fresh run. After the owner merges a task,
+   dispatch `cleaner` with the task directory; after they deploy, run the
+   config's `live:` command. Report a run in three lines: done / ready to
+   merge / waiting on you. The whole of it:
+   `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/README.md`.
+3. **`write-code`** — the single bounded change that does not need the
+   pipeline, built against the gauntlet. The gauntlet is the definition of
+   done; `scope.md`'s out-list is the boundary. Name what is explicitly out
+   before the first line is written — an implementer who does not know what
+   is out of scope builds it.
+4. **`fix-code`** — multi-lens review of a package or a release candidate.
+   Inside `/feature`, it runs on every task's branch automatically.
+5. **`check-evidence`** — before any claim that something is finished.
 
 - **Hand off, don't improvise.** Each link has a skill. Use it.
 - **`write-code` runs the gates.** The room defines done; the skill is where the
@@ -112,6 +137,7 @@ at the start, and run the adversarial pass before any claim of done.
 
 - **Owns `{kb_path}/builds/`** and the working tree. Other rooms read `builds/`; none write it, and none of them touch code.
 - **Product judgment — whether to build, who pays, at what price — belongs to `/business`.** Name the boundary and route.
+- **Functional design — who the user is, flows, screens, states — belongs to `/ux`** in the advice plugin. When a build with no spec turns into designing the experience mid-session, name the handoff and route. A handed-off spec is design truth; `scope.md` stays release truth — what gets cut goes back to `/ux` as a design question, not redesigned here.
 - **Build detail is logged here, in `builds/<project>/log/`, and never in the venture's log.** Commits, migrations, gates, and architectural progress belong to this room's log. Product, market, pipeline, and pricing belong to `/business`'s.
 
 ## Key principles
