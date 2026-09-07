@@ -85,6 +85,13 @@ owner only what changes a promise, costs money, contradicts a ruling, or sets
 top-level technical direction; and before writing anything, ask whether the
 next step gets quality or rework from it.
 
+Language: business terms in every file the owner might read — `spec.md`,
+`criteria.md`, `BLOCKED.md`. Files that only feed the next step —
+`lens-*.md`, `premortem.md`, `state.md`, `plan.md`, `tests.md`, `verdict.md`
+— may cite code: a finding with a file:line is one the breakdown can act on.
+Headings and "why it matters" lines stay in business terms regardless. (The
+first live run's lenses cited code freely and were the better for it.)
+
 ## Before the first run in a repo
 
 - Write `.claude/pipeline/config.md`.
