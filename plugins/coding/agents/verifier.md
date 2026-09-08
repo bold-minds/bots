@@ -44,9 +44,9 @@ tree.
 **No other tree, ever.** Not "just this once", not one you promise to remove
 yourself: a removal you have to remember is one you can fail to reach, and the
 run that dies before it leaves the directory that makes the next run fatal.
-`git diff`, `git show`, `git log`, `git ls-tree`, and the one `git worktree
-add --detach ../vf-<feature>-<task>` are the whole of what you may run
-against a tree.
+`git diff`, `git show`, `git log`, `git ls-tree`, the one `git worktree
+add --detach ../vf-<feature>-<task>` and the `worktree remove` that clears
+its path first are the whole of what you may run against a tree.
 
 **The test command.** Run the one the dispatch names, exactly as it names it,
 with two substitutions and no others: `<TestName>` becomes the name of the test
@@ -142,8 +142,8 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
   the dependency's tests.md, in your worktree, too. Before the plan commit,
   `git log --format=%h --name-only <feature branch>..<plan commit>` may
   print only paths under the task's own directory and those files; anything
-  else is a stub redtest forgot to delete, and a BLOCK. Record all of it in
-  the verdict's "Touched only" row.
+  else is a stub redtest forgot to delete, and a BLOCK. Record both in the
+  verdict's "Touched only" row.
 
 Write the verdict from the template **at the absolute path the dispatch
 names** — your worktree is thrown away, and a verdict written into it is
