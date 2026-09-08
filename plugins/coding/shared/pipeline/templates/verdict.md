@@ -5,7 +5,7 @@
 - Tests prove their criteria: <each test, what was mutated, went red: yes/no>
 - Rulings respected: <each entry in the rulings file this could touch — checked, fine / violated at …>
 - Gate: green / red at <step>
-- Touched only what plan.md said: yes / no — <what else>
+- Touched only what plan.md said: yes / no — <what else>; test files and tests.md after the plan commit: untouched / touched by <commits>; commits before it: tests and task files only / <what else>
 - Verifier saw the implementer's reasoning: no
 
 ## Feature only

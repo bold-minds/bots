@@ -36,15 +36,17 @@ nothing ever retires it.
 cleaner sweeps `vf-<feature>-*` and `wt-<feature>-*` beside the root and
 removes nothing else, so an invented path survives the feature, and the next
 run's `worktree add` onto a directory that still exists is fatal. To compare
-against the feature branch, `git diff` and `git show` against `<feature
-branch>` from the worktree you already have — neither needs a checkout, and
-there is no comparison in this job that needs a second tree.
+against the feature branch, `git diff`, `git show`, `git log` and `git
+ls-tree` against `<feature branch>` from the worktree you already have — none
+needs a checkout, and there is no comparison in this job that needs a second
+tree.
 
 **No other tree, ever.** Not "just this once", not one you promise to remove
 yourself: a removal you have to remember is one you can fail to reach, and the
 run that dies before it leaves the directory that makes the next run fatal.
-`git diff`, `git show`, and the one `git worktree add --detach
-../vf-<feature>-<task>` are the whole of what you may run against a tree.
+`git diff`, `git show`, `git log`, `git ls-tree`, and the one `git worktree
+add --detach ../vf-<feature>-<task>` are the whole of what you may run
+against a tree.
 
 **The test command.** Run the one the dispatch names, exactly as it names it,
 with two substitutions and no others: `<TestName>` becomes the name of the test
@@ -110,11 +112,38 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
      committed them on this branch. No plan lists them, because no plan writes
      its own bookkeeping, so a check that reads "Touch" alone BLOCKS every
      task on the pipeline's own files and no task can ever pass.
-  3. A test file that `tests.md` names — a `*_test.go`, or whatever this
-     repo's test files are called. `redtest` wrote and committed them, and the
-     plan does not list them either.
+  3. A file `tests.md` names under "Files" — a `*_test.go` or whatever this
+     repo's test files are called, or a path under `testdata/`. `redtest`
+     wrote and committed them, and the plan does not list them either.
 
   Anything outside those three is a BLOCK.
+
+- **Nobody after redtest touched a test.** Every git command here runs from
+  the root of your own worktree, `git -C ../vf-<feature>-<task>`, with
+  repo-root-relative pathspecs: from a module directory a pathspec matches
+  nothing and every read prints nothing, which is the shape of a clean
+  branch. The line is the plan commit: the oldest commit on this branch
+  touching `plan.md`, `git log --format=%H <feature branch>..<branch> --
+  <task dir>/plan.md | tail -1`; none is a BLOCK, and no builder can put a
+  commit before it. The paths are the files tests.md names under "Files" and
+  tests.md itself; `git ls-tree <branch> -- <those paths>` must list every
+  one of them first, and a named path that is not a test file or under
+  `testdata/` is a stub with a name, and a BLOCK. After the plan commit, two
+  reads. `git log --no-merges --format=%h --name-only <plan
+  commit>..<branch> -- <those paths>`, with `^<the dependency branch>` before
+  the `--` on an After task and nothing otherwise, must print nothing; a
+  commit it prints, on the branch or merged in from a side branch, is a
+  weakened test and a BLOCK, whatever its message says. Then each merge in
+  `git log --first-parent --merges --format=%h <plan commit>..<branch>` gets
+  `git show --cc <merge> -- <those paths>`, which must show no hunk: git's
+  own merge result shows none, a hand edit inside the merge shows the lines.
+  A merge that took one side's file whole shows none either; the test re-run
+  is what catches a dropped test, so on an After task re-run the names in
+  the dependency's tests.md, in your worktree, too. Before the plan commit,
+  `git log --format=%h --name-only <feature branch>..<plan commit>` may
+  print only paths under the task's own directory and those files; anything
+  else is a stub redtest forgot to delete, and a BLOCK. Record all of it in
+  the verdict's "Touched only" row.
 
 Write the verdict from the template **at the absolute path the dispatch
 names** — your worktree is thrown away, and a verdict written into it is

@@ -47,9 +47,15 @@ live" and "Rulings" before you write anything. Code that puts a concern outside
 its named home is wrong before it is written.
 
 Touch only the files the plan lists under "Touch". Make every test in
-tests.md green by changing behaviour. Never change a test to make it pass.
+tests.md green by changing behaviour. Never touch a test file or tests.md.
 If a test must change, stop and write BLOCKED — that is the planner's or the
 redtest step's mistake, not yours to paper over.
+
+That includes a gate finding on a test line that only your finished code let
+the linter see — an unchecked error, a conversion, an assertion helper. It
+means the test and the plan disagree about a signature, which is BLOCKED,
+not an edit. The verifier fails every commit after the plan that touches a
+test file or tests.md, whatever its message says.
 
 Before you hand-roll a helper the plan does not name, ask triage's prior-art
 question: if a maintained package already does it, that is BLOCKED for the

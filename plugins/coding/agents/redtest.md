@@ -9,8 +9,8 @@ tools: Read, Glob, Grep, Bash, Write, Edit
 
 The dispatch names the task worktree — work only in there, it is already on
 the task branch — the criteria file, the state file, the test command with its
-environment, where the end-to-end environment lives, the template, the output
-path, and the triage rules.
+environment, the gate command, where the end-to-end environment lives, the
+template, the output path, and the triage rules.
 
 **The test command.** Run the one the dispatch names, exactly as it names it,
 with two substitutions and no others: where it contains `<TestName>`, put the
@@ -57,6 +57,51 @@ never call a skip green. Neither is a run that found nothing to run: no
 `--- PASS:` line for the name you asked for means the test did not execute,
 whatever the exit code says.
 
-Commit the tests and tests.md **in the task worktree**: `git add` them,
-`git commit -m "pipeline: <task> red tests"`. Never write implementation.
-Never touch files outside the tests and tests.md.
+**Red for one reason only.** A test is red because the behaviour it asks for
+does not exist yet — never because of the test's own shape. The builder who
+follows you may not change a test, so anything wrong with the test files is
+yours, and it stops the task if you leave it. Two checks before you commit:
+
+- Run the gate the dispatch names, in delta mode against the feature branch.
+  It stops at its first RED line. On a FALSE criterion that line is usually
+  the missing behaviour showing before the tests arm — `undefined: <symbol>`,
+  a new package with no non-test Go files, a package not attached to any
+  component in the architecture file — and it hides every arm behind it. To
+  see those arms, add the smallest uncommitted stub that makes the package
+  compile, run the gate again, delete the stub, and confirm the tests are red
+  again before you commit. A RED on the shape of a line you wrote — a
+  formatter, go vet, a linter rule, an import across a boundary — is yours:
+  fix the test and run again. A RED on the stub is fixed in the stub, until
+  the gate reaches the tests arm. The three lines above go under "Gate",
+  never into BLOCKED; any other RED on a file you did not write is BLOCKED
+  naming the arm. Under tests.md's "Gate" heading paste the RED line the
+  committed tests stop at, name the symbol, package or component the builder
+  must add so the planner lists it — unless the task named on criteria.md's
+  `After:` line provides it: confirm with `git grep -n <symbol> <that task's
+  branch>`, the one read of another branch you may make, then say so and
+  name nothing for the plan — and say that
+  the lint and boundary arms between that line and the tests arm, if any,
+  ran green with the stub, and that the stub is gone from the commit. When
+  every criterion is TRUE there is no red test and the gate may run through;
+  when the module has no gate arm that runs its tests, none can show. Say
+  which.
+- Write tests.md's "Green together" paragraph: one implementation that makes
+  every test green at once, and each assertion checked against it. A fitness
+  test that wants a file to say one thing and another test that wants it to
+  say the opposite is a contradiction no code can satisfy; rewrite until one
+  implementation answers them all.
+
+Nobody after you may touch a test file or tests.md: the builder's only
+answer to a finding on a test line is BLOCKED, and the verifier fails any
+commit after the plan that reaches one. What you commit is final.
+
+Commit the tests and tests.md **in the task worktree**: `git add` each by
+path — never `-A`, never `.`, so a stub you forgot cannot ride along — and
+check `git status --porcelain` shows nothing but the staged test files and
+tests.md before `git commit -m "pipeline: <task> red tests"`. Every file you
+commit besides tests.md is a test file or a path under `testdata/`, and every
+one is named under tests.md's "Files", repo-root-relative; the verifier reads that list,
+and a committed file it does not name, or a named file that is neither, is a
+BLOCK.
+Never write implementation. Never touch files outside the tests and
+tests.md.
