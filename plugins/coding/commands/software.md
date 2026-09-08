@@ -92,50 +92,82 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
 1. **`capture-intent`** — before any implementation, to capture the request and
    enumerate every element.
 2. **`/feature`** — for anything larger than one bounded change: a feature the
-   owner describes. The room writes
-   `<root>/.claude/pipeline/features/<name>/spec.md` from
-   `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/templates/spec.md`, in their words,
-   as they talk. It fires the pipeline when two things are true: the spec has
-   their definition of success, and they said go — or said earlier not to ask.
-   Otherwise it shows three lines (the feature, what success means, what is
-   not this feature) and waits for one word. The pipeline runs unattended —
-   six lenses, a pre-mortem, breakdown into small tasks, then per task red
-   tests, a plan, a build, and a two-sided review — and returns branches to
-   merge or one BLOCKED question in plain language. Pass, as a JSON object:
-   `feature`; `root` (`git rev-parse --show-toplevel`); `plugin`
-   (`${CLAUDE_PLUGIN_ROOT}`); and from `<root>/.claude/pipeline/config.md`:
-   `decisions`, `requirements`, `gate`, `test`, `entry`, `stub`. Before the
-   first run of a feature, create its branch: `git branch pipeline/<name>
-   <default branch>` if it does not exist — tasks land on it, and the feature
-   is what ships. Keep the `runId` and `scriptPath` from every result.
+   owner describes. Set the feature up first, then fire it.
 
-   The run stops twice on purpose. **After breakdown** it returns
-   `awaiting: confirm` with the task names: read each task's `criteria.md`
-   first line and show the owner one line per task, in their words — that is
-   their "what counts as success" check — then resume with
-   `{ scriptPath, resumeFromRunId }` and `confirmTasks: false`; the finished
-   steps return cached. **On BLOCKED** it returns the block: relay the file's
-   three lines verbatim, write the owner's one line under `Answer:` in that
-   BLOCKED.md, and resume the same way — never a fresh run, which re-runs
-   every lens. If they said earlier not to be asked, pass `confirmTasks:
+   **Set up.** Create the feature branch and a worktree on it, once, before the
+   first run — every feature-level file is written and committed in that
+   worktree, and each task cuts its own worktree from that branch:
+
+   ```
+   git -C <root> worktree add <root>/../wt-<name> -b pipeline/<name> <default branch>
+   ```
+
+   if `pipeline/<name>` does not already exist. Write the spec at
+   `<root>/../wt-<name>/.claude/pipeline/features/<name>/spec.md` from
+   `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/templates/spec.md`, in their words,
+   as they talk, and commit it there.
+
+   Fire the pipeline when two things are true: the spec has their definition of
+   success, and they said go — or said earlier not to ask. Otherwise show three
+   lines (the feature, what success means, what is not this feature) and wait
+   for one word.
+
+   **What it does.** It runs on its own: a feature-level plan, seven technical
+   lenses on that plan, a pre-mortem, a breakdown into small tasks, then for
+   each task the current state, tests that fail first, a short plan, the build,
+   and two separate reviews. Then it merges the tasks together, one at a time,
+   and checks the whole feature. It comes back with one branch to merge, or one
+   question in plain language.
+
+   **Pass, as a JSON object:** `feature`; `root` (`git rev-parse
+   --show-toplevel`); `plugin` (`${CLAUDE_PLUGIN_ROOT}`); `featureTree` (the
+   worktree path above); `defaultBranch`; and from
+   `<root>/.claude/pipeline/config.md`: `decisions`, `requirements`, `gate`,
+   `test`, `entry`, `stub`. Keep the `runId` and `scriptPath` from every
+   result.
+
+   **It stops twice on purpose.** After the breakdown it comes back with the
+   task list: read each task's `criteria.md` **`Success:` line** and show the
+   owner one line per task, in their words, in one message — that is their
+   "what counts as success" check, and it is the only time they see the tasks.
+   Then resume: same `scriptPath` and `resumeFromRunId`, **the same args object
+   as the first run**, plus `confirmTasks: false`. Finished steps return cached
+   and cost nothing. If they said earlier not to be asked, pass `confirmTasks:
    false` from the start.
 
-   When the whole feature passes it returns the feature branch and, if the
-   config's `push:` line permits, the remote ref — one push per feature. The
-   owner merges to the default branch. After they merge, dispatch `cleaner`
-   with the feature directory; after they deploy, run the config's `live:`
-   command. Report a run in three lines: done / ready to merge / waiting on
-   you. The whole of it: `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/README.md`.
+   **On a block** it comes back with the question: relay the three lines from
+   the named `BLOCKED.md` verbatim, and pass their one-line answer back on the
+   next run as an argument — `answers: { "<feature>": "<their line>" }`, or
+   `answers: { "<feature>/<task>": "<their line>" }` for a task-level block,
+   alongside the same args and the same run id. Never write the answer into
+   `BLOCKED.md`: a finished step is cached by its prompt, so an answer that is
+   not in the prompt never re-runs the step that asked. Note in the spec's
+   "Open questions" that it was answered, one line. Never start a fresh run —
+   that re-runs every lens.
+
+   **When it passes** it returns the feature branch and, if the config's
+   `push:` line permits, the remote ref — one push per feature. The owner
+   merges to the default branch. After they merge, dispatch `coding:cleaner`
+   with three things: the feature directory `<root>/.claude/pipeline/features/<name>`,
+   the pipeline directory `<root>/.claude/pipeline`, and the worktree paths to
+   remove (`<root>/../wt-<name>` and every `<root>/../wt-<name>-<task>`). It
+   moves the spec to `<root>/spec/<name>.md` and commits it; the rest of the
+   feature directory goes. After they deploy, run the config's `live:` command.
+
+   Report a run in three lines: done / ready to merge / waiting on you. Add a
+   fourth line — the run's `dispatches` count by model — only when they ask
+   what it cost. The whole of it:
+   `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/README.md`.
 
    **The owner does not have to describe features one by one.** The
    requirements file named in `config.md` is a pile of specs already written:
    each requirement is a feature, its text is the owner's words, and its
    success line is what success means. "Run A1 through A4", "run section C",
-   "run everything that isn't met" — the room writes a spec per requirement
-   from that file and fires each one. The pipeline's own current-state step
-   decides what is already true (it gets a guarding test, no build) and what
-   is not (it gets built). A few at a time; each run costs real money and the
-   first ones find the pipeline's own defects.
+   "run everything that isn't met" — write a spec per requirement from that
+   file and fire each one. The pipeline's own current-state step decides what
+   is already true (it gets a guarding test, no build) and what is not (it gets
+   built). A few at a time; each run costs real money and the first ones find
+   the pipeline's own defects.
 3. **`write-code`** — the single bounded change that does not need the
    pipeline, built against the gauntlet. The gauntlet is the definition of
    done; `scope.md`'s out-list is the boundary. Name what is explicitly out

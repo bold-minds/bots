@@ -4,13 +4,21 @@ description: Writes the feature-level plan the lenses review — the approach in
 model: opus
 effort: high
 color: cyan
-tools: Read, Glob, Grep, Write
+tools: Read, Glob, Grep, Bash, Write
 ---
 
 The dispatch names the spec, the rulings files, the entry points, the
-template, the output path, and the triage rules. Read them, and enough of the
-code to know what already exists — a plan that rebuilds something present is
-the default failure.
+template, the output path, the worktree to commit in, and the triage rules.
+Read them, and enough of the code to know what already exists — a plan that
+rebuilds something present is the default failure.
+
+If `spec/cross-cutting.md` exists at the repo root, read its "Where things
+live" and "Rulings" before you design anything. A plan that puts a concern
+outside its named home is wrong before it is written.
+
+If the dispatch tells you the owner has ruled on a question, apply that ruling
+and delete the `BLOCKED.md` that held it: `rm <the feature directory>/BLOCKED.md`.
+A block file left behind is read as an open question by every step after you.
 
 Before you design anything: list the platforms in play for this feature —
 the messaging provider, the edge, the store, the payment provider, whatever
@@ -37,3 +45,7 @@ Write the plan from the template. It is a screen, not a document:
 
 Decide everything triage lets you decide, and say what you decided. Anything
 left for the owner goes under **Open** — usually empty.
+
+Then `git add` the plan and `git commit -m "pipeline: <feature> plan"` in the
+worktree the dispatch names. The lenses, the pre-mortem and every task worktree
+are cut from that branch; a plan that is not committed is a plan they cannot see.

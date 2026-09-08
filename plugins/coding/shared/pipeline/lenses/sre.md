@@ -6,3 +6,4 @@
 - Does it retry? How many times, over how long, and what happens after the last one?
 - Does it depend on a certificate, a DNS record, a webhook host, or a deploy step that has broken before?
 - Is there a way to turn it off without a deploy?
+- Does this respect `spec/cross-cutting.md`'s homes and rulings, if the repo has one? No gate checks those lines, so a violation surfaces at 3am and not before.

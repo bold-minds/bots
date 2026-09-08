@@ -9,6 +9,7 @@ description: |
   This agent should NOT be invoked directly by users. It is dispatched by the
   `fix-code` skill with a specific file manifest and lens selection.
 model: opus
+effort: high
 color: green
 ---
 
@@ -35,6 +36,8 @@ For each lens, use the provided prompt template to evaluate the code. Focus on:
 - Actionable recommendations with specific fix descriptions
 
 For **branch mode**: focus attention on the changed lines (from the diff), but also review surrounding context that the changes depend on. A change that is correct in isolation but breaks an invariant in the surrounding code is still a finding.
+
+If `spec/cross-cutting.md` exists at the repo root, read it and treat every line under "What the gate cannot check" as a review item against the diff, checked alongside the lenses — these are the rules no linter holds. A line the change violates is a finding, with that line quoted verbatim in the FINDING.
 
 ### Step 3: Report findings
 
