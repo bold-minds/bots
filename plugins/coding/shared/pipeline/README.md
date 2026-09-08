@@ -54,16 +54,23 @@ the same parallel `pipeline` as before, and only the boundary between waves is
 a barrier, so nothing inside a wave waits for anything. The builder of a task
 with an `After:` merges the named branch into its own as its first act and says
 so in its commit message — by then that branch has passed both reviews, because
-a wave does not start until the wave before it has finished — and that task's
-touched-files check is diffed against the named branch's tip instead of the
-feature branch, or every file the named task changed would read as this one's
-and BLOCK it for work already reviewed. Landing order, the order step 11 is
-given, is wave order and then task number inside a wave. A name that is not one
-of the feature's tasks, or a set of names that loops, halts the run before any
-task starts — the reason is in `blocks[]` with step `after` and a `null`
-`blockedPath`, because the script found it before any agent could write a file
-— and a task whose `After:` halted never runs, recorded in `blocks[]` as
-`waiting on <task>`.
+a wave does not start until the wave before it has finished — and both reviews
+at step 10 are diffed against the named branch's tip instead of the feature
+branch, or every file the named task changed would read as this task's: the
+verifier's touched-files check would BLOCK it for work already reviewed, and
+the code review would hand its builder a rework pass over code it did not
+write. The gate is the one thing that does not move — `GATE_BASE` stays the
+feature branch — because a delta gate asks only whether anything got worse
+since that base, and the named task already ran the same gate green against
+that same base, so its files carry no worse verdict here; a review asks a
+different question, an allow-list and a judgement, and both of those answer
+differently depending on whose work is in front of them. Landing order, the
+order step 11 is given, is wave order and then task number inside a wave. A
+name that is not one of the feature's tasks, or a set of names that loops,
+halts the run before any task starts — the reason is in `blocks[]` with step
+`after` and a `null` `blockedPath`, because the script found it before any
+agent could write a file — and a task whose `After:` halted never runs,
+recorded in `blocks[]` as `waiting on <task>`.
 
 Branches: `main` → `pipeline/<feature>` → `pipeline/<feature>--<task>`. The
 task branch sits *beside* the feature branch, not under it: git stores
@@ -77,9 +84,9 @@ the default branch is the owner's.
 Every review diffs against the branch its work was cut from: a task against
 `pipeline/<feature>`, the feature against the default branch. Diffing a task
 against the default branch would BLOCK every task after the first for work that
-already passed. The one exception is the touched-files check on a task with an
-`After:`, above: that branch already holds the named task's commits, so the
-check is diffed against the named branch's tip.
+already passed. The one exception is a task with an `After:`, above: its branch
+already holds the named task's commits, so both of its reviews are diffed
+against the named branch's tip instead.
 
 The seven lenses at step 3 review the *plan and the spec*, before code exists.
 `fix-code`'s nine lenses at step 10 review the *code*. Different stage,
