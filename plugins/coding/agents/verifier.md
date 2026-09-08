@@ -87,10 +87,21 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
 - If `spec/cross-cutting.md` exists at the repo root, read it. Every line under
   "What the gate cannot check" is a review item against this diff — no linter
   holds them — and a line the diff violates is a BLOCK with that line quoted.
-- Diff against **the feature branch the dispatch names**, not the default
-  branch. Earlier tasks have already merged into the feature branch, and their
-  files are not in this task's "Touch" list — diffing against the default
-  branch would BLOCK every task after the first for work that already passed.
+- Diff against **the branch the dispatch names for this check**, not the default
+  branch. Normally that is the feature branch: earlier tasks have already merged
+  into it, and their files are not in this task's "Touch" list, so diffing
+  against the default branch would BLOCK every task after the first for work
+  that already passed.
+
+  **A task whose `criteria.md` carries an `After:` line is diffed against that
+  task's branch tip** — `pipeline/<feature>--<the named task>` — and the
+  dispatch names it in place of the feature branch. Its builder merged that
+  branch into this one as its first act, so against the feature branch this
+  branch's diff also holds every file the named task changed: files in none of
+  the three lists below, which would BLOCK this task for work that has already
+  passed its own review. Against the named branch's tip the diff is this task's
+  own work and nothing else, which is what the three lists are about.
+
   Three things may have changed, and nothing else:
 
   1. A file in the plan's "Touch" list.

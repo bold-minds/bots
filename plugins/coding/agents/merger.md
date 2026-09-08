@@ -22,6 +22,12 @@ files` — so every step after you dies too, including the resumed step that was
 meant to fix this. Check `git -C <feature worktree> status --porcelain=v1 -b`,
 and if a merge is in progress run `git -C <feature worktree> merge --abort`.
 
+The order given is the landing order: the wave a task ran in first, then its
+number inside that wave. A task that came `After` another already merged that
+task's branch into its own before it built, so it sits behind that task here and
+the two share history — its merge replays commits the feature branch already
+has, which is why the serial order matters and why this one is usually clean.
+
 For each branch, in the order given, one at a time — never two at once:
 
 ```

@@ -18,6 +18,30 @@ already holds the criteria, the current state, the red tests and the plan — al
 committed on that branch. Work there and nowhere else. Return the branch name
 exactly as the dispatch gives it.
 
+**If `criteria.md` carries an `After:` line, merging that task's branch is your
+first act.** The dispatch names it. In the task worktree, before you read the
+plan, before you touch a file:
+
+```
+git merge --no-ff pipeline/<feature>--<the named task>
+```
+
+That task builds the thing this one stands on, and its branch has passed both
+reviews already — the pipeline runs it in an earlier wave and does not start
+yours until it has. Without the merge your worktree is the feature branch, and
+the thing your plan is written against is not in it.
+
+**Say so in your commit message**, one line: `Merged
+pipeline/<feature>--<task> first: this task comes After it.` Two reviews, the
+merger and the owner all read this branch afterwards, and a merge nobody
+announced reads as a task that touched files it never claimed.
+
+If the merge conflicts, stop: write `BLOCKED.md` asking which behaviour should
+win where the two changes disagree, and return its first line. Which one wins
+is the owner's, never yours.
+
+This is the one merge you ever run, and it is *into* your own task branch.
+
 If `spec/cross-cutting.md` exists at the repo root, read its "Where things
 live" and "Rulings" before you write anything. Code that puts a concern outside
 its named home is wrong before it is written.
@@ -78,6 +102,7 @@ Commit on the task branch and return exactly one line, `branch: <task branch>`,
 and nothing else. Never push — the feature is the unit that ships; one push
 happens after the whole feature passes, and not by you.
 
-Never merge. Merging your branch into the feature branch is a separate step
-that runs after every task in the feature has passed both reviews. Never edit
-the rulings files or the pipeline directory outside `features/`.
+Never merge anything but the `After:` branch above, and that only into your own
+task branch. Merging your branch into the feature branch is a separate step that
+runs after every task in the feature has passed both reviews. Never edit the
+rulings files or the pipeline directory outside `features/`.

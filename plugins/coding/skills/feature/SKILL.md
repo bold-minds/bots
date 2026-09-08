@@ -1,6 +1,6 @@
 ---
 name: feature
-description: Run one feature through the pipeline unattended — a feature plan, seven lenses, pre-mortem, breakdown, a stop for the owner to read the task list, then per task current-state → red tests → plan → build → review, then one serial merge, then the feature as a whole, then one push. Halts on BLOCKED. Called by /software with arguments from the repo's .claude/pipeline/config.md.
+description: Run one feature through the pipeline unattended — a feature plan, seven lenses, pre-mortem, breakdown, a stop for the owner to read the task list, then the tasks in waves (a task may come After one other), each task current-state → red tests → plan → build → review, then one serial merge, then the feature as a whole, then one push. Halts on BLOCKED. Called by /software with arguments from the repo's .claude/pipeline/config.md.
 argument-hint: <feature-name>
 allowed-tools: Workflow
 ---
@@ -36,13 +36,13 @@ needed.
 ```js
 export const meta = {
   name: 'feature',
-  description: 'One feature: plan, lenses, pre-mortem, breakdown, a stop to read the task list, then per task state, red tests, plan, build, review; then one serial merge; then the whole feature; then one push. Halts on BLOCKED.',
+  description: 'One feature: plan, lenses, pre-mortem, breakdown, a stop to read the task list, then the tasks in waves — per task state, red tests, plan, build, review; then one serial merge; then the whole feature; then one push. Halts on BLOCKED.',
   phases: [
     { title: 'Plan', detail: 'the feature-level plan the lenses review' },
     { title: 'Lenses', detail: 'seven technical lenses on the plan, in parallel' },
     { title: 'Pre-mortem', detail: 'how it fails, including on purpose; keep only cases a customer hits and we can name a fallback for' },
-    { title: 'Break down', detail: 'small tasks with criteria in the owner\'s words; stops for the owner to read the list' },
-    { title: 'Tasks', detail: 'each task in its own worktree: state → red tests → plan → build → review' },
+    { title: 'Break down', detail: 'small tasks with criteria in the owner\'s words, and which of them come After another; stops for the owner to read the list' },
+    { title: 'Tasks', detail: 'in waves — every task with no After: first, then the ones that come After those; each task in its own worktree: state → red tests → plan → build → review' },
     { title: 'Merge', detail: 'one agent merges the passed task branches into the feature branch, in landing order, one at a time' },
     { title: 'Feature', detail: 'the whole feature branch: journey, fitness, every test together, the gate; then one push' },
   ],
@@ -128,15 +128,17 @@ const count = (m) => { tally[m] = (tally[m] || 0) + 1 }
 // level after it would re-run behind it. `answerStep` is what the runner
 // returned beside the key, passed back unchanged.
 //
-// A rework step is the one case with no BLOCKED.md behind it: the review loop
-// ran out of passes and neither review asked the owner anything, so no step
-// wrote a file. Pointing the builder at BLOCKED.md there sends it looking for
-// something that was never written, and telling it to delete that file is an
-// instruction it cannot carry out.
-const isReworkStep = (step) => /^rework(?:-\d+)?$/.test(String(step || ''))
+// Two steps have no BLOCKED.md behind them. A rework step: the review loop ran
+// out of passes and neither review asked the owner anything, so no step wrote a
+// file. And the `after` step: the wave plan is built from the criteria files by
+// the script, and a bad plan halts before any agent could write one. Pointing
+// an agent at BLOCKED.md in either case sends it looking for something that was
+// never written, and telling it to delete that file is an instruction it cannot
+// carry out.
+const stepHasNoBlockFile = (step) => /^rework(?:-\d+)?$/.test(String(step || '')) || step === 'after'
 const ANSWER = (key, step) => !(A.answers && A.answers[key] && A.answerStep === step) ? ''
-  : isReworkStep(step)
-    ? `The owner has ruled on the question the reviews raised: "${A.answers[key]}". Apply it as a ruling. Delete BLOCKED.md only if one is actually there — a rework halt writes none. `
+  : stepHasNoBlockFile(step)
+    ? `The owner has ruled on the question this step raised: "${A.answers[key]}". Apply it as a ruling. Delete BLOCKED.md only if one is actually there — this step writes none. `
     : `The owner has ruled on the question in BLOCKED.md: "${A.answers[key]}". Apply it as a ruling, then delete BLOCKED.md. `
 const BLOCK_RULE = (where) =>
   `If you must stop per ${TRIAGE}, write ${where}/BLOCKED.md — first line "BLOCKED: <one plain sentence>", then your best default in one sentence, drawn from the nearest existing thing in this repo and naming it, then what changes if the owner says otherwise — and return that first line as your whole result.`
@@ -170,15 +172,80 @@ if (bad(pm)) return { halted: 'Pre-mortem', ...FEATURE_BLOCK(pm || 'BLOCKED: the
 phase('Break down')
 count('opus')
 const bdText = await agent(
-  `${ANSWER(f, 'breakdown')}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md, ${dir}/premortem.md, ${A.requirements} and ${A.decisions}. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, each with its Success line filled in. The task carrying the plan's journey is marked "Journey: yes"; the plan's structural rules go into that task's "Structural rules". Then delete the lens-*.md and premortem.md files. Then, in ${FT}, git add the feature directory — the new task files and the deletions — and commit it. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'breakdown')}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md, ${dir}/premortem.md, ${A.requirements} and ${A.decisions}. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, each with its Success line filled in. The task carrying the plan's journey is marked "Journey: yes"; the plan's structural rules go into that task's "Structural rules". A task that cannot start until another task's work exists — the package, the file, the table it builds on is created by that one, and a worktree cut from ${FB} does not have it — carries one "After: <that task's directory name>" line, at most one name and always a lower-numbered task; most tasks carry none. Then delete the lens-*.md and premortem.md files. Then, in ${FT}, git add the feature directory — the new task files and the deletions — and commit it. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:breakdown', phase: 'Break down' })
 if (bad(bdText)) return { halted: 'Break down', ...FEATURE_BLOCK(bdText || 'BLOCKED: the breakdown agent died before writing any task', 'breakdown') }
 const tasks = bdText.split('\n').map(s => s.trim()).filter(s => /^[0-9]{2}-[a-z0-9-]+$/.test(s))
 if (!tasks.length) return { halted: 'Break down', ...FEATURE_BLOCK(`BLOCKED: breakdown returned no task names. It returned: ${bdText.slice(0, 200)}`, 'breakdown') }
 log(`tasks: ${tasks.length}`)
+
+// A task may carry one "After: <task>" line in its criteria.md — it cannot
+// start until that task's work exists. This script has no filesystem, so one
+// cheap dispatch reads the criteria files themselves rather than trusting a
+// second copy of the fact in breakdown's return text. The same names do two
+// jobs: they order the waves, and each is handed to a builder as the branch to
+// merge first. A graph that disagreed with the files would send a builder to
+// merge a branch this run never sequenced — the one thing the waves exist to
+// stop — so the graph is read from the files that carry the rule.
+count('haiku')
+const afterText = await agent(
+  `${ANSWER(f, 'after')}Read each of these files: ${tasks.map(t => `${dir}/tasks/${t}/criteria.md`).join(', ')}. Each may carry one optional line that begins "After:" and names another task's directory name. Return exactly ${tasks.length} lines and nothing else — no prose, no heading, no code fence — one per task, in this order: ${tasks.join(', ')}. Each line is "<task directory name> after: <the name on that task's After: line>", or "<task directory name> after: none" when that file has no After: line. Copy each name exactly as the file spells it: do not tidy it, do not infer one from the numbering, do not skip a task. Write nothing and change nothing. ${BLOCK_RULE(dir)}`,
+  { agentType: 'coding:breakdown', phase: 'Break down', label: 'after: the dependency lines', model: 'haiku' })
+if (bad(afterText)) return { halted: 'Break down', ...FEATURE_BLOCK(afterText || 'BLOCKED: the agent reading the After: lines died before returning them', 'after') }
+
+// dep[t] is the one task t must come after, or null. graphBad collects the
+// tasks whose line cannot be used — an unknown name, a self-reference, a
+// missing answer, or a cycle. Any of them halts the run before a task starts:
+// a wave order built on a broken graph runs tasks in an order nothing checked.
+const dep = {}, graphBad = []
+const afterLines = String(afterText).split('\n').map(s => s.trim()).filter(Boolean)
+for (const t of tasks) {
+  // "^<name>\s" and not a bare prefix: 01-config must not read 01-config-list's
+  // line. Task names are /^[0-9]{2}-[a-z0-9-]+$/, so nothing here is a regex
+  // metacharacter.
+  const line = afterLines.find(l => new RegExp(`^${t}\\s`).test(l))
+  const a = line ? ((line.match(/\safter:\s*([^\s.]+)/i) || [])[1] || '') : ''
+  if (!a) graphBad.push({ task: t, why: `BLOCKED: no "After:" answer came back for ${t}, so the pipeline cannot tell whether it may start in the first wave. Read ${dir}/tasks/${t}/criteria.md and say whether it carries an After: line and what it names.` })
+  else if (/^none$/i.test(a)) dep[t] = null
+  else if (a === t) graphBad.push({ task: t, why: `BLOCKED: ${t}'s After: line names ${t} itself, so nothing can ever start it.` })
+  else if (!tasks.includes(a)) graphBad.push({ task: t, why: `BLOCKED: ${t}'s After: line names ${a}, which is not one of this feature's tasks (${tasks.join(', ')}).` })
+  else dep[t] = a
+}
+// Wave 1 is every task with no After:. Wave n+1 is every task whose After:
+// landed in a wave already built. A task left over when no further wave can be
+// built is in a cycle, or waiting on one.
+const waves = []
+let unplaced = tasks.filter(t => !graphBad.some(b => b.task === t))
+const placed = new Set()
+while (unplaced.length) {
+  const w = unplaced.filter(t => !dep[t] || placed.has(dep[t]))
+  if (!w.length) {
+    const loop = unplaced.map(t => `${t} after ${dep[t]}`).join(', ')
+    for (const t of unplaced) graphBad.push({ task: t, why: `BLOCKED: the After: lines never reach a task that can start first, so ${t} can never be given a wave. The tasks that cannot be ordered are: ${loop}.` })
+    break
+  }
+  w.forEach(t => placed.add(t))
+  waves.push(w)
+  unplaced = unplaced.filter(t => !placed.has(t))
+}
+if (graphBad.length) {
+  log(`the wave plan could not be built from the After: lines — no task ran`)
+  return {
+    feature: f, branch: FB, tasks, waves: [], passed: [], halted: graphBad.map(b => b.task),
+    // No BLOCKED.md: the script found this, and it found it before any agent
+    // ran that could have written one. The fix is in the criteria files, and
+    // because a finished call is cached by its prompt, editing them alone
+    // re-runs nothing — the owner's ruling has to reach the `after` step, which
+    // is what re-reads them.
+    blocks: graphBad.map(b => ({ task: b.task, step: 'after', reason: b.why, blockedPath: null, verdictPath: null, answerKey: f, answerStep: 'after' })),
+    dispatches: tally,
+  }
+}
+log(`waves: ${waves.map((w, i) => `${i + 1} — ${w.join(', ')}`).join(' | ')}`)
+
 if (CONFIRM) {
   log('stopping for the owner to read the task list — resume with confirmTasks: false')
-  return { awaiting: 'confirm', feature: f, tasks, taskDir: `${dir}/tasks`, dispatches: tally }
+  return { awaiting: 'confirm', feature: f, tasks, waves, taskDir: `${dir}/tasks`, dispatches: tally }
 }
 
 phase('Tasks')
@@ -198,7 +265,22 @@ const haltStep = {}, haltWhy = {}, lastReview = {}, haltNoFile = {}
 const halt = (t, stage, r) => { haltStep[t] = stage; haltWhy[t] = typeof r === 'string' ? r : 'the agent died'; throw new Error(`${t} halted at ${stage}: ${r || 'the agent died'}`) }
 const guard = (t, stage, shape) => (r) => (bad(r) || (shape && !shape.test(r))) ? halt(t, stage, r) : r
 
-const results = await pipeline(tasks,
+// A task with an After: merges that task's branch into its own before it
+// builds. Two dispatches need to know:
+//   AFTER_MERGE  — the builder, whose first act it is.
+//   DIFF_BASE    — the verifier's touched-files check. From the build on, this
+//                  branch's diff against the feature branch also holds every
+//                  file the named task changed, and those files are in none of
+//                  the three lists that check allows — so against the feature
+//                  branch it would BLOCK the task for work that has already
+//                  passed its own review. Against the named branch's tip the
+//                  diff is this task's own work and nothing else.
+const DIFF_BASE = (t) => dep[t] ? TB(dep[t]) : FB
+const AFTER_MERGE = (t) => dep[t]
+  ? `This task's criteria.md carries "After: ${dep[t]}", so ${dep[t]}'s work must exist before yours can stand on it. Your FIRST act, before you read the plan and before you change a file: git -C ${WT(t)} merge --no-ff ${TB(dep[t])}. That branch has passed both reviews — this run does not start your wave until the wave holding it has finished — and without the merge your worktree is the feature branch, which does not have what your plan is written against. Say so in your commit message, one line: "Merged ${TB(dep[t])} first: this task comes After ${dep[t]}." If the merge conflicts, stop and write BLOCKED.md asking which behaviour should win where the two changes disagree: that is the owner's, never yours. `
+  : ''
+
+const STAGES = [
   (_, t) => { count('sonnet'); return agent(
     `${ANSWER(`${f}/${t}`, 'state')}First, cut this task's worktree from the feature branch: git -C ${FT} worktree add ${WT(t)} -b ${TB(t)} ${FB} — unless ${WT(t)} already exists, in which case use it as it is. The task branch is ${TB(t)}, beside the feature branch and not under it: git cannot hold a branch ${FB} and a branch ${FB}/${t} at the same time. Everything you read and write is inside it. Read ${T(t)}/criteria.md. Rule each criterion TRUE or FALSE against the code in ${WT(t)}, which is branch ${FB} — not the default branch — with a file:line or a command you ran as evidence, never a document. Trace from a real entry point: ${ENTRY}. Write ${T(t)}/state.md from ${TPL('state')}, then git add and commit it in ${WT(t)}. Return "to build: N, to guard: M" and nothing else. ${BLOCK_RULE(T(t))}`,
     { agentType: 'coding:state', phase: 'Tasks', label: `${t}: state` }).then(guard(t, 'state', /^to build:\s*\d+/mi)) },
@@ -216,7 +298,7 @@ const results = await pipeline(tasks,
       return /^Flag:[ \t]*none[.!]?$/i.test(fl) ? r : halt(t, 'plan', r)
     }) },
   (_, t) => { count('opus'); return agent(
-    `${ANSWER(`${f}/${t}`, 'build')}Implement ${T(t)}/plan.md. Work in ${WT(t)} — the worktree already on branch ${TB(t)}, cut from ${FB}, holding the criteria, the state, the red tests and the plan. Do not create another worktree. Make every test in ${T(t)}/tests.md green without weakening any test, using: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'. A test is green only when the output carries "--- PASS: <that name>"; "no tests to run" is a failure. Then run the gate to green in the task worktree, in delta mode against the feature branch: ${GATE(FB)}. Green means nothing you touched got worse and nothing you added is red — the repo's backlog since before ${FB} is not this task's to clear, and the absolute run is the owner's at the merge. Commit in ${WT(t)}. Do not push. Do not merge. Return exactly one line — "branch: ${TB(t)}" — and nothing else. ${BLOCK_RULE(T(t))}`,
+    `${ANSWER(`${f}/${t}`, 'build')}${AFTER_MERGE(t)}Implement ${T(t)}/plan.md. Work in ${WT(t)} — the worktree already on branch ${TB(t)}, cut from ${FB}, holding the criteria, the state, the red tests and the plan. Do not create another worktree. Make every test in ${T(t)}/tests.md green without weakening any test, using: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'. A test is green only when the output carries "--- PASS: <that name>"; "no tests to run" is a failure. Then run the gate to green in the task worktree, in delta mode against the feature branch: ${GATE(FB)}. Green means nothing you touched got worse and nothing you added is red — the repo's backlog since before ${FB} is not this task's to clear, and the absolute run is the owner's at the merge. Commit in ${WT(t)}. Do not push. Do not merge${dep[t] ? ` anything but the ${TB(dep[t])} merge above, and that only into ${TB(t)} — never into ${FB}` : ''}. Return exactly one line — "branch: ${TB(t)}" — and nothing else. ${BLOCK_RULE(T(t))}`,
     { agentType: 'coding:builder', phase: 'Tasks', label: `${t}: build` }).then(r => { const m = bad(r) ? null : (r.match(/^branch: (\S+)/m) || [])[1]; return m || halt(t, 'build', r) }) },
   // Two fresh contexts that never saw the builder's reasoning, in parallel:
   // fix-code's lensed code review, and a verifier for what a code review does
@@ -249,7 +331,7 @@ const results = await pipeline(tasks,
           `${ANSWER(`${f}/${t}`, crStep)}${again}Branch-mode review of ${b} in ${WT(t)}: diff it against ${FB}, the feature branch it was cut from — not the default branch. Read every CLAUDE.md in the repo and hold the code to it. File manifest: every file the diff touches — read each in full. Apply the lens prompt templates in ${CODE_LENSES}: the always-on baseline plus whatever ${LENS_RULES} selects for these files. Report findings by severity as your agent definition says. This dispatch comes from the /feature pipeline rather than fix-code, and it adds one line to your format: end with exactly "VERDICT: PASS" if there is no P0 or P1 finding, otherwise "VERDICT: BLOCK: <the top P0/P1 in one sentence>". Both are intended. A BLOCK the builder can act on — a named file, a named change, a cap to get under — needs nothing else from you: say what to do about it, and the pipeline hands your whole report straight back to the builder for a fix pass. Only when the OWNER has to decide per ${TRIAGE} — a promise to a customer, money, a contradicted ruling, top-level technical direction — write ${T(t)}/BLOCKED.md (first line "BLOCKED: " and one plain sentence, then your best default, then what changes if they rule otherwise) and put that same "BLOCKED: <sentence>" on the FIRST line of what you return, above everything else, as well as the VERDICT line at the end. That first line is what stops the feature and wakes the owner, so a finding the builder could have fixed must not carry it; and a halt with no BLOCKED.md beside it reads as an agent that died. ${BLOCK_RULE(T(t))}`,
           { agentType: 'coding:code-reviewer', phase: 'Tasks', label: `${t}: code review${attempt ? ` (rework ${attempt})` : ''}` }),
         () => agent(
-          `${ANSWER(`${f}/${t}`, vfStep)}${again}Verify ${b} against ${T(t)}/criteria.md, ${T(t)}/tests.md and ${T(t)}/plan.md. Check it out in a worktree of your own, detached so you do not fight the build worktree — clear any worktree a previous run left at that path first, because "worktree add" onto an existing directory is fatal: git -C ${WT(t)} worktree remove --force ../vf-${f}-${t} 2>/dev/null; git -C ${WT(t)} worktree add --detach ../vf-${f}-${t} ${b}. That path is the only worktree you may create. It is the one the cleaner knows by name; a path you invent for a comparison — ../vf-base-${f}, ../vf-baseline-${f} — is one nothing ever removes, and the next run's "worktree add" onto it is fatal. To compare against the feature branch, use git diff or git show against ${FB} from the worktree you already have — neither needs a checkout, and there is no comparison here that needs a second tree. No other worktree, ever, at any path, for any reason. Re-run every test and every mutation yourself with: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'. A run is green only if its output contains "--- PASS: <that test name>"; "no tests to run", "no test files", or a summary "ok" without that line is a failure, not a pass, and it is a BLOCK. Run the gate the same way the builder was told to, in delta mode against the feature branch: ${GATE(FB)} — green means nothing this task touched got worse and nothing it added is red, not that the repo's backlog is clear, and that backlog is not this task's; read ${A.decisions} and confirm nothing is reversed; diff ${b} against ${FB} — the feature branch, not the default branch — and confirm every changed file is one of three things: a file in plan.md's "Touch" list; a file under ${T(t)}/ — this task's own .claude/pipeline/ bookkeeping, state.md and tests.md and plan.md, committed on this branch by the steps before you, which no plan lists because no plan writes it; or a test file named in ${T(t)}/tests.md — a *_test.go, or whatever this repo's test files are called — which redtest wrote and committed and which the plan does not list either. Those three are the whole of what may have moved; anything else is a BLOCK. Write ${T(t)}/verdict.md from ${TPL('verdict')} at that absolute path — your own worktree is discarded. A BLOCK is the builder's to fix unless ${TRIAGE} says the owner must decide it: say what to do about it and return "# BLOCK: <one sentence>", and keep the "BLOCKED:" first line for the owner's questions alone — it stops the feature, where a "# BLOCK" goes back to the builder for a fix pass. Merge nothing: the merge is a separate step after every task has passed. Return the verdict's first line exactly — "# PASS" or "# BLOCK: <one sentence>" — and nothing else. ${BLOCK_RULE(T(t))}`,
+          `${ANSWER(`${f}/${t}`, vfStep)}${again}Verify ${b} against ${T(t)}/criteria.md, ${T(t)}/tests.md and ${T(t)}/plan.md. Check it out in a worktree of your own, detached so you do not fight the build worktree — clear any worktree a previous run left at that path first, because "worktree add" onto an existing directory is fatal: git -C ${WT(t)} worktree remove --force ../vf-${f}-${t} 2>/dev/null; git -C ${WT(t)} worktree add --detach ../vf-${f}-${t} ${b}. That path is the only worktree you may create. It is the one the cleaner knows by name; a path you invent for a comparison — ../vf-base-${f}, ../vf-baseline-${f} — is one nothing ever removes, and the next run's "worktree add" onto it is fatal. To compare against another branch, use git diff or git show against the branch this dispatch names for that comparison, from the worktree you already have — neither needs a checkout, and there is no comparison here that needs a second tree. No other worktree, ever, at any path, for any reason. Re-run every test and every mutation yourself with: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'. A run is green only if its output contains "--- PASS: <that test name>"; "no tests to run", "no test files", or a summary "ok" without that line is a failure, not a pass, and it is a BLOCK. Run the gate the same way the builder was told to, in delta mode against the feature branch: ${GATE(FB)} — green means nothing this task touched got worse and nothing it added is red, not that the repo's backlog is clear, and that backlog is not this task's; read ${A.decisions} and confirm nothing is reversed; diff ${b} against ${DIFF_BASE(t)} — ${dep[t] ? `the tip of ${TB(dep[t])}, the branch this task comes After and whose commits its builder merged in before it started, and NOT ${FB}: against the feature branch this diff would also carry every file ${dep[t]} changed, which is in none of the three lists below and would BLOCK this task for work that has already passed its own review` : `the feature branch, not the default branch`} — and confirm every changed file is one of three things: a file in plan.md's "Touch" list; a file under ${T(t)}/ — this task's own .claude/pipeline/ bookkeeping, state.md and tests.md and plan.md, committed on this branch by the steps before you, which no plan lists because no plan writes it; or a test file named in ${T(t)}/tests.md — a *_test.go, or whatever this repo's test files are called — which redtest wrote and committed and which the plan does not list either. Those three are the whole of what may have moved; anything else is a BLOCK. Write ${T(t)}/verdict.md from ${TPL('verdict')} at that absolute path — your own worktree is discarded. A BLOCK is the builder's to fix unless ${TRIAGE} says the owner must decide it: say what to do about it and return "# BLOCK: <one sentence>", and keep the "BLOCKED:" first line for the owner's questions alone — it stops the feature, where a "# BLOCK" goes back to the builder for a fix pass. Merge nothing: the merge is a separate step after every task has passed. Return the verdict's first line exactly — "# PASS" or "# BLOCK: <one sentence>" — and nothing else. ${BLOCK_RULE(T(t))}`,
           { agentType: 'coding:verifier', phase: 'Tasks', label: `${t}: verify${attempt ? ` (rework ${attempt})` : ''}` }),
       ])
       // A reviewer writing markdown puts the verdict in bold or in a bullet:
@@ -318,28 +400,62 @@ ${vf}`,
     if (last.rework) haltNoFile[t] = true
     return halt(t, last.step, last.why)
   },
-)
+]
 
-const passed = results.filter(Boolean)
-const halted = tasks.filter((_, i) => !results[i])
+// Waves, not one pipeline over every task. A task that comes After another
+// cannot start until that task's branch exists and has passed both reviews, so
+// wave 1 is every task with no After:, wave n+1 is the tasks whose After:
+// landed in wave n, and a wave starts only once the wave before it has
+// finished. Inside a wave it is the same pipeline() as before — no barrier
+// between its stages, so one task can be in review while its neighbour is
+// still writing red tests. The barrier is only between waves, which is the
+// least it can be and still guarantee the branch a builder merges is a branch
+// that passed.
+const resultOf = new Map(), waitingOn = new Map()
+for (const w of waves) {
+  // A task whose After: halted never runs: its branch does not hold the work it
+  // was told to build on, and merging a halted branch builds on a failure.
+  // Recorded, not silently dropped — and transitively, because a task three
+  // waves down finds its own After: missing from resultOf for the same reason.
+  const runnable = w.filter(t => !dep[t] || resultOf.has(dep[t]))
+  for (const t of w) if (!runnable.includes(t)) waitingOn.set(t, dep[t])
+  if (!runnable.length) continue
+  const rs = await pipeline(runnable, ...STAGES)
+  runnable.forEach((t, i) => { if (rs[i]) resultOf.set(t, rs[i]) })
+}
+
+// Landing order is wave order, then task order inside a wave — which is what
+// waves.flat() is, because each wave was filtered out of a list already in
+// task order. That is the order the merger is given.
+const ordered = waves.flat()
+const passed = ordered.filter(t => resultOf.has(t)).map(t => resultOf.get(t))
+const halted = ordered.filter(t => !resultOf.has(t))
 // Name the files that hold the reason, the reason itself, and both halves of
 // the key the owner's answer comes back under — the answer only re-runs the
 // step when answerStep is passed back with it. blockedPath is null for a
 // rework halt: no step wrote that file, and a path printed beside a halt is
 // read as "the file is there, or the agent died" — neither is true here, and
 // the record is codeReview/verify instead.
-const blocks = halted.map(t => ({ task: t, step: haltStep[t] || null, reason: haltWhy[t] || null, blockedPath: haltNoFile[t] ? null : `${T(t)}/BLOCKED.md`, verdictPath: `${T(t)}/verdict.md`, answerKey: `${f}/${t}`, answerStep: haltStep[t] || null, ...(lastReview[t] || {}) }))
+// A task that never ran because the task it comes After halted is a third kind
+// of entry: nothing dispatched, nothing wrote a file, and no answer of the
+// owner's unblocks it — clearing the task it waits on is what does. It carries
+// the reason "waiting on <task>" and nulls everywhere a path or a key would
+// otherwise be read as something to go and look at.
+const blocks = halted.map(t => waitingOn.has(t)
+  ? { task: t, step: null, reason: `waiting on ${waitingOn.get(t)}`, blockedPath: null, verdictPath: null, answerKey: null, answerStep: null, waitingOn: waitingOn.get(t) }
+  : { task: t, step: haltStep[t] || null, reason: haltWhy[t] || null, blockedPath: haltNoFile[t] ? null : `${T(t)}/BLOCKED.md`, verdictPath: `${T(t)}/verdict.md`, answerKey: `${f}/${t}`, answerStep: haltStep[t] || null, ...(lastReview[t] || {}) })
 log(`dispatches this run asked for — opus ${tally.opus}, sonnet ${tally.sonnet}, haiku ${tally.haiku}; a resumed run counts cached calls again`)
 if (halted.length) {
-  log(`halted: ${halted.join(', ')} — where blocks[].blockedPath is set, read that BLOCKED.md or the verdict.md beside it, and neither file means the agent died; where it is null the halt is a rework halt, which writes no BLOCKED.md — read blocks[].codeReview and blocks[].verify, which are the whole record of it`)
-  return { feature: f, branch: FB, passed, halted, blocks, dispatches: tally }
+  const waited = halted.filter(t => waitingOn.has(t))
+  log(`halted: ${halted.join(', ')} — where blocks[].blockedPath is set, read that BLOCKED.md or the verdict.md beside it, and neither file means the agent died; where it is null the halt is a rework halt, which writes no BLOCKED.md — read blocks[].codeReview and blocks[].verify, which are the whole record of it${waited.length ? `. ${waited.join(', ')} never ran at all: each comes After a task that halted, and clearing that task is what starts it` : ''}`)
+  return { feature: f, branch: FB, waves, passed, halted, blocks, dispatches: tally }
 }
 
 phase('Merge')
 count('haiku')
 const order = passed.map(p => p.branch)
 const mg = await agent(
-  `${ANSWER(f, 'merge')}Feature worktree ${FT}, on branch ${FB}. First, if a merge is in progress in ${FT} — a previous run stopped on a conflict and left it that way — run git -C ${FT} merge --abort before anything else. Nothing can be committed in that tree until you do, so every step after you dies if you skip it; check with git -C ${FT} status --porcelain=v1 -b. Then merge these task branches into ${FB}, in this order, one at a time — never two at once: ${order.join(', ')}. For each, run: git -C ${FT} merge --no-ff <branch>. On the first conflict, stop there: run git -C ${FT} merge --abort so the tree is usable again, then write ${dir}/BLOCKED.md — first line "BLOCKED: <one plain sentence, in business terms, asking which behaviour should win where the two changes disagree>", then in one sentence what you would do by default, then what changes if the owner rules otherwise. Return that first line as your whole result. Otherwise return the branches you merged, one per line, and nothing else.`,
+  `${ANSWER(f, 'merge')}Feature worktree ${FT}, on branch ${FB}. First, if a merge is in progress in ${FT} — a previous run stopped on a conflict and left it that way — run git -C ${FT} merge --abort before anything else. Nothing can be committed in that tree until you do, so every step after you dies if you skip it; check with git -C ${FT} status --porcelain=v1 -b. Then merge these task branches into ${FB}, in this order, one at a time — never two at once: ${order.join(', ')}. That is the landing order: the wave each task ran in first, then its number inside that wave. A task that came After another already merged that task's branch into its own before it built, so it sits behind that task in this list and the two share history. For each, run: git -C ${FT} merge --no-ff <branch>. On the first conflict, stop there: run git -C ${FT} merge --abort so the tree is usable again, then write ${dir}/BLOCKED.md — first line "BLOCKED: <one plain sentence, in business terms, asking which behaviour should win where the two changes disagree>", then in one sentence what you would do by default, then what changes if the owner rules otherwise. Return that first line as your whole result. Otherwise return the branches you merged, one per line, and nothing else.`,
   { agentType: 'coding:merger', phase: 'Merge' })
 if (bad(mg)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(mg || 'BLOCKED: the merge agent died before merging every task branch', 'merge') }
 

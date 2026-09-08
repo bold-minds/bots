@@ -37,11 +37,33 @@ a step genuinely cannot decide.
 | 13 | clean | `cleaner` | haiku | after the owner merges: keeps the spec as `spec/<f>.md`, deletes the feature directory and the worktrees; one index line |
 | 14 | prove | `/software` runs config's `live:` command | — | pass/fail |
 
-Steps 6–10 run per task, in order. Tasks in a feature run in parallel, each in
-**its own worktree** on its own branch off the feature branch — one working
-tree per agent is the only thing that stops two tasks eating each other's
-commits. 11 runs once, after every task has passed, and merges serially. 12
-runs once after that. 13 and 14 run after the owner merges and deploys.
+Steps 6–10 run per task, in order. Tasks in a feature run in parallel within a
+wave, each in **its own worktree** on its own branch off the feature branch —
+one working tree per agent is the only thing that stops two tasks eating each
+other's commits. 11 runs once, after every task has passed, and merges serially.
+12 runs once after that. 13 and 14 run after the owner merges and deploys.
+
+**A task may come `After` one other, and then the tasks run in waves.** Most
+tasks cannot: every task's worktree is cut from the feature branch, so a task
+whose work sits on top of another task's has nothing to build on. That task's
+`criteria.md` carries one line — `After: <the other task's directory name>`,
+one name at most, because a task that needs two others is two tasks — and the
+run reads those lines before it starts anything. Tasks with no `After:` are
+wave 1, tasks whose `After:` is in wave 1 are wave 2, and so on; each wave is
+the same parallel `pipeline` as before, and only the boundary between waves is
+a barrier, so nothing inside a wave waits for anything. The builder of a task
+with an `After:` merges the named branch into its own as its first act and says
+so in its commit message — by then that branch has passed both reviews, because
+a wave does not start until the wave before it has finished — and that task's
+touched-files check is diffed against the named branch's tip instead of the
+feature branch, or every file the named task changed would read as this one's
+and BLOCK it for work already reviewed. Landing order, the order step 11 is
+given, is wave order and then task number inside a wave. A name that is not one
+of the feature's tasks, or a set of names that loops, halts the run before any
+task starts — the reason is in `blocks[]` with step `after` and a `null`
+`blockedPath`, because the script found it before any agent could write a file
+— and a task whose `After:` halted never runs, recorded in `blocks[]` as
+`waiting on <task>`.
 
 Branches: `main` → `pipeline/<feature>` → `pipeline/<feature>--<task>`. The
 task branch sits *beside* the feature branch, not under it: git stores
@@ -55,7 +77,9 @@ the default branch is the owner's.
 Every review diffs against the branch its work was cut from: a task against
 `pipeline/<feature>`, the feature against the default branch. Diffing a task
 against the default branch would BLOCK every task after the first for work that
-already passed.
+already passed. The one exception is the touched-files check on a task with an
+`After:`, above: that branch already holds the named task's commits, so the
+check is diffed against the named branch's tip.
 
 The seven lenses at step 3 review the *plan and the spec*, before code exists.
 `fix-code`'s nine lenses at step 10 review the *code*. Different stage,

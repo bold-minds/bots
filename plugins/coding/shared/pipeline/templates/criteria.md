@@ -9,6 +9,13 @@ From: <the line in spec.md this comes from>
 Journey: yes / no   <exactly one task per feature is "yes"; it gets an
 end-to-end test — one that walks the whole path a customer walks, through the
 real environment, not a unit test>
+After: <optional, and at most one task directory name. Write it when this task
+cannot start until that task's work exists — the file, the package, the table
+this one builds on is created by that one, and a worktree cut from the feature
+branch does not have it. The pipeline runs that task in an earlier wave and
+this task's builder merges its branch first. A task that needs two others is
+two tasks: split it rather than name two. Leave the line out — most tasks do —
+when this task can start from the feature branch as it stands.>
 
 ## Success
 
