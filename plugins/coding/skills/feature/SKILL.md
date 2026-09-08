@@ -356,7 +356,7 @@ const fv = await agent(
 // The first non-empty line only, for the same reason as vfPass above: the
 // feature verdict's second line is prose, and "# BLOCK: the journey failed"
 // explained by a sentence with PASS in it is a BLOCK.
-const fvPass = !bad(fv) && /^#?\s*PASS\b/.test(firstLine(fv))
+const fvPass = !bad(fv) && /^\W{0,4}#?\s*PASS\b/.test(firstLine(fv))
 const pushed = fvPass ? ((fv.match(/^pushed:\s*(\S+)/m) || [null, null])[1]) : null
 log(`dispatches this run asked for — opus ${tally.opus}, sonnet ${tally.sonnet}, haiku ${tally.haiku}; a resumed run counts cached calls again`)
 return {
