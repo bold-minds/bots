@@ -92,7 +92,11 @@ const REWORK_MAX = 2
 // dispatch, and never written into the repo's own command.
 const GATE = (base) => `GATE_BASE=${base} ${A.gate}`
 
-const isBlocked = (r) => typeof r === 'string' && /^BLOCKED:/m.test(r)
+// A verdict word may carry markdown emphasis or a heading or a bullet — `**PASS**`,
+// `# PASS`, `- PASS` — and nothing else. Not `\W{0,4}`: that also matched `--- `, so
+// a verifier's evidence line `--- PASS: TestX (0.4s)` read as its verdict.
+const MD = String.raw`(?:\*{1,2}|_|#{1,6}\s*|-\s)?`
+const isBlocked = (r) => typeof r === 'string' && new RegExp(`^${MD}BLOCKED:`, 'm').test(r)
 const bad = (r) => !r || isBlocked(r)
 // A verdict is its FIRST non-empty line and nothing else. Testing the whole
 // text with an /m regex lets "# BLOCK: the journey failed" followed by prose
@@ -108,7 +112,7 @@ const firstLine = (r) => (String(r || '').split('\n').find(l => l.trim()) || '')
 // are the owner's question in bold or in a bullet, and a bare ^BLOCKED: reads
 // them as rework — which sends a question about a promise to a customer to the
 // builder, the one place that cannot answer it.
-const ownerBlock = (r) => /^\W{0,4}BLOCKED:/.test(firstLine(r))
+const ownerBlock = (r) => new RegExp(`^${MD}BLOCKED:`).test(firstLine(r))
 // Each rework round gets its own step name. An owner's answer is gated on the
 // key AND the step, so an answer to round 2's review must not also match round
 // 1's prompt: that would re-run the earliest match and drag every call after it
@@ -252,21 +256,21 @@ const results = await pipeline(tasks,
       // "**VERDICT: PASS**" and "- VERDICT: PASS" are the same verdict as
       // "VERDICT: PASS", so allow a few leading non-word characters. \b after
       // PASS is what keeps "VERDICT: PASSED" from reading as a pass.
-      const crPass = typeof cr === 'string' && /^\W{0,4}VERDICT:\s*PASS\b/mi.test(cr)
+      const crPass = typeof cr === 'string' && new RegExp(`^${MD}VERDICT:\\s*PASS\\b`, 'mi').test(cr)
       // Only the first non-empty line: see firstLine above.
       // Same markdown allowance as crPass: a verifier writing its verdict as
       // "**PASS**" or "- # PASS" has passed the task, and a bare regex reads it
       // as a block that no rework pass can clear.
-      const vfPass = !bad(vf) && /^\W{0,4}#?\s*PASS\b/.test(firstLine(vf))
+      const vfPass = !bad(vf) && new RegExp(`^${MD}PASS\\b`).test(firstLine(vf))
       // A reviewer can hand back BOTH — "BLOCKED:" on the first line for the
       // owner and "VERDICT: PASS" at the end, because the two lines answer
       // different questions and the format asks for both. Returning on the pass
       // alone merges the branch with the owner's question still unanswered, so
       // the pass is gated on neither side having raised one.
       const owner = ownerBlock(cr) || ownerBlock(vf)
-      if (crPass && vfPass && !owner) return { task: t, branch: b, verdict: vf, review: (cr.match(/^VERDICT:.*$/m) || [''])[0], reworks: attempt }
+      if (crPass && vfPass && !owner) return { task: t, branch: b, verdict: vf, review: (cr.match(new RegExp(`^${MD}VERDICT:.*$`, 'm')) || [''])[0], reworks: attempt }
       const why = [
-        !cr ? 'code-reviewer died' : (ownerBlock(cr) ? `code review: ${firstLine(cr)}` : (!crPass ? `code review: ${(cr.match(/^VERDICT:.*$/m) || ['no verdict line'])[0]}` : null)),
+        !cr ? 'code-reviewer died' : (ownerBlock(cr) ? `code review: ${firstLine(cr)}` : (!crPass ? `code review: ${(cr.match(new RegExp(`^${MD}VERDICT:.*$`, 'm')) || ['no verdict line'])[0]}` : null)),
         !vf ? 'verifier died' : (ownerBlock(vf) ? `verify: ${firstLine(vf)}` : (!vfPass ? `verify: ${vf}` : null)),
       ].filter(Boolean).join(' | ')
       // Name the half that stopped: that is the step whose prompt the owner's
@@ -356,7 +360,7 @@ const fv = await agent(
 // The first non-empty line only, for the same reason as vfPass above: the
 // feature verdict's second line is prose, and "# BLOCK: the journey failed"
 // explained by a sentence with PASS in it is a BLOCK.
-const fvPass = !bad(fv) && /^\W{0,4}#?\s*PASS\b/.test(firstLine(fv))
+const fvPass = !bad(fv) && new RegExp(`^${MD}PASS\\b`).test(firstLine(fv))
 const pushed = fvPass ? ((fv.match(/^pushed:\s*(\S+)/m) || [null, null])[1]) : null
 log(`dispatches this run asked for — opus ${tally.opus}, sonnet ${tally.sonnet}, haiku ${tally.haiku}; a resumed run counts cached calls again`)
 return {
