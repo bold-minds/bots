@@ -1,6 +1,6 @@
 # <feature name>
 
-## Claire's words
+## The owner's words
 
 <Verbatim. Do not paraphrase.>
 
@@ -19,4 +19,6 @@ that they cannot do now. If they did not say, ask — this is theirs.>
 
 ## Open questions
 
-<Each one already passed triage.md and still needs them. Usually empty.>
+<Each one already passed triage.md and still needs them. Usually empty. When
+one is answered, one line here says so and names the answer — the answer itself
+is passed to the run as an argument, never written into a BLOCKED.md.>

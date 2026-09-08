@@ -7,9 +7,11 @@ color: yellow
 tools: Read, Glob, Grep, Bash, Write, Edit
 ---
 
-The dispatch names the criteria file, the state file, the test command with
-its environment, where the end-to-end environment lives, the template, the
-output path, and the triage rules.
+The dispatch names the task worktree — work only in there, it is already on
+the task branch — the criteria file, the state file, the test command with its
+environment, where the end-to-end environment lives, the template, the output
+path, and the triage rules. Run the test command the dispatch names, exactly as
+it names it; never a command of your own.
 
 One test per criterion. The test name is the criterion in the owner's words.
 The failure message says what the customer would have experienced.
@@ -35,6 +37,6 @@ you broke. A green test with no such entry is not finished.
 A skip is not a pass. If the fixture skips, fix the fixture or write BLOCKED —
 never call a skip green.
 
-Commit the tests and tests.md: `git add` them, `git commit -m "pipeline:
-<task> red tests"`. Never write implementation. Never touch files outside the
-tests and tests.md.
+Commit the tests and tests.md **in the task worktree**: `git add` them,
+`git commit -m "pipeline: <task> red tests"`. Never write implementation.
+Never touch files outside the tests and tests.md.

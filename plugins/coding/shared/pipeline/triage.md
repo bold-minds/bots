@@ -1,10 +1,12 @@
-# Before asking Claire anything
+# Before asking the owner anything
 
 Ask yourself these, in order. The first one that answers, decides.
 
 1. **What is the benefit of doing this?** None → don't do it, don't ask.
 2. **Is there already a ruling?** Check the rulings files. Yes → apply it,
-   cite it, move on.
+   cite it, move on — **unless the spec asks for the opposite. The owner's new
+   words contradicting the owner's old ruling is not yours to resolve: stop and
+   ask, quoting both. Never pick one silently, in either direction.**
 3. **Is there prior art — in this repo, in a platform we already pay for, or
    in a maintained package?**
    Search this repo for the nearest existing message, check, helper, or
@@ -22,22 +24,25 @@ Ask yourself these, in order. The first one that answers, decides.
    second one beside it. Any default you propose — including the default
    inside a BLOCKED question — comes from the nearest existing thing, named,
    not from invention.
-4. **Is it a naming, structure, or implementation detail?** Yes → never ask.
-4. **Can a test settle it instead of a person?** Yes → write the test.
-5. **Is it cheap to reverse?** Yes → pick the simplest, note it, move on.
-6. **Would any sensible engineer pick the same answer?** Yes → pick it.
-7. **Does the answer change what a customer is promised — what they get,
-   when, or what it costs?** No → decide it yourself and note the choice.
-   Yes → that is one of the four things below.
+4. **Does the answer change what a customer is promised — what they get,
+   when, or what it costs?** Yes → that is one of the four things below, and it
+   stays the owner's however cheap it is to change. The exact words a refused
+   customer reads are what they get. No → keep going.
+5. **Is it a naming, structure, or implementation detail?** Yes → never ask.
+6. **Can a test settle it instead of a person?** Yes → write the test.
+7. **Is it cheap to reverse?** Yes → pick the simplest, note it, move on.
+8. **Would any sensible engineer pick the same answer?** Yes → pick it.
 
-The order matters. A customer-visible string that is cheap to change is
-decided at 5, not escalated at 7.
+The order matters, and 4 sits above 7 on purpose. Something a customer reads
+is theirs even when changing it costs nothing; a naming or structure choice is
+never theirs even when changing it costs a lot.
 
-## Ask Claire only if the question is one of these
+## Ask the owner only if the question is one of these
 
 - It changes a promise to a customer: what they get, when, what it costs.
 - It costs money, or commits to a vendor, or changes a provider.
-- It contradicts an existing ruling.
+- It contradicts an existing ruling — including one of their own newer
+  sentences contradicting an older ruling.
 - It is top-level technical direction: caching, storage, a new external system.
 
 ## Before writing your output file
@@ -54,6 +59,12 @@ Ask: **will the next step get high quality from this, or rework?**
   go check.
 - Is this the smallest output that fully does the job? Extra words are places
   to be misread.
+- **Does this design create a recurring human step?** A notice per event, a
+  message per sender, an inbox item per failure, a decision someone has to
+  make every time — that is a person in the loop on the normal path, and it is
+  wrong by ruling. Say how often it would fire. Automate it, or write BLOCKED
+  and ask. The owner is involved when something is completely failing or no
+  automated process exists — never as a routine step in a design.
 
 What that means at each step:
 
@@ -63,7 +74,7 @@ What that means at each step:
 - **redtest** — a test that pins the customer's outcome, not the implementation
 - **planner** — the change that will not have to be undone by the next task
 - **builder** — the test went green because the behaviour changed, not because the test got weaker
-- **reviewer** — this question, asked of everything above
+- **verifier** — this question, asked of everything above
 
 If any answer is "rework", fix it before writing. That is cheaper than every
 step after you fixing it.
@@ -71,11 +82,19 @@ step after you fixing it.
 ## How to ask
 
 Write `BLOCKED.md` in your step's output directory — the feature directory for
-steps 1–4, the task directory for steps 5–9. Return its first line as your
-result too, so the chain halts. `BLOCKED: ` on the first line, then:
+the feature-level steps (plan, lenses, pre-mortem, breakdown, and the whole
+feature at the end), the task directory for every step inside a task. Return
+its first line as your result too, so the chain halts. `BLOCKED: ` on the first
+line, then:
 
-- the question, one sentence, in business language
+- the question — **one** question, one sentence, in business language. Two
+  questions in one sentence cannot be answered in one line. No file names, no
+  function names, no test names: if the owner has to read code to answer it,
+  it is not written yet.
 - what you'd do if they say nothing, one sentence (your best default)
 - what changes if they say otherwise, one sentence
 
-Nothing else. They answer in one line. The chain resumes.
+Nothing else. They answer in one line, and that line comes back to the run as
+an argument — nobody edits `BLOCKED.md` to deliver it. The step that was
+blocked re-runs with the ruling in front of it, deletes the file, and the chain
+resumes.

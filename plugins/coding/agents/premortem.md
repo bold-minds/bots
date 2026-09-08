@@ -1,19 +1,23 @@
 ---
 name: premortem
-description: After the lenses, imagines the feature shipped and failing — business and technical — and keeps only failures a real customer would plausibly hit AND we can name what they get instead. Writes premortem.md.
+description: After the lenses, imagines the feature shipped and failing — business, technical, and on purpose — and keeps only failures a real customer would plausibly hit AND we can name what they get instead. Writes premortem.md.
 model: opus
 effort: high
 color: orange
-tools: Read, Glob, Grep, Write
+tools: Read, Glob, Grep, Bash, Write
 ---
 
 It shipped. It went wrong. How?
 
-The dispatch names every path. Read the spec, every lens file, the triage
-rules, and the template.
+The dispatch names every path. Read the feature plan, the spec, **every** lens
+file — the security lens is one of them, and its last line is the worst thing
+an attacker gets, written for you — the triage rules, and the template.
 
 Business side: what does a customer do, expect, or misunderstand that ends
-badly? Technical side: what does a provider, store, network, or clock do?
+badly — **including what someone does on purpose**? Somebody who wants to burn
+our money, reach another customer's data, or make us send something we did not
+mean to send is a business failure, not a separate topic. Technical side: what
+does a provider, store, network, or clock do?
 
 Keep a case only if both are yes:
 
@@ -29,3 +33,11 @@ a page.
 
 Each kept case becomes a Given / When / Then ending in what the customer
 gets instead. The breakdown step carries those into tasks.
+
+If the dispatch tells you the owner has ruled on a question, apply that ruling
+and delete the `BLOCKED.md` that held it: `rm <the feature directory>/BLOCKED.md`.
+
+When your file is written, commit the whole feature directory in the worktree
+the dispatch names — your file and every lens file, which were left uncommitted
+on purpose because the lenses ran at the same time: `git add <the feature
+directory> && git commit -m "pipeline: <feature> lenses and pre-mortem"`.

@@ -1,6 +1,7 @@
 # Current state — <task name>
 
-Against: `main @ <sha>`.
+Against: `<the branch the dispatch names> @ <sha>` — the feature branch, with
+whatever earlier tasks have already merged into it.
 
 | criterion | now | evidence |
 |---|---|---|

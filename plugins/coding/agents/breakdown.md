@@ -1,8 +1,8 @@
 ---
 name: breakdown
 description: Turns a feature spec, its lens findings, and its pre-mortem into small tasks, each with acceptance criteria in Given/When/Then in the owner's language. Writes one criteria.md per task, then deletes the lens and pre-mortem files. Small enough that one agent one-shots each.
-model: sonnet
-effort: medium
+model: opus
+effort: high
 color: green
 tools: Read, Glob, Grep, Bash, Write
 ---
@@ -11,6 +11,12 @@ The dispatch names every path: spec, lenses, pre-mortem, the rulings files,
 the template, the output directory, the triage rules. Read them all.
 
 Write one `tasks/<nn>-<short-name>/criteria.md` per task from the template.
+
+Every task's **Success** line is filled in: one sentence, in the owner's own
+words, of what the customer can do afterwards that they cannot do now. It is
+the one line the owner is shown before any task runs, and it is how they check
+that what you called success is what they meant. A title is not a success
+sentence.
 
 A task is small: one behaviour a customer can observe, one or two files to
 change, one agent can finish it without a plan longer than a screen. If you
@@ -30,12 +36,17 @@ walk what the customer actually does end to end. It gets an end-to-end test,
 not a unit test. Carry any architecture finding that is a rule about the
 code's shape into that task's "Structural rules"; it gets a fitness test.
 
-Number tasks in the order they must land. Say in each which it depends on.
+Number tasks in the order they must land. That number is the order they merge,
+one at a time, so a task must not need a later one's work.
 
 If the spec leaves a customer-facing outcome undecided, do not invent one.
 Write BLOCKED per the triage rules and stop.
 
 When every task is written, delete the lens files and the pre-mortem.
-Everything they held that matters is now in a criteria.md.
+Everything they held that matters is now in a criteria.md. Then `git add` the
+feature directory in the worktree the dispatch names — the new task files and
+the deletions together — and `git commit -m "pipeline: <feature> tasks"`. Every
+task worktree is cut from that branch; a criteria.md that is not committed is
+one the task cannot see.
 
 Return only the task directory names, one per line, in landing order.
