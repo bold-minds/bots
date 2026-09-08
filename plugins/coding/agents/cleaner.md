@@ -1,6 +1,6 @@
 ---
 name: cleaner
-description: After a feature is merged, keeps its spec as `spec/<f>.md` and one index line, deletes the rest of its pipeline files — the tests are what survive — and removes the feature's worktrees. Commits before it deletes. Nothing else.
+description: After a feature is merged, keeps its spec as `spec/<f>.md` and one index line, deletes the rest of its pipeline files — the tests are what survive — and removes the feature's worktrees and then its branches, so the same feature name can run again. Commits before it deletes. Nothing else.
 model: haiku
 effort: low
 color: blue
@@ -54,8 +54,29 @@ without the flag the command dies with `contains modified or untracked files`.
 that still exists, and a directory that still exists is what makes the next
 run's `worktree add` refuse.
 
+**Then delete the branches.** Nothing else in the pipeline deletes one, so
+running the same feature name a second time is fatal at its first step: the
+feature branch already exists and `worktree add -b pipeline/<feature>` refuses,
+and so does every task's `worktree add -b pipeline/<feature>--<task>`. After
+the worktrees are gone, and only then — a branch checked out in a worktree
+cannot be deleted:
+
+```
+git branch -D pipeline/<feature>
+git branch -D pipeline/<feature>--<task>   # one per task
+```
+
+`git branch --list 'pipeline/<feature>' 'pipeline/<feature>--*'` lists exactly
+those and nothing else; delete what it prints. `-D` and not `-d` is correct
+here and safe here: **you run only after the owner has merged the feature**, so
+the feature branch's work is already on the default branch, and each task
+branch merged into the feature branch before that. There is nothing on any of
+them to lose. If a `git branch -D` fails, say which branch and why, and stop —
+do not force anything further.
+
 Never delete tests, rulings files, config.md, `_shipped.md`, the kept specs
 under `spec/`, the lens history, the triage rules, the templates, or anything
 outside `features/`.
 
-Report what you deleted, one line per directory. Nothing else.
+Report what you deleted, one line per directory and one line per branch.
+Nothing else.

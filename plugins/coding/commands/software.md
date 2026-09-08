@@ -161,7 +161,12 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    `git worktree prune` leaves a directory that still exists, and the next run's
    `worktree add` on that path is fatal. It moves the spec to
    `<root>/spec/<name>.md` and commits it; the rest of the feature directory
-   goes. After they deploy, run the config's `live:` command.
+   goes. **Then it deletes the branches** — `pipeline/<name>` and every
+   `pipeline/<name>--<task>` — which is why it runs only after the merge: the
+   work is on the default branch by then, and nothing else in the pipeline ever
+   deletes a branch, so without this the same feature name is fatal on its
+   second run at the first `worktree add -b`. After they deploy, run the
+   config's `live:` command.
 
    Report a run in three lines: done / ready to merge / waiting on you. Add a
    fourth line — the run's `dispatches` count by model — only when they ask

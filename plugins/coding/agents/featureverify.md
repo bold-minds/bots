@@ -30,8 +30,22 @@ branch with every task merged into it. Do not create another. Then, yourself:
   alone and fail together are the point of this step.
 - **The gate.** Green, or BLOCK naming the part.
 - **The plan.** `git diff` the feature branch against the branch it was cut
-  from, which the dispatch names, and confirm nothing outside the feature
-  plan's "Touches" moved.
+  from, which the dispatch names. Then, over the changed files:
+
+  - Ignore every path under `.claude/pipeline/`. That is the pipeline's own
+    bookkeeping — one criteria/state/tests/plan/verdict set per task, plus the
+    feature's own — and it is on this branch because every task committed its
+    own before merging. No plan lists it, so a check that does not exempt it
+    BLOCKS every feature on files the pipeline itself wrote.
+  - Ignore every test file. `redtest` wrote them, one per criterion, and the
+    "Touches" section does not list files at all.
+  - Every file left must sit under the path of a component named in the
+    feature plan's "Touches". Match by **path prefix**: "Touches" names
+    components and the path each lives at, not the files, so a file-by-file
+    comparison against it can never match anything.
+
+  A remaining file under no named component's path is a BLOCK — name the file,
+  and say which components it belongs to none of.
 
 Write the verdict from the template **at the absolute path the dispatch
 names**, filling in the "Feature only" rows — the journey, the fitness tests,

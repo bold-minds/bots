@@ -9,7 +9,10 @@ files'.>
 
 - Leans on: <a platform capability that does part or all of this — named,
   with what it does — or "none: <why no platform in play does it>">
-- Components: <which of the program's parts>
+- Components: <which of the program's parts — each one named, and after it the
+  path it lives at (`the queue worker — internal/worker/`). The feature's
+  verdict matches every changed file against these paths by prefix, so a
+  component with no path is a component it cannot credit.>
 - New state: <any new store, field, marker, flag — who writes it, who reads it>
 - Outside calls: <any vendor, provider, or external system — or "none">
 - Stays untouched: <the nearby things this must not change>
