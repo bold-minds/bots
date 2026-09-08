@@ -1,6 +1,7 @@
 # Plan — <task name>
 
-Touch: <files, one per line>
+Touch: <files, one per line — never a test file or tests.md: redtest wrote
+those and they are frozen; a plan that needs one changed is BLOCKED>
 Do not touch: <the nearby files this must leave alone>
 Reuses: <the existing thing this extends, named — a message, a check, a
 helper, a table, a setting on a platform we already pay for — or one line

@@ -18,7 +18,9 @@ wrong before it is written.
 
 The plan is a screen or less. Files to touch; files nearby that must not be
 touched; what this reuses; the change in three to eight lines; done when the
-tests and the gate are green.
+tests and the gate are green. "Touch" never names a test file or tests.md:
+redtest wrote those and nobody after it may change them, so a plan that needs
+a test changed is a BLOCKED, not a plan.
 
 Before the change, fill in **Reuses**: the existing thing this extends, named —
 a message, a check, a helper, a table, a setting on a platform we already pay
