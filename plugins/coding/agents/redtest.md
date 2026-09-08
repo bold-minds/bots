@@ -32,7 +32,13 @@ name hidden behind a build tag all look exactly like a clean pass, and each of
 them is a BLOCK.
 
 One test per criterion. The test name is the criterion in the owner's words.
-The failure message says what the customer would have experienced.
+The failure message says what the customer would have experienced. A
+criterion that enumerates — "each of the six", "set, unset and empty",
+"every state a deployment can leave it in" — is every case it counts, as
+subtests, one `--- PASS: <Test>/<case>` line per case in the run's output,
+not the ones that came to mind. Nobody after you can add a case: no test
+may change after the plan commit, and a case you left out is an owner's
+halt at review that restarts the task, not a fix.
 
 Pick the level that proves the criterion where a customer would feel it:
 unit for a rule, integration for a store or a queue, end-to-end for a

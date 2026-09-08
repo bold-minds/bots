@@ -171,6 +171,30 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    the spec's "Open questions" that it was answered, one line. Never start a
    fresh run — that re-runs every lens.
 
+   One halt is a restart, not an answer: a case redtest left out of a task's
+   tests. No step after the plan commit may touch a test, so no answer can
+   add one, and a ruling on the `answers` line reaches only the step it names
+   — redtest would re-run reading the same criteria and could leave the same
+   case out. With the owner's word, three things by hand. Write the missing
+   cases into that task's `criteria.md` in the feature worktree and commit it
+   on `pipeline/<feature>`; the fresh task branch is cut from there and every
+   step reads that file. Remove the task's worktree and branch —
+   `git -C <feature worktree> worktree remove --force ../wt-<feature>-<task>`,
+   then `git -C <feature worktree> branch -D pipeline/<feature>--<task>`.
+   Then resume with `answerStep: "state"` for that task — not the `review`
+   or `review-N` step the result returned, which would re-run the verifier
+   on the same frozen tests and block again — with the `answers` line saying
+   the criteria now carry the cases. The state step's prompt changes, and
+   every step after it runs live again on a branch cut fresh from the
+   feature branch. The other tasks in that wave re-run live too. One that
+   had passed: its state, red-tests, plan and build steps each see their
+   work already on the branch, return it and change nothing, and its
+   reviews run again on the finished branch, diffing in the merge-base form
+   so the criteria commit on the feature branch is not charged to it. One
+   that was itself halted: every step finds its BLOCKED.md still there with
+   no ruling naming it, returns the first line, and it halts again as it
+   did, costing one dispatch per step.
+
    **When it passes** it returns the feature branch and, if the config's
    `push:` line permits, the remote ref — one push per feature. The owner
    merges to the default branch.

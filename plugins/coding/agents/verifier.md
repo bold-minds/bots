@@ -61,6 +61,18 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
 
 - Run every test in tests.md with the named command. A skip is a fail, and so
   is a test that never ran.
+- Read criteria.md against the table: every criterion has a row, and a
+  criterion that enumerates — each of N names, three states — has every case
+  it counts as a subtest line of that criterion's test run, `--- PASS:
+  <Test>/<case>`, one per case criteria.md names, or per item the code
+  enumerates where criteria.md only counts. A criterion or a case with no
+  test is a BLOCK, and because no test may change after the plan commit it
+  is the owner's: write BLOCKED.md naming the criterion and the cases
+  missing. The default is a restart of the task — the owner writes the cases
+  into the task's criteria.md on the feature branch, removes the task's
+  worktree and branch, and answers at its `state` step, so state, red tests,
+  plan and build run again against the criteria that now name them —
+  because no answer can add a test to a branch that already holds a plan.
 - For each test, break the behaviour it guards, confirm it goes red, restore.
   A test that stays green while its behaviour is broken is an inert guard,
   and the task is BLOCKED on that alone. You hold `Edit` for exactly this and
@@ -90,7 +102,10 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
   "What the gate cannot check" is a review item against this diff — no linter
   holds them — and a line the diff violates is a BLOCK with that line quoted.
 - Diff against **the branch the dispatch names for this check**, not the default
-  branch. Normally that is the feature branch: earlier tasks have already merged
+  branch, and in the merge-base form — `git diff <base>...<branch>`, three
+  dots, never the two-endpoint form: the feature branch can gain a commit
+  after this branch was cut, and that commit is not this task's. Normally
+  the base is the feature branch: earlier tasks have already merged
   into it, and their files are not in this task's "Touch" list, so diffing
   against the default branch would BLOCK every task after the first for work
   that already passed.

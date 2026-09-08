@@ -53,6 +53,10 @@ never theirs even when changing it costs a lot.
   listing the items the check printed, exactly as it printed them, and halt.
   The owner's answer arrives as `answers` on the next run, and the step that
   asked records exactly the items they approved, quoting their answer.
+- **A frozen artefact only a restart can change** — a case redtest left out
+  of a task's tests. No step after the plan commit may touch a test, so the
+  fix is the task run again from its start with the case written into its
+  criteria; that restart is the owner's, never rework.
 
 ## Before writing your output file
 
