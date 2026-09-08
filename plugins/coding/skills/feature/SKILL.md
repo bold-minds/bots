@@ -76,6 +76,21 @@ const ENTRY = A.entry || 'the program\'s main entry points'
 const STUB = A.stub || 'the local end-to-end environment, if the repo has one'
 const BASE = A.defaultBranch || 'the branch the feature branch was created from'
 const CONFIRM = A.confirmTasks !== false
+// A review BLOCK that is rework goes back to the builder, not to the owner.
+// Two passes, then the owner: a third is a builder that cannot see what the
+// reviewer means, and the owner is cheaper than a fourth.
+const REWORK_MAX = 2
+// The gate reads GATE_BASE. With it set, the gate judges only what changed
+// since that ref — findings on changed lines, the files changed, coverage and
+// mutation no worse than the base. Inside a task the base is the feature
+// branch: the repo's backlog is not this task's, and a gate that is red on a
+// backlog can never go green for one task, so "gate green" would be a
+// condition no task could ever meet. The absolute run belongs to the owner, at
+// the merge to the default branch. A repo whose gate has no delta mode ignores
+// the variable and runs the same absolute command it ran before — which is why
+// the config key stays `gate:`: the variable is prepended here, by the
+// dispatch, and never written into the repo's own command.
+const GATE = (base) => `GATE_BASE=${base} ${A.gate}`
 
 const isBlocked = (r) => typeof r === 'string' && /^BLOCKED:/m.test(r)
 const bad = (r) => !r || isBlocked(r)
@@ -84,6 +99,17 @@ const bad = (r) => !r || isBlocked(r)
 // containing the word PASS read as a PASS — the block's own explanation
 // clears the block.
 const firstLine = (r) => (String(r || '').split('\n').find(l => l.trim()) || '').trim()
+// An owner-level block is triage.md's shape: "BLOCKED:" on the FIRST line.
+// Anything else a reviewer returns — "VERDICT: BLOCK: …", "# BLOCK: …" — is
+// rework, and rework is the builder's. Testing the whole text with an /m regex
+// would turn a reviewer who quotes the word into an owner block, for the same
+// reason firstLine exists.
+const ownerBlock = (r) => /^BLOCKED:/.test(firstLine(r))
+// Each rework round gets its own step name. An owner's answer is gated on the
+// key AND the step, so an answer to round 2's review must not also match round
+// 1's prompt: that would re-run the earliest match and drag every call after it
+// along. Round 0 keeps the bare name, so nothing that already ran moves.
+const stepAt = (base, attempt) => attempt ? `${base}-${attempt}` : base
 const tally = { opus: 0, sonnet: 0, haiku: 0 }
 const count = (m) => { tally[m] = (tally[m] || 0) + 1 }
 // The owner's answer arrives as an argument, never as an edit to BLOCKED.md.
@@ -144,7 +170,7 @@ phase('Tasks')
 // below must be spelled exactly as that step's ANSWER() second argument — a
 // mismatch returns an answerStep no dispatch matches, and the resume silently
 // returns the cached block.
-const haltStep = {}, haltWhy = {}
+const haltStep = {}, haltWhy = {}, lastReview = {}
 const halt = (t, stage, r) => { haltStep[t] = stage; haltWhy[t] = typeof r === 'string' ? r : 'the agent died'; throw new Error(`${t} halted at ${stage}: ${r || 'the agent died'}`) }
 const guard = (t, stage, shape) => (r) => (bad(r) || (shape && !shape.test(r))) ? halt(t, stage, r) : r
 
@@ -166,37 +192,78 @@ const results = await pipeline(tasks,
       return /^Flag:[ \t]*none[.!]?$/i.test(fl) ? r : halt(t, 'plan', r)
     }) },
   (_, t) => { count('opus'); return agent(
-    `${ANSWER(`${f}/${t}`, 'build')}Implement ${T(t)}/plan.md. Work in ${WT(t)} — the worktree already on branch ${TB(t)}, cut from ${FB}, holding the criteria, the state, the red tests and the plan. Do not create another worktree. Make every test in ${T(t)}/tests.md green without weakening any test, using: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'. A test is green only when the output carries "--- PASS: <that name>"; "no tests to run" is a failure. Then run the gate to green: ${A.gate}. Commit in ${WT(t)}. Do not push. Do not merge. Return exactly one line — "branch: ${TB(t)}" — and nothing else. ${BLOCK_RULE(T(t))}`,
+    `${ANSWER(`${f}/${t}`, 'build')}Implement ${T(t)}/plan.md. Work in ${WT(t)} — the worktree already on branch ${TB(t)}, cut from ${FB}, holding the criteria, the state, the red tests and the plan. Do not create another worktree. Make every test in ${T(t)}/tests.md green without weakening any test, using: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'. A test is green only when the output carries "--- PASS: <that name>"; "no tests to run" is a failure. Then run the gate to green in the task worktree, in delta mode against the feature branch: ${GATE(FB)}. Green means nothing you touched got worse and nothing you added is red — the repo's backlog since before ${FB} is not this task's to clear, and the absolute run is the owner's at the merge. Commit in ${WT(t)}. Do not push. Do not merge. Return exactly one line — "branch: ${TB(t)}" — and nothing else. ${BLOCK_RULE(T(t))}`,
     { agentType: 'coding:builder', phase: 'Tasks', label: `${t}: build` }).then(r => { const m = bad(r) ? null : (r.match(/^branch: (\S+)/m) || [])[1]; return m || halt(t, 'build', r) }) },
   // Two fresh contexts that never saw the builder's reasoning, in parallel:
   // fix-code's lensed code review, and a verifier for what a code review does
   // not do. PASS needs both. Neither merges — the Merge phase does, after every
   // task has passed, so a code-review BLOCK can never land on an already-merged
   // branch.
-  (b, t) => { count('opus'); count('opus'); return parallel([
-    () => agent(
-      `${ANSWER(`${f}/${t}`, 'code-review')}Branch-mode review of ${b} in ${WT(t)}: diff it against ${FB}, the feature branch it was cut from — not the default branch. Read every CLAUDE.md in the repo and hold the code to it. File manifest: every file the diff touches — read each in full. Apply the lens prompt templates in ${CODE_LENSES}: the always-on baseline plus whatever ${LENS_RULES} selects for these files. Report findings by severity as your agent definition says. This dispatch comes from the /feature pipeline rather than fix-code, and it adds one line to your format: end with exactly "VERDICT: PASS" if there is no P0 or P1 finding, otherwise "VERDICT: BLOCK: <the top P0/P1 in one sentence>". Both are intended. On BLOCK, before you return, also write ${T(t)}/BLOCKED.md — first line "BLOCKED: " followed by that same sentence, then in one sentence what you would do about it, then what changes if the owner rules otherwise. A halt with no BLOCKED.md reads as an agent that died, and the verdict.md beside it says PASS, so without that file the owner is handed a PASS as the reason for a stop. ${BLOCK_RULE(T(t))}`,
-      { agentType: 'coding:code-reviewer', phase: 'Tasks', label: `${t}: code review` }),
-    () => agent(
-      `${ANSWER(`${f}/${t}`, 'review')}Verify ${b} against ${T(t)}/criteria.md, ${T(t)}/tests.md and ${T(t)}/plan.md. Check it out in a worktree of your own, detached so you do not fight the build worktree — clear any worktree a previous run left at that path first, because "worktree add" onto an existing directory is fatal: git -C ${WT(t)} worktree remove --force ../vf-${f}-${t} 2>/dev/null; git -C ${WT(t)} worktree add --detach ../vf-${f}-${t} ${b}. Re-run every test and every mutation yourself with: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'. A run is green only if its output contains "--- PASS: <that test name>"; "no tests to run", "no test files", or a summary "ok" without that line is a failure, not a pass, and it is a BLOCK. Run the gate: ${A.gate}; read ${A.decisions} and confirm nothing is reversed; diff ${b} against ${FB} — the feature branch, not the default branch — and confirm every changed file is one of three things: a file in plan.md's "Touch" list; a file under ${T(t)}/ — this task's own .claude/pipeline/ bookkeeping, state.md and tests.md and plan.md, committed on this branch by the steps before you, which no plan lists because no plan writes it; or a test file named in ${T(t)}/tests.md — a *_test.go, or whatever this repo's test files are called — which redtest wrote and committed and which the plan does not list either. Those three are the whole of what may have moved; anything else is a BLOCK. Write ${T(t)}/verdict.md from ${TPL('verdict')} at that absolute path — your own worktree is discarded. Merge nothing: the merge is a separate step after every task has passed. Return the verdict's first line exactly — "# PASS" or "# BLOCK: <one sentence>" — and nothing else. ${BLOCK_RULE(T(t))}`,
-      { agentType: 'coding:verifier', phase: 'Tasks', label: `${t}: verify` }),
-  ]).then(([cr, vf]) => {
-    // A reviewer writing markdown puts the verdict in bold or in a bullet:
-    // "**VERDICT: PASS**" and "- VERDICT: PASS" are the same verdict as
-    // "VERDICT: PASS", so allow a few leading non-word characters. \b after
-    // PASS is what keeps "VERDICT: PASSED" from reading as a pass.
-    const crPass = typeof cr === 'string' && /^\W{0,4}VERDICT:\s*PASS\b/mi.test(cr)
-    // Only the first non-empty line: see firstLine above.
-    const vfPass = !bad(vf) && /^#?\s*PASS\b/.test(firstLine(vf))
-    if (crPass && vfPass) return { task: t, branch: b, verdict: vf, review: (cr.match(/^VERDICT:.*$/m) || [''])[0] }
-    const why = [
-      !cr ? 'code-reviewer died' : (!crPass ? `code review: ${(cr.match(/^VERDICT:.*$/m) || ['no verdict line'])[0]}` : null),
-      !vf ? 'verifier died' : (!vfPass ? `verify: ${vf}` : null),
-    ].filter(Boolean).join(' | ')
-    // Name the half that stopped: that is the step whose prompt the owner's
-    // answer has to change on the resume.
-    return halt(t, crPass ? 'review' : 'code-review', why)
-  }) },
+  //
+  // Most of what these two return on a BLOCK is rework: test files over the
+  // size cap, lint findings the change added, a mutation that survived. That is
+  // the builder's work, and halting the whole feature to hand the owner a lint
+  // count stops a run one more build pass would have finished. So a BLOCK goes
+  // back to the builder with both review texts, and both reviews run again on
+  // the branch as it then stands — REWORK_MAX times. Only a block that says the
+  // OWNER must decide — "BLOCKED:" on the first line, triage.md's shape —
+  // leaves the loop early, because no build pass can answer a question about a
+  // promise to a customer. So does a dead agent: there is nothing to fix.
+  async (b, t) => {
+    let last = null
+    for (let attempt = 0; attempt <= REWORK_MAX; attempt++) {
+      count('opus'); count('opus')
+      // Round 1's prompts have to differ from round 0's or the runner hands
+      // back the cached BLOCK on code that has since been fixed: a finished
+      // call is cached by its exact (prompt, opts). This line is what makes the
+      // re-review a new call, and its absence at round 0 is what leaves round
+      // 0 — and every step before it — cached.
+      const again = attempt === 0 ? '' : `Rework pass ${attempt} of ${REWORK_MAX}: the builder has been given the previous round's findings and has just fixed them. Review the branch as it stands now, on its own; nothing the previous round said is evidence about this one. `
+      const crStep = stepAt('code-review', attempt), vfStep = stepAt('review', attempt)
+      const [cr, vf] = await parallel([
+        () => agent(
+          `${ANSWER(`${f}/${t}`, crStep)}${again}Branch-mode review of ${b} in ${WT(t)}: diff it against ${FB}, the feature branch it was cut from — not the default branch. Read every CLAUDE.md in the repo and hold the code to it. File manifest: every file the diff touches — read each in full. Apply the lens prompt templates in ${CODE_LENSES}: the always-on baseline plus whatever ${LENS_RULES} selects for these files. Report findings by severity as your agent definition says. This dispatch comes from the /feature pipeline rather than fix-code, and it adds one line to your format: end with exactly "VERDICT: PASS" if there is no P0 or P1 finding, otherwise "VERDICT: BLOCK: <the top P0/P1 in one sentence>". Both are intended. A BLOCK the builder can act on — a named file, a named change, a cap to get under — needs nothing else from you: say what to do about it, and the pipeline hands your whole report straight back to the builder for a fix pass. Only when the OWNER has to decide per ${TRIAGE} — a promise to a customer, money, a contradicted ruling, top-level technical direction — write ${T(t)}/BLOCKED.md (first line "BLOCKED: " and one plain sentence, then your best default, then what changes if they rule otherwise) and put that same "BLOCKED: <sentence>" on the FIRST line of what you return, above everything else, as well as the VERDICT line at the end. That first line is what stops the feature and wakes the owner, so a finding the builder could have fixed must not carry it; and a halt with no BLOCKED.md beside it reads as an agent that died. ${BLOCK_RULE(T(t))}`,
+          { agentType: 'coding:code-reviewer', phase: 'Tasks', label: `${t}: code review${attempt ? ` (rework ${attempt})` : ''}` }),
+        () => agent(
+          `${ANSWER(`${f}/${t}`, vfStep)}${again}Verify ${b} against ${T(t)}/criteria.md, ${T(t)}/tests.md and ${T(t)}/plan.md. Check it out in a worktree of your own, detached so you do not fight the build worktree — clear any worktree a previous run left at that path first, because "worktree add" onto an existing directory is fatal: git -C ${WT(t)} worktree remove --force ../vf-${f}-${t} 2>/dev/null; git -C ${WT(t)} worktree add --detach ../vf-${f}-${t} ${b}. That path is the only worktree you may create. It is the one the cleaner knows by name; a path you invent for a comparison — ../vf-base-${f}, ../vf-baseline-${f} — is one nothing ever removes, and the next run's "worktree add" onto it is fatal. To compare against the feature branch, use git diff or git show against ${FB} from the worktree you already have, or a detached worktree you remove yourself, with git worktree remove --force, before you return. Re-run every test and every mutation yourself with: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'. A run is green only if its output contains "--- PASS: <that test name>"; "no tests to run", "no test files", or a summary "ok" without that line is a failure, not a pass, and it is a BLOCK. Run the gate the same way the builder was told to, in delta mode against the feature branch: ${GATE(FB)} — green means nothing this task touched got worse and nothing it added is red, not that the repo's backlog is clear, and that backlog is not this task's; read ${A.decisions} and confirm nothing is reversed; diff ${b} against ${FB} — the feature branch, not the default branch — and confirm every changed file is one of three things: a file in plan.md's "Touch" list; a file under ${T(t)}/ — this task's own .claude/pipeline/ bookkeeping, state.md and tests.md and plan.md, committed on this branch by the steps before you, which no plan lists because no plan writes it; or a test file named in ${T(t)}/tests.md — a *_test.go, or whatever this repo's test files are called — which redtest wrote and committed and which the plan does not list either. Those three are the whole of what may have moved; anything else is a BLOCK. Write ${T(t)}/verdict.md from ${TPL('verdict')} at that absolute path — your own worktree is discarded. A BLOCK is the builder's to fix unless ${TRIAGE} says the owner must decide it: say what to do about it and return "# BLOCK: <one sentence>", and keep the "BLOCKED:" first line for the owner's questions alone — it stops the feature, where a "# BLOCK" goes back to the builder for a fix pass. Merge nothing: the merge is a separate step after every task has passed. Return the verdict's first line exactly — "# PASS" or "# BLOCK: <one sentence>" — and nothing else. ${BLOCK_RULE(T(t))}`,
+          { agentType: 'coding:verifier', phase: 'Tasks', label: `${t}: verify${attempt ? ` (rework ${attempt})` : ''}` }),
+      ])
+      // A reviewer writing markdown puts the verdict in bold or in a bullet:
+      // "**VERDICT: PASS**" and "- VERDICT: PASS" are the same verdict as
+      // "VERDICT: PASS", so allow a few leading non-word characters. \b after
+      // PASS is what keeps "VERDICT: PASSED" from reading as a pass.
+      const crPass = typeof cr === 'string' && /^\W{0,4}VERDICT:\s*PASS\b/mi.test(cr)
+      // Only the first non-empty line: see firstLine above.
+      const vfPass = !bad(vf) && /^#?\s*PASS\b/.test(firstLine(vf))
+      if (crPass && vfPass) return { task: t, branch: b, verdict: vf, review: (cr.match(/^VERDICT:.*$/m) || [''])[0], reworks: attempt }
+      const why = [
+        !cr ? 'code-reviewer died' : (!crPass ? `code review: ${(cr.match(/^VERDICT:.*$/m) || ['no verdict line'])[0]}` : null),
+        !vf ? 'verifier died' : (!vfPass ? `verify: ${vf}` : null),
+      ].filter(Boolean).join(' | ')
+      // Name the half that stopped: that is the step whose prompt the owner's
+      // answer has to change on the resume, and after a rework round it is that
+      // round's step, not round 0's.
+      last = { why, step: crPass ? vfStep : crStep, cr, vf, attempt }
+      if (!cr || !vf || ownerBlock(cr) || ownerBlock(vf) || attempt === REWORK_MAX) break
+      count('opus')
+      const reworkStep = stepAt('rework', attempt + 1)
+      const rb = await agent(
+        `${ANSWER(`${f}/${t}`, reworkStep)}Rework pass ${attempt + 1} of ${REWORK_MAX} on ${TB(t)}. Work in ${WT(t)} — the worktree you already built in, on branch ${TB(t)}. Do not create another worktree. Both reviews of your branch have run and at least one came back BLOCK. Every finding below is yours, not the owner's: fix these, then re-run the gate. Fix them by changing the code — never by weakening a test, deleting a test, skipping one, or moving a threshold; a finding answered that way comes back as a worse block next round. If a finding is one you genuinely must not fix — it contradicts ${T(t)}/plan.md, or ${TRIAGE} makes it the owner's — write ${T(t)}/BLOCKED.md and return its first line instead of building. Keep every test in ${T(t)}/tests.md green with: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'; a test is green only when the output carries "--- PASS: <that name>". Then run the gate green again, in delta mode against the feature branch: ${GATE(FB)}. Commit in ${WT(t)}. Do not push. Do not merge. Return exactly one line — "branch: ${TB(t)}" — and nothing else. ${BLOCK_RULE(T(t))}
+
+--- the code review ---
+${cr}
+
+--- the verifier ---
+${vf}`,
+        { agentType: 'coding:builder', phase: 'Tasks', label: `${t}: rework ${attempt + 1}` })
+      if (bad(rb) || !/^branch: \S+/m.test(rb)) return halt(t, reworkStep, rb)
+    }
+    // Out of rework passes, or a block no build pass can answer. The last two
+    // review texts are the whole record of a rework block — it writes no
+    // BLOCKED.md — so they go back with the halt.
+    lastReview[t] = { reworks: last.attempt, codeReview: last.cr || null, verify: last.vf || null }
+    return halt(t, last.step, last.why)
+  },
 )
 
 const passed = results.filter(Boolean)
@@ -204,7 +271,7 @@ const halted = tasks.filter((_, i) => !results[i])
 // Name the files that hold the reason, the reason itself, and both halves of
 // the key the owner's answer comes back under — the answer only re-runs the
 // step when answerStep is passed back with it.
-const blocks = halted.map(t => ({ task: t, step: haltStep[t] || null, reason: haltWhy[t] || null, blockedPath: `${T(t)}/BLOCKED.md`, verdictPath: `${T(t)}/verdict.md`, answerKey: `${f}/${t}`, answerStep: haltStep[t] || null }))
+const blocks = halted.map(t => ({ task: t, step: haltStep[t] || null, reason: haltWhy[t] || null, blockedPath: `${T(t)}/BLOCKED.md`, verdictPath: `${T(t)}/verdict.md`, answerKey: `${f}/${t}`, answerStep: haltStep[t] || null, ...(lastReview[t] || {}) }))
 log(`dispatches this run asked for — opus ${tally.opus}, sonnet ${tally.sonnet}, haiku ${tally.haiku}; a resumed run counts cached calls again`)
 if (halted.length) {
   log(`halted: ${halted.join(', ')} — read each task's BLOCKED.md or verdict.md; neither file means the agent died`)
@@ -222,7 +289,7 @@ if (bad(mg)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(m
 phase('Feature')
 count('sonnet')
 const fv = await agent(
-  `${ANSWER(f, 'feature')}Feature branch ${FB} in the worktree ${FT}, every task branch already merged into it. Read ${dir}/plan.md and every ${dir}/tasks/*/criteria.md and tests.md. Work in ${FT}. Run the journey task's end-to-end test through ${STUB}; run every fitness test; run every task's tests together with: ${A.test} — substituting each test's name for "<TestName>" and the module's directory for "<module dir>", once per test, anchored as -run '^<TestName>$', changing nothing else. Every one of them must show "--- PASS: <that test name>"; "no tests to run" or "no test files" against a name that should exist is a BLOCK, never a pass. Run the gate: ${A.gate}; diff ${FB} against ${BASE} and check the changed files this way: ignore every path under .claude/pipeline/ — that is the pipeline's own bookkeeping, one criteria/state/tests/plan/verdict set per task, and it is on this branch because every task committed its own — and ignore every test file, which redtest wrote. Every remaining changed file must sit under the path of a component named in ${dir}/plan.md's "Touches" — the Touches section names components and the path each one lives at, so match by path prefix, not by file. A remaining file under no named component's path is a BLOCK, naming the file and the components it fits none of. Write ${dir}/verdict.md from ${TPL('verdict')} at that absolute path, filling in the "Feature only" rows. On PASS, and only if ${CONFIG} contains a line "push: feature" or "push: confirmed", push ${FB} to the remote and put "pushed: <the remote ref>" on a second line. Return the verdict's first line — "# PASS" or "# BLOCK: <one sentence>" — then that pushed line if you pushed, and nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'feature')}Feature branch ${FB} in the worktree ${FT}, every task branch already merged into it. Read ${dir}/plan.md and every ${dir}/tasks/*/criteria.md and tests.md. Work in ${FT}. Run the journey task's end-to-end test through ${STUB}; run every fitness test; run every task's tests together with: ${A.test} — substituting each test's name for "<TestName>" and the module's directory for "<module dir>", once per test, anchored as -run '^<TestName>$', changing nothing else. Every one of them must show "--- PASS: <that test name>"; "no tests to run" or "no test files" against a name that should exist is a BLOCK, never a pass. Run the gate in delta mode against ${BASE}, the branch this feature was cut from: ${GATE('<that branch>')} — substitute that branch's name for "<that branch>" and change nothing else. Green means nothing this feature touched got worse and nothing it added is red; the repo's backlog from before the feature is not this feature's, and the absolute run belongs to the owner's merge to the default branch. Then diff ${FB} against ${BASE} and check the changed files this way: ignore every path under .claude/pipeline/ — that is the pipeline's own bookkeeping, one criteria/state/tests/plan/verdict set per task, and it is on this branch because every task committed its own — and ignore every test file, which redtest wrote. Every remaining changed file must sit under the path of a component named in ${dir}/plan.md's "Touches" — the Touches section names components and the path each one lives at, so match by path prefix, not by file. A remaining file under no named component's path is a BLOCK, naming the file and the components it fits none of. Write ${dir}/verdict.md from ${TPL('verdict')} at that absolute path, filling in the "Feature only" rows. On PASS, and only if ${CONFIG} contains a line "push: feature" or "push: confirmed", push ${FB} to the remote and put "pushed: <the remote ref>" on a second line. Return the verdict's first line — "# PASS" or "# BLOCK: <one sentence>" — then that pushed line if you pushed, and nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:featureverify', phase: 'Feature' })
 // The first non-empty line only, for the same reason as vfPass above: the
 // feature verdict's second line is prose, and "# BLOCK: the journey failed"

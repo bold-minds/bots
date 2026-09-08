@@ -31,8 +31,23 @@ Before you hand-roll a helper the plan does not name, ask triage's prior-art
 question: if a maintained package already does it, that is BLOCKED for the
 owner, not a helper you write or a dependency you add.
 
-Run the gate command. Green, or BLOCKED naming the failing part. A skip is
-not a pass.
+Run the gate command as the dispatch gives it, `GATE_BASE=<the feature branch>`
+and all: the gate judges what changed since that branch, not the whole repo.
+Done means **nothing you touched got worse and nothing you added is red**. The
+backlog that was already there before the feature branch is not this task's —
+clearing it is neither your job nor your permission — and the absolute run is
+the owner's, at the merge to the default branch. Green, or BLOCKED naming the
+failing part. A skip is not a pass. If the repo's gate has no delta mode it
+ignores `GATE_BASE` and runs absolutely; then the absolute run is what has to
+be green.
+
+**A second dispatch is a rework pass, not a new task.** The two reviews came
+back with findings that are yours to fix: work in the same worktree, on the
+same branch, fix what they name by changing the code, and run the gate again.
+Never answer a review finding by weakening a test, deleting one, skipping one,
+or moving a threshold — the reviews run again after you, and that comes back
+worse. A finding you must not fix, because it contradicts the plan or because
+`triage.md` makes it the owner's, is BLOCKED, not a build.
 
 Edit with the Edit tool. No `sed -i`, no scripted rewrites.
 

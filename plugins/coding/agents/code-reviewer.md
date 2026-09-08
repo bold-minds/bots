@@ -62,6 +62,10 @@ RECOMMENDATION: One sentence describing the specific fix.
 
 Report P0 findings first, then P1, P2, P3. Within each severity, group by lens.
 
+### Who the block belongs to
+
+If the fix is the builder's — a named file, a named change, a cap to get under — say what to do about it and stop there; the /feature pipeline hands your report straight back to the builder for a fix pass. Write `BLOCKED:` on the **first** line of what you return only when the owner must decide (a promise to a customer, money, a contradicted ruling, top-level technical direction), because that line halts the whole feature.
+
 ### What NOT to report
 
 - Issues a linter would catch (leave those to the linter)

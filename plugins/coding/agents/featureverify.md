@@ -28,7 +28,14 @@ branch with every task merged into it. Do not create another. Then, yourself:
   code's shape; each must be green.
 - **Every task's tests, together,** with the named command. Tasks that passed
   alone and fail together are the point of this step.
-- **The gate.** Green, or BLOCK naming the part.
+- **The gate.** Run it as the dispatch gives it, with `GATE_BASE=<the branch
+  the feature branch was cut from>` in front: the gate then judges what this
+  feature changed since that branch. Done means **nothing this feature touched
+  got worse and nothing it added is red** — the repo's backlog from before the
+  feature is not this feature's, and the absolute run over everything belongs
+  to the owner at the merge to the default branch. Green, or BLOCK naming the
+  part. A gate with no delta mode ignores `GATE_BASE` and runs absolutely; then
+  the absolute run is the answer.
 - **The plan.** `git diff` the feature branch against the branch it was cut
   from, which the dispatch names. Then, over the changed files:
 

@@ -31,7 +31,7 @@ a step genuinely cannot decide.
 | 7 | red tests | `redtest` | opus | test files, `tasks/<t>/tests.md`, committed on the task branch |
 | 8 | plan | `planner` | opus | `tasks/<t>/plan.md`, committed |
 | 9 | build | `builder` | opus | the task branch `pipeline/<f>--<t>`, gate green |
-| 10 | review | `code-reviewer` (fix-code's nine lenses) ∥ `verifier` (mutations, gate, rulings, touched files) | opus ×2 | `tasks/<t>/verdict.md`; PASS needs both; **neither merges** |
+| 10 | review | `code-reviewer` (fix-code's nine lenses) ∥ `verifier` (mutations, gate, rulings, touched files) | opus ×2 | `tasks/<t>/verdict.md`; PASS needs both; a BLOCK that is rework goes back to `builder` and both reviews run again, twice at most; **neither merges** |
 | 11 | merge | `merger` | haiku | merges every passed task branch into `pipeline/<f>`, one at a time, in landing order |
 | 12 | feature | `featureverify` | sonnet | `features/<f>/verdict.md` — the journey end to end, every fitness test, every task's tests together, the gate; on PASS, the one push if config permits |
 | 13 | clean | `cleaner` | haiku | after the owner merges: keeps the spec as `spec/<f>.md`, deletes the feature directory and the worktrees; one index line |
@@ -91,6 +91,21 @@ push: not confirmed
 `/software` reads it and hands every value to the runner as arguments. No
 agent knows a path of its own.
 
+`gate:` stays the plain command. The pipeline prepends `GATE_BASE=<ref>` to it
+in the dispatch; nothing about it is written into the repo's own command. A
+gate that has a delta mode judges only what changed since that ref — findings
+on the changed lines, the files the diff touched, coverage and mutation no
+worse than the base. Inside a task the ref is the feature branch, so a task is
+done when nothing it touched got worse and nothing it added is red; the repo's
+backlog is not that task's, and against a repo with a backlog an absolute gate
+makes "gate green" a condition no task can ever meet. `featureverify` uses the
+default branch, so the feature is judged on what the feature changed. The
+absolute run — everything, backlog included — is the owner's, at the merge to
+the default branch. A gate with no delta mode ignores `GATE_BASE` and runs
+absolutely; that absolute run is then what the pipeline holds every step to,
+and a repo with a backlog needs the delta mode before the pipeline can pass a
+task in it.
+
 `push:` is the owner's switch. `push: feature` (or `confirmed`) and the
 feature branch is pushed once, when the whole feature passes — never a task,
 never the default branch. Anything else and nothing is pushed; the owner
@@ -132,6 +147,22 @@ re-run the whole level behind it. The key **and** the step reach exactly one
 dispatch. So: that one step re-runs, it deletes the file, and everything before
 it stays cached. Send the key without the step and nothing re-runs at all; the
 cached BLOCK comes straight back.
+
+**A review BLOCK usually does not halt.** Most of what the two reviews at step
+10 return is rework — test files over the size cap, lint findings the change
+added, a mutation that survived — and that is the builder's work, not the
+owner's. So when either review comes back BLOCK, both review texts go back to
+`builder` as "fix these, then re-run the gate", in the same task worktree on
+the same branch, and both reviews then run again on the branch as it stands.
+Twice at most (`REWORK_MAX`); after that the run halts to the owner carrying
+the last two review texts in the block record, which are the whole account of
+it, because a rework block writes no `BLOCKED.md`. The exception is a block
+only the owner can settle: the reviewer puts `BLOCKED:` on its **first** line,
+`triage.md`'s shape, and that one skips the loop and halts at once — no build
+pass answers a question about a promise to a customer. A dead agent halts too;
+there is nothing to hand back. Each round's dispatches carry their own step
+names — `code-review-1`, `review-1`, `rework-1` — so an answer keyed to one
+round re-runs that round alone and every call before it stays cached.
 
 **A halt with no `BLOCKED.md` and no `verdict.md` means the agent died.** The
 runner says so, and names the paths where those files would have been.

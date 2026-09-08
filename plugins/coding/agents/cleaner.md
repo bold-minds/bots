@@ -47,12 +47,33 @@ the verifier creates and nobody else retires:
 git worktree remove --force <path>
 ```
 
-for each, then `git worktree prune`. `--force` is not optional: a task
-worktree still holds the untracked `verdict.md` the verifier wrote into it, and
-without the flag the command dies with `contains modified or untracked files`.
-`prune` alone does not help — it removes the registration, never a directory
-that still exists, and a directory that still exists is what makes the next
-run's `worktree add` refuse.
+for each. `--force` is not optional: a task worktree still holds the untracked
+`verdict.md` the verifier wrote into it, and without the flag the command dies
+with `contains modified or untracked files`.
+
+**Then sweep for the ones nobody named, before you prune.** A verifier that cut
+itself an extra worktree to compare against — `vf-base-<feature>`,
+`vf-baseline-<feature>`, any name it chose — left a directory the dispatch
+cannot list, because whoever wrote the dispatch never knew it existed:
+
+```
+git worktree list --porcelain | sed -n 's/^worktree //p' | grep -- 'vf-.*<feature>'
+ls -d <the directory holding the worktrees>/vf-*<feature>* 2>/dev/null
+```
+
+Remove every path either command prints that is not already gone, with the same
+`git worktree remove --force <path>`; if git answers that it is not a working
+tree, the registration is already pruned and only the directory is left, so
+`rm -rf` that one path — a directory that still exists is exactly what makes the
+next run's `worktree add` refuse. Only paths these two commands printed, never
+a path you assembled yourself.
+
+Then `git worktree prune`. `prune` alone does not help — it removes the
+registration, never a directory that still exists.
+
+**Print what the sweep found**, one line per path, and print it when it found
+nothing too: `no leftover vf- worktrees` is what says the sweep ran. A sweep
+that reports nothing reads the same as a sweep that never happened.
 
 **Then delete the branches.** Nothing else in the pipeline deletes one, so
 running the same feature name a second time is fatal at its first step: the
@@ -78,5 +99,5 @@ Never delete tests, rulings files, config.md, `_shipped.md`, the kept specs
 under `spec/`, the lens history, the triage rules, the templates, or anything
 outside `features/`.
 
-Report what you deleted, one line per directory and one line per branch.
-Nothing else.
+Report what you deleted, one line per directory and one line per branch, plus
+the sweep's line for the worktrees nobody named. Nothing else.

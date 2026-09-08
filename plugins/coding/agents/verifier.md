@@ -31,6 +31,16 @@ path the dispatch names and the only path the cleaner knows to remove; a bare
 `vf-<task>` collides between two features running the same task name, and
 nothing ever retires it.
 
+**That path is the only worktree you may create.** Not `vf-base-<feature>`, not
+`vf-baseline-<feature>`, not any path you invent to hold a comparison: the
+cleaner removes what the dispatch named and nothing else, so an invented path
+survives the feature, and the next run's `worktree add` onto a directory that
+still exists is fatal. To compare against the feature branch, `git diff` and
+`git show` against `<feature branch>` from the worktree you already have —
+neither needs a checkout. If you genuinely need a second tree, add it detached
+and remove it yourself, `git worktree remove --force <path>`, before you
+return; leaving it for someone else to find is the same defect.
+
 **The test command.** Run the one the dispatch names, exactly as it names it,
 with two substitutions and no others: `<TestName>` becomes the name of the test
 you are running, `<module dir>` becomes the directory of the module that holds
@@ -50,7 +60,14 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
   nothing else: the break and the restore, in your own detached worktree,
   never committed. Restore before the next one — a mutation left in place
   fails every test after it and the branch reads as broken when it is not.
-- Run the gate. Green, or BLOCK naming the part.
+- Run the gate the way the dispatch gives it: `GATE_BASE=<the feature branch>`
+  in front of the gate command, so the gate judges this task's diff and not the
+  repo. Done here means **nothing you touched got worse and nothing you added
+  is red** — the backlog that was already there before the feature branch is
+  not this task's to clear, and the absolute run belongs to the owner at the
+  merge to the default branch. Green, or BLOCK naming the part. If the repo's
+  gate has no delta mode it ignores `GATE_BASE` and runs absolutely; then the
+  absolute result is the answer and you report it as it comes.
 - Read the rulings file. Anything here that reverses a ruling is a BLOCK,
   with the ruling quoted.
 - If `spec/cross-cutting.md` exists at the repo root, read it. Every line under
@@ -77,6 +94,11 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
 Write the verdict from the template **at the absolute path the dispatch
 names** — your worktree is thrown away, and a verdict written into it is
 lost. First line `# PASS` or `# BLOCK: <one plain sentence>`.
+
+If the fix is the builder's, say what to do and return `# BLOCK: <sentence>`;
+the pipeline hands it back to the builder for a fix pass. Write `BLOCKED:` on
+the first line only when the owner must decide, per `triage.md` — that line
+halts the feature, where a `# BLOCK` does not.
 
 **Merge nothing, ever — not even on PASS.** A code review is running beside
 you and has not returned yet; a branch merged on your verdict alone can be

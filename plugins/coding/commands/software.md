@@ -159,7 +159,10 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    every `<root>/../vf-<name>-<task>`, the detached worktree each task's
    verifier cuts. Name the `vf-` ones explicitly: nothing else removes them,
    `git worktree prune` leaves a directory that still exists, and the next run's
-   `worktree add` on that path is fatal. It moves the spec to
+   `worktree add` on that path is fatal. The cleaner then sweeps
+   `<root>/../vf-*<name>*` itself, for any a verifier cut under a name nobody
+   passed it, and prints what the sweep found — including that it found nothing,
+   which is the only thing that says the sweep ran. It moves the spec to
    `<root>/spec/<name>.md` and commits it; the rest of the feature directory
    goes. **Then it deletes the branches** — `pipeline/<name>` and every
    `pipeline/<name>--<task>` — which is why it runs only after the merge: the
