@@ -15,5 +15,11 @@ the customer would have experienced.
 A GREEN test with no "proves it" entry is not finished. Break the thing it
 guards; watch it go red; restore; then record what you broke.
 
-Run with: `<the test command the dispatch names, exactly as it names it>`
-A skip is not a pass. A green summary line over a skipped test proves nothing.
+Run with: `<the test command the dispatch names, exactly as it names it, with
+`<TestName>` replaced by this test's name and `<module dir>` by the directory of
+the module that holds it, and the name anchored: -run '^<TestName>$'>`
+
+A skip is not a pass. A green summary line over a skipped test proves nothing,
+and neither does one over a test that never ran: `no tests to run` and
+`no test files` are failures. The run counts as green only if the output carries
+`--- PASS: <the test name>`.

@@ -8,9 +8,10 @@ allowed-tools: Workflow
 Call the Workflow tool with this script, verbatim, and `args` as a JSON object
 holding: `feature`, `root`, `plugin` (this plugin's root), `featureTree` (the
 worktree sitting on the feature branch), `decisions`, `requirements`, `gate`,
-`test`, and optionally `entry`, `stub`, `defaultBranch`, `answers`, and
-`confirmTasks` (default true: the run stops after breakdown and returns the
-task list; the owner reads it; resume with `confirmTasks: false`).
+`test`, and optionally `entry`, `stub`, `defaultBranch`, `answers`,
+`answerStep`, and `confirmTasks` (default true: the run stops after breakdown
+and returns the task list; the owner reads it; resume with
+`confirmTasks: false`).
 
 `/software` supplies them. Before the first run it creates the feature branch
 `pipeline/<feature>` from the default branch **and a worktree on it**, and
@@ -18,12 +19,19 @@ passes that worktree's path as `featureTree`. Every feature-level file is
 written and committed there.
 
 `answers` carries the owner's ruling on a `BLOCKED.md`, keyed by `"<feature>"`
-for a feature-level block or `"<feature>/<task>"` for a task-level one. It is
-what makes a resume re-run the blocked step: the answer goes into that step's
-prompt, so its call is new and every call before it is still cached.
+for a feature-level block or `"<feature>/<task>"` for a task-level one.
+`answerStep` names the step that asked — the runner returns it as `answerStep`
+beside the key, and it must be passed back unchanged. **Both are required for a
+resume to work.** A finished call is cached by its exact prompt, and every call
+after a changed prompt re-runs too, so an answer that reaches more than one
+prompt re-runs everything from the earliest of them. The key alone reaches
+every dispatch at that level; the key *and* the step reach exactly one. That is
+what makes only the blocked step run again while every call before it stays
+cached.
 
 Keep the `runId` and `scriptPath` from every result. Resume with the **same
-args object**, plus `answers` and `confirmTasks: false` as needed.
+args object**, plus `answers` + `answerStep` and `confirmTasks: false` as
+needed.
 
 ```js
 export const meta = {
@@ -53,6 +61,12 @@ const LENS_RULES = `${PLUGIN}/skills/fix-code/references/lens-selection.md`
 const P = `${ROOT}/.claude/pipeline`
 const CONFIG = `${P}/config.md`
 const FB = `pipeline/${f}`
+// Task branches sit BESIDE the feature branch, not under it. Git stores
+// refs/heads/pipeline/<f> as a file, so refs/heads/pipeline/<f>/<t> would need
+// that same path to be a directory: `worktree add -b pipeline/<f>/<t>` fails
+// with "cannot lock ref … 'refs/heads/pipeline/<f>' exists" while the feature
+// branch exists, which is always. The `--` separator keeps one flat namespace.
+const TB = (t) => `pipeline/${f}--${t}`
 const dir = `${FT}/.claude/pipeline/features/${f}`
 const WT = (t) => `${FT}/../wt-${f}-${t}`
 const T = (t) => `${WT(t)}/.claude/pipeline/features/${f}/tasks/${t}`
@@ -68,46 +82,50 @@ const bad = (r) => !r || isBlocked(r)
 const tally = { opus: 0, sonnet: 0, haiku: 0 }
 const count = (m) => { tally[m] = (tally[m] || 0) + 1 }
 // The owner's answer arrives as an argument, never as an edit to BLOCKED.md.
-// Every finished call is cached by its (prompt, opts); putting the answer in
-// the prompt is what makes the blocked call — and only it — run again.
-const ANSWER = (key) => (A.answers && A.answers[key]) ? `The owner has ruled on the question in BLOCKED.md: "${A.answers[key]}". Apply it as a ruling, then delete BLOCKED.md. ` : ''
+// Every finished call is cached by its (prompt, opts), and a changed prompt
+// re-runs that call AND everything after it. So the answer is gated on the
+// step that asked as well as the key: with the key alone it would reach every
+// dispatch at that level, the earliest of them would re-run, and the whole
+// level after it would re-run behind it. `answerStep` is what the runner
+// returned beside the key, passed back unchanged.
+const ANSWER = (key, step) => (A.answers && A.answers[key] && A.answerStep === step) ? `The owner has ruled on the question in BLOCKED.md: "${A.answers[key]}". Apply it as a ruling, then delete BLOCKED.md. ` : ''
 const BLOCK_RULE = (where) =>
   `If you must stop per ${TRIAGE}, write ${where}/BLOCKED.md — first line "BLOCKED: <one plain sentence>", then your best default in one sentence, drawn from the nearest existing thing in this repo and naming it, then what changes if the owner says otherwise — and return that first line as your whole result.`
-const FEATURE_BLOCK = (b) => ({ blocked: b, blockedPath: `${dir}/BLOCKED.md`, answerKey: f, dispatches: tally })
+const FEATURE_BLOCK = (b, step) => ({ blocked: b, blockedPath: `${dir}/BLOCKED.md`, answerKey: f, answerStep: step, dispatches: tally })
 
 phase('Plan')
 count('opus')
 const fp = await agent(
-  `${ANSWER(f)}Read ${dir}/spec.md, ${A.requirements}, ${A.decisions}, and enough of the code to know what already exists. Entry points: ${ENTRY}. Write ${dir}/plan.md from ${TPL('featureplan')}. Then, in ${FT} — a worktree already on branch ${FB} — git add the plan and commit it. Return "planned" and nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'plan')}Read ${dir}/spec.md, ${A.requirements}, ${A.decisions}, and enough of the code to know what already exists. Entry points: ${ENTRY}. Write ${dir}/plan.md from ${TPL('featureplan')}. Then, in ${FT} — a worktree already on branch ${FB} — git add the plan and commit it. Return "planned" and nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:featureplan', phase: 'Plan' })
-if (bad(fp)) return { halted: 'Plan', ...FEATURE_BLOCK(fp || 'BLOCKED: the feature-plan agent died before writing its file') }
+if (bad(fp)) return { halted: 'Plan', ...FEATURE_BLOCK(fp || 'BLOCKED: the feature-plan agent died before writing its file', 'plan') }
 
 phase('Lenses')
 const LENSES = [['architecture', 'opus'], ['sre', 'opus'], ['security', 'opus'], ['performance', 'sonnet'], ['database', 'sonnet'], ['qa', 'opus'], ['staff', 'opus']]
 const lenses = await parallel(LENSES.map(([l, m]) => () => { count(m); return agent(
-  `${ANSWER(f)}Lens: ${l}. Read ${dir}/spec.md and ${dir}/plan.md. Load ${SHARED}/lenses/${l}.md; if ${P}/lenses/${l}.md exists, load it too — it is this repo's history for this lens. Nothing about other lenses. Write ${dir}/lens-${l}.md from ${TPL('lens')}. Do not run git: you are one of several lenses writing into ${FT} at the same time, and the next step commits all of your files together. Return the number of findings and nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'lenses')}Lens: ${l}. Read ${dir}/spec.md and ${dir}/plan.md. Load ${SHARED}/lenses/${l}.md; if ${P}/lenses/${l}.md exists, load it too — it is this repo's history for this lens. Nothing about other lenses. Write ${dir}/lens-${l}.md from ${TPL('lens')}. Do not run git: you are one of several lenses writing into ${FT} at the same time, and the next step commits all of your files together. Return the number of findings and nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:lens', phase: 'Lenses', label: `lens: ${l}`, model: m }) }))
 const dead = lenses.findIndex(r => !r)
-if (dead >= 0) return { halted: 'Lenses', ...FEATURE_BLOCK(`BLOCKED: the ${LENSES[dead][0]} lens agent died before writing its file`) }
+if (dead >= 0) return { halted: 'Lenses', ...FEATURE_BLOCK(`BLOCKED: the ${LENSES[dead][0]} lens agent died before writing its file`, 'lenses') }
 const lensBlock = lenses.find(isBlocked)
-if (lensBlock) return { halted: 'Lenses', ...FEATURE_BLOCK(lensBlock) }
+if (lensBlock) return { halted: 'Lenses', ...FEATURE_BLOCK(lensBlock, 'lenses') }
 log(`lenses: ${LENSES.length} written`)
 
 phase('Pre-mortem')
 count('opus')
 const pm = await agent(
-  `${ANSWER(f)}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md — there are ${LENSES.length}, one of them the security lens, and its last sentence is written for you — and ${A.decisions}. Write ${dir}/premortem.md from ${TPL('premortem')}. Then, in ${FT}, git add the whole feature directory — your file and every lens file — and commit it. Return the number of kept cases and nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'premortem')}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md — there are ${LENSES.length}, one of them the security lens, and its last sentence is written for you — and ${A.decisions}. Write ${dir}/premortem.md from ${TPL('premortem')}. Then, in ${FT}, git add the whole feature directory — your file and every lens file — and commit it. Return the number of kept cases and nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:premortem', phase: 'Pre-mortem' })
-if (bad(pm)) return { halted: 'Pre-mortem', ...FEATURE_BLOCK(pm || 'BLOCKED: the pre-mortem agent died before writing its file') }
+if (bad(pm)) return { halted: 'Pre-mortem', ...FEATURE_BLOCK(pm || 'BLOCKED: the pre-mortem agent died before writing its file', 'premortem') }
 
 phase('Break down')
 count('opus')
 const bdText = await agent(
-  `${ANSWER(f)}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md, ${dir}/premortem.md, ${A.requirements} and ${A.decisions}. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, each with its Success line filled in. The task carrying the plan's journey is marked "Journey: yes"; the plan's structural rules go into that task's "Structural rules". Then delete the lens-*.md and premortem.md files. Then, in ${FT}, git add the feature directory — the new task files and the deletions — and commit it. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'breakdown')}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md, ${dir}/premortem.md, ${A.requirements} and ${A.decisions}. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, each with its Success line filled in. The task carrying the plan's journey is marked "Journey: yes"; the plan's structural rules go into that task's "Structural rules". Then delete the lens-*.md and premortem.md files. Then, in ${FT}, git add the feature directory — the new task files and the deletions — and commit it. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:breakdown', phase: 'Break down' })
-if (bad(bdText)) return { halted: 'Break down', ...FEATURE_BLOCK(bdText || 'BLOCKED: the breakdown agent died before writing any task') }
+if (bad(bdText)) return { halted: 'Break down', ...FEATURE_BLOCK(bdText || 'BLOCKED: the breakdown agent died before writing any task', 'breakdown') }
 const tasks = bdText.split('\n').map(s => s.trim()).filter(s => /^[0-9]{2}-[a-z0-9-]+$/.test(s))
-if (!tasks.length) return { halted: 'Break down', ...FEATURE_BLOCK(`BLOCKED: breakdown returned no task names. It returned: ${bdText.slice(0, 200)}`) }
+if (!tasks.length) return { halted: 'Break down', ...FEATURE_BLOCK(`BLOCKED: breakdown returned no task names. It returned: ${bdText.slice(0, 200)}`, 'breakdown') }
 log(`tasks: ${tasks.length}`)
 if (CONFIRM) {
   log('stopping for the owner to read the task list — resume with confirmTasks: false')
@@ -115,21 +133,35 @@ if (CONFIRM) {
 }
 
 phase('Tasks')
-const halt = (t, stage, r) => { throw new Error(`${t} halted at ${stage}: ${r || 'the agent died'}`) }
+// A halt's message dies inside pipeline(), so record which step stopped and
+// why before throwing: the step name is what the owner's answer must be keyed
+// to on the resume, and without it the run has no way back. Every stage string
+// below must be spelled exactly as that step's ANSWER() second argument — a
+// mismatch returns an answerStep no dispatch matches, and the resume silently
+// returns the cached block.
+const haltStep = {}, haltWhy = {}
+const halt = (t, stage, r) => { haltStep[t] = stage; haltWhy[t] = typeof r === 'string' ? r : 'the agent died'; throw new Error(`${t} halted at ${stage}: ${r || 'the agent died'}`) }
 const guard = (t, stage, shape) => (r) => (bad(r) || (shape && !shape.test(r))) ? halt(t, stage, r) : r
 
 const results = await pipeline(tasks,
   (_, t) => { count('sonnet'); return agent(
-    `${ANSWER(`${f}/${t}`)}First, cut this task's worktree from the feature branch: git -C ${FT} worktree add ${WT(t)} -b ${FB}/${t} ${FB} — unless ${WT(t)} already exists, in which case use it as it is. Everything you read and write is inside it. Read ${T(t)}/criteria.md. Rule each criterion TRUE or FALSE against the code in ${WT(t)}, which is branch ${FB} — not the default branch — with a file:line or a command you ran as evidence, never a document. Trace from a real entry point: ${ENTRY}. Write ${T(t)}/state.md from ${TPL('state')}, then git add and commit it in ${WT(t)}. Return "to build: N, to guard: M" and nothing else. ${BLOCK_RULE(T(t))}`,
+    `${ANSWER(`${f}/${t}`, 'state')}First, cut this task's worktree from the feature branch: git -C ${FT} worktree add ${WT(t)} -b ${TB(t)} ${FB} — unless ${WT(t)} already exists, in which case use it as it is. The task branch is ${TB(t)}, beside the feature branch and not under it: git cannot hold a branch ${FB} and a branch ${FB}/${t} at the same time. Everything you read and write is inside it. Read ${T(t)}/criteria.md. Rule each criterion TRUE or FALSE against the code in ${WT(t)}, which is branch ${FB} — not the default branch — with a file:line or a command you ran as evidence, never a document. Trace from a real entry point: ${ENTRY}. Write ${T(t)}/state.md from ${TPL('state')}, then git add and commit it in ${WT(t)}. Return "to build: N, to guard: M" and nothing else. ${BLOCK_RULE(T(t))}`,
     { agentType: 'coding:state', phase: 'Tasks', label: `${t}: state` }).then(guard(t, 'state', /^to build:\s*\d+/mi)) },
   (_, t) => { count('opus'); return agent(
-    `${ANSWER(`${f}/${t}`)}Work in ${WT(t)}, a worktree on branch ${FB}/${t}. Read ${T(t)}/criteria.md and ${T(t)}/state.md. Write the tests and ${T(t)}/tests.md from ${TPL('tests')}. The test command is: ${A.test}. Journey tests use ${STUB}. Every FALSE criterion's test must be red now. Every TRUE criterion's test must go red when you break the behaviour on purpose, then be restored. Then git add and commit the tests and tests.md in ${WT(t)}. Return the tests.md table and nothing else. ${BLOCK_RULE(T(t))}`,
-    { agentType: 'coding:redtest', phase: 'Tasks', label: `${t}: red tests` }).then(guard(t, 'red tests', /^\s*\|/m)) },
+    `${ANSWER(`${f}/${t}`, 'redtest')}Work in ${WT(t)}, a worktree on branch ${TB(t)}. Read ${T(t)}/criteria.md and ${T(t)}/state.md. Write the tests and ${T(t)}/tests.md from ${TPL('tests')}. The test command is: ${A.test} — run it exactly as written except that where it contains "<TestName>" you substitute the name of the test you are running, and where it contains "<module dir>" you substitute the directory of the module that holds that test; change nothing else. Anchor the name so it cannot match a neighbour: -run '^<TestName>$'. A run is green only if its output contains "--- PASS: <that test name>"; "no tests to run" or "no test files" is a failure, never a pass, and so is a summary "ok" with no such line. Journey tests use ${STUB}. Every FALSE criterion's test must be red now. Every TRUE criterion's test must go red when you break the behaviour on purpose, then be restored. Then git add and commit the tests and tests.md in ${WT(t)}. Return the tests.md table and nothing else. ${BLOCK_RULE(T(t))}`,
+    { agentType: 'coding:redtest', phase: 'Tasks', label: `${t}: red tests` }).then(guard(t, 'redtest', /^\s*\|/m)) },
   (_, t) => { count('opus'); return agent(
-    `${ANSWER(`${f}/${t}`)}Work in ${WT(t)}, a worktree on branch ${FB}/${t}. Read ${T(t)}/criteria.md, ${T(t)}/tests.md, the test files, the code they exercise, and ${A.decisions}. Write ${T(t)}/plan.md from ${TPL('plan')}, then git add and commit it in ${WT(t)}. If the Flag line is not "Flag: none", also write ${T(t)}/BLOCKED.md with that flag as its first line, prefixed "BLOCKED: ", then your best default and what changes if the owner says otherwise. Return the Flag line exactly as written and nothing else. ${BLOCK_RULE(T(t))}`,
-    { agentType: 'coding:planner', phase: 'Tasks', label: `${t}: plan` }).then(r => (bad(r) || !/^Flag:\s*none\b(?!\s+\w)/mi.test(r)) ? halt(t, 'plan', r) : r) },
+    `${ANSWER(`${f}/${t}`, 'plan')}Work in ${WT(t)}, a worktree on branch ${TB(t)}. Read ${T(t)}/criteria.md, ${T(t)}/tests.md, the test files, the code they exercise, and ${A.decisions}. Write ${T(t)}/plan.md from ${TPL('plan')}, then git add and commit it in ${WT(t)}. The Flag line is read by a machine: it is either the four characters "Flag: none" alone on the line, with nothing after them but an optional full stop, or it names the one thing that halts the chain. There is no third shape — a qualifier, a parenthesis or a "none, but …" is a flag. If the line is not exactly "Flag: none", also write ${T(t)}/BLOCKED.md with that flag as its first line, prefixed "BLOCKED: ", then your best default and what changes if the owner says otherwise. Return the Flag line exactly as written and nothing else. ${BLOCK_RULE(T(t))}`,
+    { agentType: 'coding:planner', phase: 'Tasks', label: `${t}: plan` }).then(r => {
+      if (bad(r)) return halt(t, 'plan', r)
+      // Only the first Flag: line, and the whole of it: "Flag: none, but …"
+      // and "Flag: none - …" are flags, and a "Flag: none" followed by prose
+      // on its own line is not.
+      const fl = ((r.match(/^[ \t]*Flag:.*$/mi) || [''])[0]).trim()
+      return /^Flag:[ \t]*none[.!]?$/i.test(fl) ? r : halt(t, 'plan', r)
+    }) },
   (_, t) => { count('opus'); return agent(
-    `${ANSWER(`${f}/${t}`)}Implement ${T(t)}/plan.md. Work in ${WT(t)} — the worktree already on branch ${FB}/${t}, cut from ${FB}, holding the criteria, the state, the red tests and the plan. Do not create another worktree. Make every test in ${T(t)}/tests.md green without weakening any test, using: ${A.test}. Then run the gate to green: ${A.gate}. Commit in ${WT(t)}. Do not push. Do not merge. Return exactly one line — "branch: ${FB}/${t}" — and nothing else. ${BLOCK_RULE(T(t))}`,
+    `${ANSWER(`${f}/${t}`, 'build')}Implement ${T(t)}/plan.md. Work in ${WT(t)} — the worktree already on branch ${TB(t)}, cut from ${FB}, holding the criteria, the state, the red tests and the plan. Do not create another worktree. Make every test in ${T(t)}/tests.md green without weakening any test, using: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'. A test is green only when the output carries "--- PASS: <that name>"; "no tests to run" is a failure. Then run the gate to green: ${A.gate}. Commit in ${WT(t)}. Do not push. Do not merge. Return exactly one line — "branch: ${TB(t)}" — and nothing else. ${BLOCK_RULE(T(t))}`,
     { agentType: 'coding:builder', phase: 'Tasks', label: `${t}: build` }).then(r => { const m = bad(r) ? null : (r.match(/^branch: (\S+)/m) || [])[1]; return m || halt(t, 'build', r) }) },
   // Two fresh contexts that never saw the builder's reasoning, in parallel:
   // fix-code's lensed code review, and a verifier for what a code review does
@@ -138,10 +170,10 @@ const results = await pipeline(tasks,
   // branch.
   (b, t) => { count('opus'); count('opus'); return parallel([
     () => agent(
-      `Branch-mode review of ${b} in ${WT(t)}: diff it against ${FB}, the feature branch it was cut from — not the default branch. Read every CLAUDE.md in the repo and hold the code to it. File manifest: every file the diff touches — read each in full. Apply the lens prompt templates in ${CODE_LENSES}: the always-on baseline plus whatever ${LENS_RULES} selects for these files. Report findings by severity as your agent definition says. This dispatch comes from the /feature pipeline rather than fix-code, and it adds one line to your format: end with exactly "VERDICT: PASS" if there is no P0 or P1 finding, otherwise "VERDICT: BLOCK: <the top P0/P1 in one sentence>". Both are intended.`,
+      `${ANSWER(`${f}/${t}`, 'code-review')}Branch-mode review of ${b} in ${WT(t)}: diff it against ${FB}, the feature branch it was cut from — not the default branch. Read every CLAUDE.md in the repo and hold the code to it. File manifest: every file the diff touches — read each in full. Apply the lens prompt templates in ${CODE_LENSES}: the always-on baseline plus whatever ${LENS_RULES} selects for these files. Report findings by severity as your agent definition says. This dispatch comes from the /feature pipeline rather than fix-code, and it adds one line to your format: end with exactly "VERDICT: PASS" if there is no P0 or P1 finding, otherwise "VERDICT: BLOCK: <the top P0/P1 in one sentence>". Both are intended. On BLOCK, before you return, also write ${T(t)}/BLOCKED.md — first line "BLOCKED: " followed by that same sentence, then in one sentence what you would do about it, then what changes if the owner rules otherwise. A halt with no BLOCKED.md reads as an agent that died, and the verdict.md beside it says PASS, so without that file the owner is handed a PASS as the reason for a stop. ${BLOCK_RULE(T(t))}`,
       { agentType: 'coding:code-reviewer', phase: 'Tasks', label: `${t}: code review` }),
     () => agent(
-      `${ANSWER(`${f}/${t}`)}Verify ${b} against ${T(t)}/criteria.md, ${T(t)}/tests.md and ${T(t)}/plan.md. Check it out in a worktree of your own, detached so you do not fight the build worktree: git -C ${WT(t)} worktree add --detach ../vf-${f}-${t} ${b}. Re-run every test and every mutation yourself with: ${A.test}; run the gate: ${A.gate}; read ${A.decisions} and confirm nothing is reversed; diff ${b} against ${FB} — the feature branch, not the default branch — and confirm only plan.md's files changed. Write ${T(t)}/verdict.md from ${TPL('verdict')} at that absolute path — your own worktree is discarded. Merge nothing: the merge is a separate step after every task has passed. Return the verdict's first line exactly — "# PASS" or "# BLOCK: <one sentence>" — and nothing else. ${BLOCK_RULE(T(t))}`,
+      `${ANSWER(`${f}/${t}`, 'review')}Verify ${b} against ${T(t)}/criteria.md, ${T(t)}/tests.md and ${T(t)}/plan.md. Check it out in a worktree of your own, detached so you do not fight the build worktree — clear any worktree a previous run left at that path first, because "worktree add" onto an existing directory is fatal: git -C ${WT(t)} worktree remove --force ../vf-${f}-${t} 2>/dev/null; git -C ${WT(t)} worktree add --detach ../vf-${f}-${t} ${b}. Re-run every test and every mutation yourself with: ${A.test} — substitute the test's name for "<TestName>" and the module's directory for "<module dir>", change nothing else, and anchor the name as -run '^<TestName>$'. A run is green only if its output contains "--- PASS: <that test name>"; "no tests to run", "no test files", or a summary "ok" without that line is a failure, not a pass, and it is a BLOCK. Run the gate: ${A.gate}; read ${A.decisions} and confirm nothing is reversed; diff ${b} against ${FB} — the feature branch, not the default branch — and confirm only plan.md's files changed. Write ${T(t)}/verdict.md from ${TPL('verdict')} at that absolute path — your own worktree is discarded. Merge nothing: the merge is a separate step after every task has passed. Return the verdict's first line exactly — "# PASS" or "# BLOCK: <one sentence>" — and nothing else. ${BLOCK_RULE(T(t))}`,
       { agentType: 'coding:verifier', phase: 'Tasks', label: `${t}: verify` }),
   ]).then(([cr, vf]) => {
     const crPass = typeof cr === 'string' && /^VERDICT:\s*PASS/m.test(cr)
@@ -151,15 +183,18 @@ const results = await pipeline(tasks,
       !cr ? 'code-reviewer died' : (!crPass ? `code review: ${(cr.match(/^VERDICT:.*$/m) || ['no verdict line'])[0]}` : null),
       !vf ? 'verifier died' : (!vfPass ? `verify: ${vf}` : null),
     ].filter(Boolean).join(' | ')
-    return halt(t, 'review', why)
+    // Name the half that stopped: that is the step whose prompt the owner's
+    // answer has to change on the resume.
+    return halt(t, crPass ? 'review' : 'code-review', why)
   }) },
 )
 
 const passed = results.filter(Boolean)
 const halted = tasks.filter((_, i) => !results[i])
-// A halt's message dies inside pipeline(), so name the files that hold the
-// reason and the key the owner's answer comes back under.
-const blocks = halted.map(t => ({ task: t, blockedPath: `${T(t)}/BLOCKED.md`, verdictPath: `${T(t)}/verdict.md`, answerKey: `${f}/${t}` }))
+// Name the files that hold the reason, the reason itself, and both halves of
+// the key the owner's answer comes back under — the answer only re-runs the
+// step when answerStep is passed back with it.
+const blocks = halted.map(t => ({ task: t, step: haltStep[t] || null, reason: haltWhy[t] || null, blockedPath: `${T(t)}/BLOCKED.md`, verdictPath: `${T(t)}/verdict.md`, answerKey: `${f}/${t}`, answerStep: haltStep[t] || null }))
 log(`dispatches this run asked for — opus ${tally.opus}, sonnet ${tally.sonnet}, haiku ${tally.haiku}; a resumed run counts cached calls again`)
 if (halted.length) {
   log(`halted: ${halted.join(', ')} — read each task's BLOCKED.md or verdict.md; neither file means the agent died`)
@@ -170,14 +205,14 @@ phase('Merge')
 count('haiku')
 const order = passed.map(p => p.branch)
 const mg = await agent(
-  `Feature worktree ${FT}, on branch ${FB}. Merge these task branches into ${FB}, in this order, one at a time — never two at once: ${order.join(', ')}. For each, run: git -C ${FT} merge --no-ff <branch>. On the first conflict, stop there: write ${dir}/BLOCKED.md — first line "BLOCKED: <branch> and ${FB} changed the same lines, so the merge stopped", then the two branch names and the files that clashed, then that whoever resolves it decides which behaviour wins — and return that first line as your whole result. Otherwise return the branches you merged, one per line, and nothing else.`,
+  `${ANSWER(f, 'merge')}Feature worktree ${FT}, on branch ${FB}. First, if a merge is in progress in ${FT} — a previous run stopped on a conflict and left it that way — run git -C ${FT} merge --abort before anything else. Nothing can be committed in that tree until you do, so every step after you dies if you skip it; check with git -C ${FT} status --porcelain=v1 -b. Then merge these task branches into ${FB}, in this order, one at a time — never two at once: ${order.join(', ')}. For each, run: git -C ${FT} merge --no-ff <branch>. On the first conflict, stop there: run git -C ${FT} merge --abort so the tree is usable again, then write ${dir}/BLOCKED.md — first line "BLOCKED: <one plain sentence, in business terms, asking which behaviour should win where the two changes disagree>", then in one sentence what you would do by default, then what changes if the owner rules otherwise. Return that first line as your whole result. Otherwise return the branches you merged, one per line, and nothing else.`,
   { agentType: 'coding:merger', phase: 'Merge' })
-if (bad(mg)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(mg || 'BLOCKED: the merge agent died before merging every task branch') }
+if (bad(mg)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(mg || 'BLOCKED: the merge agent died before merging every task branch', 'merge') }
 
 phase('Feature')
 count('sonnet')
 const fv = await agent(
-  `${ANSWER(f)}Feature branch ${FB} in the worktree ${FT}, every task branch already merged into it. Read ${dir}/plan.md and every ${dir}/tasks/*/criteria.md and tests.md. Work in ${FT}. Run the journey task's end-to-end test through ${STUB}; run every fitness test; run every task's tests together with: ${A.test}; run the gate: ${A.gate}; diff ${FB} against ${BASE} and confirm nothing outside the plan's "Touches" moved. Write ${dir}/verdict.md from ${TPL('verdict')} at that absolute path, filling in the "Feature only" rows. On PASS, and only if ${CONFIG} contains a line "push: feature" or "push: confirmed", push ${FB} to the remote and put "pushed: <the remote ref>" on a second line. Return the verdict's first line — "# PASS" or "# BLOCK: <one sentence>" — then that pushed line if you pushed, and nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'feature')}Feature branch ${FB} in the worktree ${FT}, every task branch already merged into it. Read ${dir}/plan.md and every ${dir}/tasks/*/criteria.md and tests.md. Work in ${FT}. Run the journey task's end-to-end test through ${STUB}; run every fitness test; run every task's tests together with: ${A.test} — substituting each test's name for "<TestName>" and the module's directory for "<module dir>", once per test, anchored as -run '^<TestName>$', changing nothing else. Every one of them must show "--- PASS: <that test name>"; "no tests to run" or "no test files" against a name that should exist is a BLOCK, never a pass. Run the gate: ${A.gate}; diff ${FB} against ${BASE} and confirm nothing outside the plan's "Touches" moved. Write ${dir}/verdict.md from ${TPL('verdict')} at that absolute path, filling in the "Feature only" rows. On PASS, and only if ${CONFIG} contains a line "push: feature" or "push: confirmed", push ${FB} to the remote and put "pushed: <the remote ref>" on a second line. Return the verdict's first line — "# PASS" or "# BLOCK: <one sentence>" — then that pushed line if you pushed, and nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:featureverify', phase: 'Feature' })
 const fvPass = !bad(fv) && /^#?\s*PASS\b/m.test(fv)
 const pushed = fvPass ? ((fv.match(/^pushed:\s*(\S+)/m) || [null, null])[1]) : null
@@ -185,7 +220,7 @@ log(`dispatches this run asked for — opus ${tally.opus}, sonnet ${tally.sonnet
 return {
   feature: f, branch: FB, passed, halted, merged: mg,
   feature_verdict: fv || 'BLOCKED: the feature-verify agent died before writing its verdict',
-  feature_verdict_path: `${dir}/verdict.md`, blockedPath: `${dir}/BLOCKED.md`, answerKey: f,
+  feature_verdict_path: `${dir}/verdict.md`, blockedPath: `${dir}/BLOCKED.md`, answerKey: f, answerStep: 'feature',
   pushed, dispatches: tally,
 }
 ```

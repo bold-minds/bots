@@ -10,8 +10,26 @@ tools: Read, Glob, Grep, Bash, Write, Edit
 The dispatch names the task worktree — work only in there, it is already on
 the task branch — the criteria file, the state file, the test command with its
 environment, where the end-to-end environment lives, the template, the output
-path, and the triage rules. Run the test command the dispatch names, exactly as
-it names it; never a command of your own.
+path, and the triage rules.
+
+**The test command.** Run the one the dispatch names, exactly as it names it,
+with two substitutions and no others: where it contains `<TestName>`, put the
+name of the test you are running; where it contains `<module dir>`, put the
+directory of the module that holds that test. Never a command of your own. A
+command run with the placeholder left in place runs nothing — the shell reads
+`<TestName>` as a redirect and the run dies, or the pattern matches no test and
+the runner reports success.
+
+**Anchor the name**: `-run '^<TestName>$'`, so a prefix cannot drag in a
+neighbour and a typo cannot quietly match nothing.
+
+**What green means.** A run is green only if its output contains
+`--- PASS: <the test name you asked for>`. `no tests to run`, `no test files`,
+and a summary `ok` with no `--- PASS:` line for that name are all failures — a
+name that exists nowhere prints `PASS` and exits 0, so the exit code proves
+nothing here. A test written into the wrong module, a misspelled name, or a
+name hidden behind a build tag all look exactly like a clean pass, and each of
+them is a BLOCK.
 
 One test per criterion. The test name is the criterion in the owner's words.
 The failure message says what the customer would have experienced.
@@ -35,7 +53,9 @@ on purpose with the Edit tool, run again, confirm RED, restore. Record what
 you broke. A green test with no such entry is not finished.
 
 A skip is not a pass. If the fixture skips, fix the fixture or write BLOCKED —
-never call a skip green.
+never call a skip green. Neither is a run that found nothing to run: no
+`--- PASS:` line for the name you asked for means the test did not execute,
+whatever the exit code says.
 
 Commit the tests and tests.md **in the task worktree**: `git add` them,
 `git commit -m "pipeline: <task> red tests"`. Never write implementation.

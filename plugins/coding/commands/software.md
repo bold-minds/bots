@@ -138,21 +138,30 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    **On a block** it comes back with the question: relay the three lines from
    the named `BLOCKED.md` verbatim, and pass their one-line answer back on the
    next run as an argument — `answers: { "<feature>": "<their line>" }`, or
-   `answers: { "<feature>/<task>": "<their line>" }` for a task-level block,
-   alongside the same args and the same run id. Never write the answer into
-   `BLOCKED.md`: a finished step is cached by its prompt, so an answer that is
-   not in the prompt never re-runs the step that asked. Note in the spec's
-   "Open questions" that it was answered, one line. Never start a fresh run —
-   that re-runs every lens.
+   `answers: { "<feature>/<task>": "<their line>" }` for a task-level block —
+   **plus `answerStep`, copied from the `answerStep` the result returned beside
+   that key**, alongside the same args and the same run id. Both, every time:
+   the key alone reaches every step at that level and re-runs the lot, and the
+   runner ignores an answer whose step is missing, so the cached block comes
+   straight back. With the step, exactly one prompt changes, that step re-runs
+   and deletes the file, and everything before it stays cached. Never write the
+   answer into `BLOCKED.md`: a finished step is cached by its prompt, so an
+   answer that is not in the prompt never re-runs the step that asked. Note in
+   the spec's "Open questions" that it was answered, one line. Never start a
+   fresh run — that re-runs every lens.
 
    **When it passes** it returns the feature branch and, if the config's
    `push:` line permits, the remote ref — one push per feature. The owner
    merges to the default branch. After they merge, dispatch `coding:cleaner`
    with three things: the feature directory `<root>/.claude/pipeline/features/<name>`,
-   the pipeline directory `<root>/.claude/pipeline`, and the worktree paths to
-   remove (`<root>/../wt-<name>` and every `<root>/../wt-<name>-<task>`). It
-   moves the spec to `<root>/spec/<name>.md` and commits it; the rest of the
-   feature directory goes. After they deploy, run the config's `live:` command.
+   the pipeline directory `<root>/.claude/pipeline`, and **every** worktree path
+   to remove — `<root>/../wt-<name>`, every `<root>/../wt-<name>-<task>`, and
+   every `<root>/../vf-<name>-<task>`, the detached worktree each task's
+   verifier cuts. Name the `vf-` ones explicitly: nothing else removes them,
+   `git worktree prune` leaves a directory that still exists, and the next run's
+   `worktree add` on that path is fatal. It moves the spec to
+   `<root>/spec/<name>.md` and commits it; the rest of the feature directory
+   goes. After they deploy, run the config's `live:` command.
 
    Report a run in three lines: done / ready to merge / waiting on you. Add a
    fourth line — the run's `dispatches` count by model — only when they ask

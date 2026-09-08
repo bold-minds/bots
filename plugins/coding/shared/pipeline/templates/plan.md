@@ -18,4 +18,9 @@ Flag: none
 <or: one line — touches a ruling in the rulings file / a vendor / money / a
 promise to a customer. A non-empty flag halts the chain for the owner, and the
 same line goes into BLOCKED.md beside this file. File count is never a reason
-to flag.>
+to flag.
+
+This line is read by a machine, so "none" means the word alone, with nothing
+after it but an optional full stop. "Flag: none, but …", "Flag: none (…)" and
+"Flag: none - …" are flags, not clearances: whatever follows "none" is the
+thing you are flagging, so write it as the flag and write the BLOCKED.md.>

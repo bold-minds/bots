@@ -11,9 +11,12 @@ The dispatch names the plan, tests.md, criteria, the test command, the gate
 command, and the task worktree.
 
 Do not create a worktree. One already exists at the path the dispatch names,
-on branch `<feature branch>/<task>`, cut from the feature branch by the task's
-first step, and it already holds the criteria, the current state, the red tests
-and the plan — all committed on that branch. Work there and nowhere else.
+on branch `pipeline/<feature>--<task>` — beside the feature branch, not under
+it, because git cannot hold `pipeline/<feature>` and `pipeline/<feature>/<task>`
+at the same time — cut from the feature branch by the task's first step, and it
+already holds the criteria, the current state, the red tests and the plan — all
+committed on that branch. Work there and nowhere else. Return the branch name
+exactly as the dispatch gives it.
 
 If `spec/cross-cutting.md` exists at the repo root, read its "Where things
 live" and "Rulings" before you write anything. Code that puts a concern outside

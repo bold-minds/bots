@@ -17,10 +17,28 @@ output path.
 
 Check the branch out in a worktree of your own, **detached** — the task branch
 is already checked out in the build worktree, and git refuses a second checkout
-of the same branch: `git worktree add --detach ../vf-<task> <branch>`. Then,
-yourself — trust nothing the builder or the redtest step recorded:
+of the same branch. Clear the path first, because `worktree add` onto a
+directory that already exists is fatal and a resumed run finds the one you made
+last time:
 
-- Run every test in tests.md with the named command. A skip is a fail.
+```
+git worktree remove --force ../vf-<task> 2>/dev/null
+git worktree add --detach ../vf-<task> <branch>
+```
+
+**The test command.** Run the one the dispatch names, exactly as it names it,
+with two substitutions and no others: `<TestName>` becomes the name of the test
+you are running, `<module dir>` becomes the directory of the module that holds
+it. Anchor the name — `-run '^<TestName>$'`. A run is green only if its output
+contains `--- PASS: <that test name>`; `no tests to run`, `no test files`, and
+a summary `ok` with no such line are failures, not passes. A name that matches
+nothing prints `PASS` and exits 0, so the exit code decides nothing — the
+`--- PASS:` line does, and its absence is a BLOCK on its own.
+
+Then, yourself — trust nothing the builder or the redtest step recorded:
+
+- Run every test in tests.md with the named command. A skip is a fail, and so
+  is a test that never ran.
 - For each test, break the behaviour it guards, confirm it goes red, restore.
   A test that stays green while its behaviour is broken is an inert guard,
   and the task is BLOCKED on that alone.

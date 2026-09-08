@@ -30,7 +30,7 @@ a step genuinely cannot decide.
 | 6 | current state | `state` | sonnet | cuts the task worktree from `pipeline/<f>`; `tasks/<t>/state.md`, committed there |
 | 7 | red tests | `redtest` | opus | test files, `tasks/<t>/tests.md`, committed on the task branch |
 | 8 | plan | `planner` | opus | `tasks/<t>/plan.md`, committed |
-| 9 | build | `builder` | opus | the task branch `pipeline/<f>/<t>`, gate green |
+| 9 | build | `builder` | opus | the task branch `pipeline/<f>--<t>`, gate green |
 | 10 | review | `code-reviewer` (fix-code's nine lenses) ∥ `verifier` (mutations, gate, rulings, touched files) | opus ×2 | `tasks/<t>/verdict.md`; PASS needs both; **neither merges** |
 | 11 | merge | `merger` | haiku | merges every passed task branch into `pipeline/<f>`, one at a time, in landing order |
 | 12 | feature | `featureverify` | sonnet | `features/<f>/verdict.md` — the journey end to end, every fitness test, every task's tests together, the gate; on PASS, the one push if config permits |
@@ -43,9 +43,14 @@ tree per agent is the only thing that stops two tasks eating each other's
 commits. 11 runs once, after every task has passed, and merges serially. 12
 runs once after that. 13 and 14 run after the owner merges and deploys.
 
-Branches: `main` → `pipeline/<feature>` → `pipeline/<feature>/<task>`. The
-feature is the unit that ships and the unit that gets the end-to-end and
-fitness tests. Merging the feature to the default branch is the owner's.
+Branches: `main` → `pipeline/<feature>` → `pipeline/<feature>--<task>`. The
+task branch sits *beside* the feature branch, not under it: git stores
+`refs/heads/pipeline/<feature>` as a file, so a branch named
+`pipeline/<feature>/<task>` would need that same path to be a directory, and
+`git worktree add -b` refuses with `cannot lock ref … exists`. The `--`
+separator is what keeps both alive at once. The feature is the unit that ships
+and the unit that gets the end-to-end and fitness tests. Merging the feature to
+the default branch is the owner's.
 
 Every review diffs against the branch its work was cut from: a task against
 `pipeline/<feature>`, the feature against the default branch. Diffing a task
@@ -72,8 +77,11 @@ green or not, the other merges a named list in a named order.
 decisions: <absolute path to the rulings file>
 requirements: <absolute path to what must be true>
 gate: <the command that must be green before anything ships>
-test: <the command that runs one named test, with any env it needs — run from
-       the directory that holds the test if this repo has more than one module>
+test: <the command that runs one named test, with any env it needs. Write the
+       test's name in it as the literal <TestName>, and if this repo has more
+       than one module write the directory as the literal <module dir> — every
+       step that runs it is told to substitute both and change nothing else.
+       Anchor the name so a prefix cannot match a neighbour.>
 entry: <the program's entry points, comma-separated>
 stub: <where the local end-to-end environment lives, if any>
 live: <a command that asks production whether it is healthy, if any>
@@ -111,11 +119,19 @@ with `confirmTasks: false`; every finished step returns cached.
 directory and returns its first line. The run stops. `/software` relays the
 file's three lines to the owner and passes their one-line answer back as an
 argument on the next run — `answers: { "<feature>": "<line>" }`, or
-`answers: { "<feature>/<task>": "<line>" }` for a task-level block. Nobody
-edits `BLOCKED.md` to deliver an answer: a finished call is cached by its
-prompt, so an answer that is not in the prompt never re-runs the step that
-asked. The answer goes into that one step's prompt, that one step re-runs, it
-deletes the file, and everything before it stays cached.
+`answers: { "<feature>/<task>": "<line>" }` for a task-level block —
+**together with `answerStep`, the step name the runner returned beside the
+key** (`answerStep: "breakdown"`, `"plan"`, `"merge"`, …). Nobody edits
+`BLOCKED.md` to deliver an answer: a finished call is cached by its prompt, so
+an answer that is not in the prompt never re-runs the step that asked.
+
+Both halves matter, because a changed prompt re-runs that call *and everything
+after it*. The key alone is one per level, and every dispatch at that level
+carries it — so a key-only answer would change the level's first prompt and
+re-run the whole level behind it. The key **and** the step reach exactly one
+dispatch. So: that one step re-runs, it deletes the file, and everything before
+it stays cached. Send the key without the step and nothing re-runs at all; the
+cached BLOCK comes straight back.
 
 **A halt with no `BLOCKED.md` and no `verdict.md` means the agent died.** The
 runner says so, and names the paths where those files would have been.

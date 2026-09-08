@@ -39,10 +39,20 @@ Per-task files go with it; there is no separate per-task cleanup. The index
 line and the kept spec are the only records: the map from a feature to the
 tests that prove it, and what the feature was for.
 
-Then remove the worktrees the run used — the feature worktree and each task
-worktree the dispatch names: `git worktree remove <path>` for each, then
-`git worktree prune`. A worktree left behind holds a branch checked out and the
-next run's `worktree add` refuses.
+Then remove **every** worktree path the dispatch names — the feature worktree,
+each task worktree, and each verifier worktree (`vf-<feature>-<task>`), which
+the verifier creates and nobody else retires:
+
+```
+git worktree remove --force <path>
+```
+
+for each, then `git worktree prune`. `--force` is not optional: a task
+worktree still holds the untracked `verdict.md` the verifier wrote into it, and
+without the flag the command dies with `contains modified or untracked files`.
+`prune` alone does not help — it removes the registration, never a directory
+that still exists, and a directory that still exists is what makes the next
+run's `worktree add` refuse.
 
 Never delete tests, rulings files, config.md, `_shipped.md`, the kept specs
 under `spec/`, the lens history, the triage rules, the templates, or anything
