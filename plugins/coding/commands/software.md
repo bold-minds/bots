@@ -135,8 +135,28 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    and cost nothing. If they said earlier not to be asked, pass `confirmTasks:
    false` from the start.
 
-   **On a block** it comes back with the question: relay the three lines from
-   the named `BLOCKED.md` verbatim, and pass their one-line answer back on the
+   **On a block** it comes back with the question. Where the question is is
+   what `blocks[].blockedPath` tells you, and there are two kinds:
+
+   - **An owner block** — a step asked the owner something. `blockedPath` names
+     the file. Relay its three lines verbatim.
+   - **A rework halt** — the two reviews ran out of rework passes without
+     either of them asking the owner anything. `blockedPath` is `null` because
+     **no step wrote a `BLOCKED.md`**; the whole record is
+     `blocks[].codeReview` and `blocks[].verify`, the last two review texts.
+     Relay what those two say the builder could not settle, in the owner's
+     terms, and ask the one question that decides it. Never send them looking
+     for a file that was never written.
+
+   A rework halt's `answerStep` is the **builder's** last rework step
+   (`rework-2`), not a review step. Both reviews may be blocking, and a review
+   step carries the ruling to only one of them — the other would re-run
+   unchanged, block again, and the resume would 2-cycle forever. The builder is
+   the one place that fixes both halves; both reviews sit after it and re-run
+   live on what it did. Pass the `answerStep` back exactly as the result gave
+   it and this happens on its own.
+
+   Either way, relay the question and pass their one-line answer back on the
    next run as an argument — `answers: { "<feature>": "<their line>" }`, or
    `answers: { "<feature>/<task>": "<their line>" }` for a task-level block —
    **plus `answerStep`, copied from the `answerStep` the result returned beside
@@ -144,7 +164,8 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    the key alone reaches every step at that level and re-runs the lot, and the
    runner ignores an answer whose step is missing, so the cached block comes
    straight back. With the step, exactly one prompt changes, that step re-runs
-   and deletes the file, and everything before it stays cached. Never write the
+   with the ruling in front of it — deleting its `BLOCKED.md` if there was one
+   — and everything before it stays cached. Never write the
    answer into `BLOCKED.md`: a finished step is cached by its prompt, so an
    answer that is not in the prompt never re-runs the step that asked. Note in
    the spec's "Open questions" that it was answered, one line. Never start a
@@ -152,17 +173,29 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
 
    **When it passes** it returns the feature branch and, if the config's
    `push:` line permits, the remote ref — one push per feature. The owner
-   merges to the default branch. After they merge, dispatch `coding:cleaner`
-   with three things: the feature directory `<root>/.claude/pipeline/features/<name>`,
-   the pipeline directory `<root>/.claude/pipeline`, and **every** worktree path
-   to remove — `<root>/../wt-<name>`, every `<root>/../wt-<name>-<task>`, and
-   every `<root>/../vf-<name>-<task>`, the detached worktree each task's
-   verifier cuts. Name the `vf-` ones explicitly: nothing else removes them,
-   `git worktree prune` leaves a directory that still exists, and the next run's
-   `worktree add` on that path is fatal. The cleaner then sweeps
-   `<root>/../vf-*<name>*` itself, for any a verifier cut under a name nobody
-   passed it, and prints what the sweep found — including that it found nothing,
-   which is the only thing that says the sweep ran. It moves the spec to
+   merges to the default branch.
+
+   **Before that merge, the owner runs the gate in absolute mode — no
+   `GATE_BASE` — on the feature branch.** Everything inside the pipeline ran in
+   delta mode, so this is the first run that judges the whole repo, and it is
+   the owner's by design. A red here is not this task's and not this feature's:
+   it is the backlog's, and the merge waits for the feature that owns it.
+
+   After they merge, dispatch `coding:cleaner` with five things: the **feature
+   name** `<name>`, the feature directory
+   `<root>/.claude/pipeline/features/<name>`, the pipeline directory
+   `<root>/.claude/pipeline`, the **worktree directory** `<root>/..` — the one
+   the worktrees sit in — and **every** worktree path to remove:
+   `<root>/../wt-<name>`, every `<root>/../wt-<name>-<task>`, and every
+   `<root>/../vf-<name>-<task>`, the detached worktree each task's verifier
+   cuts. Name the `vf-` ones explicitly: nothing else removes them, `git
+   worktree prune` leaves a directory that still exists, and the next run's
+   `worktree add` on that path is fatal. The name and the directory are what
+   the cleaner's own sweep is made of — it then sweeps
+   `<root>/../vf-<name>-*` and `<root>/../wt-<name>-*`, anchored on the name
+   and never `*<name>*`, for any tree a run left under a path nobody passed it,
+   and prints what the sweep found — including that it found nothing, which is
+   the only thing that says the sweep ran. It moves the spec to
    `<root>/spec/<name>.md` and commits it; the rest of the feature directory
    goes. **Then it deletes the branches** — `pipeline/<name>` and every
    `pipeline/<name>--<task>` — which is why it runs only after the merge: the

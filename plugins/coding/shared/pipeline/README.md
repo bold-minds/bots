@@ -155,8 +155,20 @@ owner's. So when either review comes back BLOCK, both review texts go back to
 `builder` as "fix these, then re-run the gate", in the same task worktree on
 the same branch, and both reviews then run again on the branch as it stands.
 Twice at most (`REWORK_MAX`); after that the run halts to the owner carrying
-the last two review texts in the block record, which are the whole account of
-it, because a rework block writes no `BLOCKED.md`. The exception is a block
+the last two review texts in the block record — `blocks[].codeReview` and
+`blocks[].verify` — which are the whole account of it, because a rework block
+writes no `BLOCKED.md`. `blocks[].blockedPath` is `null` there, and that null
+is how the two halts are told apart: a path means there is a file to read, and
+its absence beside a path means the agent died.
+
+**That halt's `answerStep` is the builder's last rework step**, `rework-2`, not
+either review's. Both reviews can be blocking at once, and a review step
+carries the owner's ruling to one of them only: the other re-runs unchanged on
+the resume, blocks again on what it blocked on before, and the run 2-cycles
+forever. The builder is the single place that can fix both halves, so the
+ruling goes to its last dispatch — and because a changed prompt re-runs that
+call and everything after it, both reviews then run again, live, on the branch
+as the builder has just left it. The exception is a block
 only the owner can settle: the reviewer puts `BLOCKED:` on its **first** line,
 `triage.md`'s shape, and that one skips the loop and halts at once — no build
 pass answers a question about a promise to a customer. A dead agent halts too;
@@ -164,8 +176,11 @@ there is nothing to hand back. Each round's dispatches carry their own step
 names — `code-review-1`, `review-1`, `rework-1` — so an answer keyed to one
 round re-runs that round alone and every call before it stays cached.
 
-**A halt with no `BLOCKED.md` and no `verdict.md` means the agent died.** The
-runner says so, and names the paths where those files would have been.
+**A halt whose `blockedPath` is set, with no `BLOCKED.md` and no `verdict.md`
+at those paths, means the agent died.** The runner says so, and names the paths
+where those files would have been. A halt whose `blockedPath` is `null` is the
+rework halt above — nothing died, nothing wrote a file, and the record is the
+two review texts.
 
 ## Rules every agent follows
 

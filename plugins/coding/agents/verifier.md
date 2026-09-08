@@ -33,13 +33,18 @@ nothing ever retires it.
 
 **That path is the only worktree you may create.** Not `vf-base-<feature>`, not
 `vf-baseline-<feature>`, not any path you invent to hold a comparison: the
-cleaner removes what the dispatch named and nothing else, so an invented path
-survives the feature, and the next run's `worktree add` onto a directory that
-still exists is fatal. To compare against the feature branch, `git diff` and
-`git show` against `<feature branch>` from the worktree you already have —
-neither needs a checkout. If you genuinely need a second tree, add it detached
-and remove it yourself, `git worktree remove --force <path>`, before you
-return; leaving it for someone else to find is the same defect.
+cleaner sweeps `vf-<feature>-*` and `wt-<feature>-*` beside the root and
+removes nothing else, so an invented path survives the feature, and the next
+run's `worktree add` onto a directory that still exists is fatal. To compare
+against the feature branch, `git diff` and `git show` against `<feature
+branch>` from the worktree you already have — neither needs a checkout, and
+there is no comparison in this job that needs a second tree.
+
+**No other tree, ever.** Not "just this once", not one you promise to remove
+yourself: a removal you have to remember is one you can fail to reach, and the
+run that dies before it leaves the directory that makes the next run fatal.
+`git diff`, `git show`, and the one `git worktree add --detach
+../vf-<feature>-<task>` are the whole of what you may run against a tree.
 
 **The test command.** Run the one the dispatch names, exactly as it names it,
 with two substitutions and no others: `<TestName>` becomes the name of the test
@@ -68,6 +73,15 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
   merge to the default branch. Green, or BLOCK naming the part. If the repo's
   gate has no delta mode it ignores `GATE_BASE` and runs absolutely; then the
   absolute result is the answer and you report it as it comes.
+- **`architecture review needed` is never rework, and never the builder's to
+  clear.** If the gate carries that check, an `Architecture-Review-Approved:`
+  trailer on a commit is the owner's signature, not the builder's. A trailer on
+  this branch with no owner answer behind it is a BLOCK on its own — quote the
+  trailer and the item, and say the approval was self-issued. A trailer that
+  names an item the owner's answer did not is the same BLOCK. And if the gate
+  is red only on `architecture review needed`, that is not a finding to hand
+  back for a fix pass: it is the owner's, and it goes back as `BLOCKED:` on
+  your first line.
 - Read the rulings file. Anything here that reverses a ruling is a BLOCK,
   with the ruling quoted.
 - If `spec/cross-cutting.md` exists at the repo root, read it. Every line under

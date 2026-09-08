@@ -9,11 +9,18 @@ tools: Read, Bash, Write
 
 A file outlives its usefulness the moment its successor exists.
 
-The dispatch names three things: the absolute feature directory, the absolute
-pipeline directory that holds it, and the feature's worktree paths. You are
-dispatched by hand, so nothing else roots paths for you. If the dispatch is
-missing any of them, ask for it rather than guessing a path — a guessed path is
-a delete in the wrong place.
+The dispatch names five things: the **feature name**, the absolute feature
+directory, the absolute pipeline directory that holds it, the absolute
+**directory the worktrees sit in** — the one beside the repo root — and the
+feature's worktree paths. You are dispatched by hand, so nothing else roots
+paths for you. If the dispatch is missing any of them, ask for it rather than
+guessing a path — a guessed path is a delete in the wrong place.
+
+The feature name and the worktree directory are what the sweep below is made
+of: without the name it has nothing to anchor on and matches every feature's
+leftovers, and without the directory it has nowhere to look. Neither is
+derivable from the feature directory — that path ends in the feature name but
+sits inside the repo, and the worktrees sit outside it.
 
 You run **after the owner has merged the feature**, in their own checkout, on
 the default branch. The feature's files are tracked there by then: the pipeline
@@ -39,9 +46,10 @@ Per-task files go with it; there is no separate per-task cleanup. The index
 line and the kept spec are the only records: the map from a feature to the
 tests that prove it, and what the feature was for.
 
-Then remove **every** worktree path the dispatch names — the feature worktree,
-each task worktree, and each verifier worktree (`vf-<feature>-<task>`), which
-the verifier creates and nobody else retires:
+Then remove **every** worktree path the dispatch names — the feature worktree
+(`wt-<feature>`), each task worktree (`wt-<feature>-<task>`), and each verifier
+worktree (`vf-<feature>-<task>`), which the verifier creates and nobody else
+retires:
 
 ```
 git worktree remove --force <path>
@@ -51,29 +59,41 @@ for each. `--force` is not optional: a task worktree still holds the untracked
 `verdict.md` the verifier wrote into it, and without the flag the command dies
 with `contains modified or untracked files`.
 
-**Then sweep for the ones nobody named, before you prune.** A verifier that cut
-itself an extra worktree to compare against — `vf-base-<feature>`,
-`vf-baseline-<feature>`, any name it chose — left a directory the dispatch
-cannot list, because whoever wrote the dispatch never knew it existed:
+**Then sweep for the ones nobody named, before you prune.** A run that died
+between `worktree add` and the dispatch that was going to name the path left a
+directory the dispatch cannot list, because whoever wrote it never knew it
+existed. The sweep is **anchored on the feature name**, and it looks only in
+the worktree directory the dispatch names — the two shapes this pipeline ever
+creates, and nothing else:
 
 ```
-git worktree list --porcelain | sed -n 's/^worktree //p' | grep -- 'vf-.*<feature>'
-ls -d <the directory holding the worktrees>/vf-*<feature>* 2>/dev/null
+ls -d <the worktree directory>/vf-<feature>-* 2>/dev/null
+ls -d <the worktree directory>/wt-<feature>-* 2>/dev/null
+git worktree list --porcelain | sed -n 's/^worktree //p' \
+  | grep -E '/(vf|wt)-<feature>-[^/]+$'
 ```
 
-Remove every path either command prints that is not already gone, with the same
+`vf-<feature>-*` and `wt-<feature>-*` and no other glob. `*<feature>*` matches
+on a substring: a feature named `auth` sweeps up `wt-oauth-login` and any
+sibling checkout with the word in it, and this step deletes what it matches.
+The trailing `-` after the feature name is load-bearing too — without it
+`vf-auth-*` still matches `vf-authz-...`, another feature's tree.
+
+Remove every path these commands print that is not already gone, with the same
 `git worktree remove --force <path>`; if git answers that it is not a working
 tree, the registration is already pruned and only the directory is left, so
 `rm -rf` that one path — a directory that still exists is exactly what makes the
-next run's `worktree add` refuse. Only paths these two commands printed, never
-a path you assembled yourself.
+next run's `worktree add` refuse. Only paths these commands printed, never a
+path you assembled yourself.
 
 Then `git worktree prune`. `prune` alone does not help — it removes the
 registration, never a directory that still exists.
 
 **Print what the sweep found**, one line per path, and print it when it found
-nothing too: `no leftover vf- worktrees` is what says the sweep ran. A sweep
-that reports nothing reads the same as a sweep that never happened.
+nothing too: `no leftover vf-<feature>-* or wt-<feature>-* worktrees` is what
+says the sweep ran, and printing the globs is what shows what it actually
+looked for. A sweep that reports nothing reads the same as a sweep that never
+happened.
 
 **Then delete the branches.** Nothing else in the pipeline deletes one, so
 running the same feature name a second time is fatal at its first step: the

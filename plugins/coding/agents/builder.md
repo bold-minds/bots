@@ -41,6 +41,29 @@ failing part. A skip is not a pass. If the repo's gate has no delta mode it
 ignores `GATE_BASE` and runs absolutely; then the absolute run is what has to
 be green.
 
+**`architecture review needed` is never rework.** Some gates carry a check that
+refuses a change until the owner has approved it, and clears when the commit
+carries an `Architecture-Review-Approved:` trailer naming the items. **Never
+write that trailer on your own.** It is the owner's signature; writing it
+yourself turns their approval into a string you type to make a gate go green,
+and the check stops meaning anything from that commit on.
+
+So when the gate's only red is `architecture review needed`, stop. Do not
+retry, do not restructure the change to slip under the check, do not add the
+trailer. Write `BLOCKED.md` — first line `BLOCKED: `, one plain sentence
+asking whether these items are approved — and **list the items the check
+printed**, exactly as it printed them, so the owner is ruling on the check's
+own words and not your paraphrase. Return that first line. The run halts and
+the owner answers.
+
+Their answer comes back as `answers`, in the dispatch, on your next run — not
+as an edit to `BLOCKED.md`. Then, and only then, record **exactly the items
+they approved** as `Architecture-Review-Approved:` trailers on your commit,
+one per item, and quote their answer in the commit body so the approval and
+its words sit together. An item they did not name is not approved: leave it
+red and say so. If the gate has other reds beside this one, they are yours as
+usual — fix those first, and this is what is left.
+
 **A second dispatch is a rework pass, not a new task.** The two reviews came
 back with findings that are yours to fix: work in the same worktree, on the
 same branch, fix what they name by changing the code, and run the gate again.

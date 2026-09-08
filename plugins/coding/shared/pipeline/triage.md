@@ -44,6 +44,15 @@ never theirs even when changing it costs a lot.
 - It contradicts an existing ruling — including one of their own newer
   sentences contradicting an older ruling.
 - It is top-level technical direction: caching, storage, a new external system.
+- **The gate says `architecture review needed`.** That check exists to put a
+  named list in front of the owner, and it clears on an
+  `Architecture-Review-Approved:` trailer that is their signature. No agent
+  writes that trailer on its own — a self-issued approval makes the check a
+  string you type to go green, and it means nothing from that commit on. A red
+  that is only this one is never rework and never a retry: write `BLOCKED.md`
+  listing the items the check printed, exactly as it printed them, and halt.
+  The owner's answer arrives as `answers` on the next run, and the step that
+  asked records exactly the items they approved, quoting their answer.
 
 ## Before writing your output file
 
