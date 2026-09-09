@@ -9,9 +9,11 @@ Call the Workflow tool with this script, verbatim, and `args` as a JSON object
 holding: `feature`, `root`, `plugin` (this plugin's root), `featureTree` (the
 worktree sitting on the feature branch), `decisions`, `requirements`, `gate`,
 `test`, and optionally `entry`, `stub`, `defaultBranch`, `answers`,
-`answerStep`, and `confirmTasks` (default true: the run stops after breakdown
-and returns the task list; the owner reads it; resume with
-`confirmTasks: false`).
+`answerStep`, `confirmTasks` (default true: the run stops after breakdown
+and returns the task list; the owner reads it) and `startAt` (`"tasks"`: a new
+run that skips the front half and builds the task list an earlier run
+committed on the feature branch, which is how the owner's approval is acted on
+from a fresh session).
 
 `/software` supplies them. Before the first run it creates the feature branch
 `pipeline/<feature>` from the default branch **and a worktree on it**, and
@@ -33,7 +35,8 @@ cached.
 
 Keep the `runId` and `scriptPath` from every result. Resume with the **same
 args object**, plus `answers` + `answerStep` and `confirmTasks: false` as
-needed.
+needed (the confirm stop itself, from a fresh session, needs a new run with
+`startAt: "tasks"`).
 
 ```js
 export const meta = {
@@ -150,7 +153,7 @@ const count = (m) => { tally[m] = (tally[m] || 0) + 1 }
 // an agent at BLOCKED.md in either case sends it looking for something that was
 // never written, and telling it to delete that file is an instruction it cannot
 // carry out.
-const stepHasNoBlockFile = (step) => /^rework(?:-\d+)?$/.test(String(step || '')) || step === 'after'
+const stepHasNoBlockFile = (step) => /^rework(?:-\d+)?$/.test(String(step || '')) || step === 'after' || step === 'tasklist'
 const ANSWER = (key, step) => !(A.answers && A.answers[key] && A.answerStep === step) ? ''
   : stepHasNoBlockFile(step)
     ? `The owner has ruled on the question this step raised: "${A.answers[key]}". Apply it as a ruling. Delete BLOCKED.md only if one is actually there — this step writes none. `
@@ -159,6 +162,23 @@ const BLOCK_RULE = (where) =>
   `If ${where}/BLOCKED.md is already there and no ruling above names it, the owner has not answered yet: return its first line and change nothing — a resume re-runs every step after the one that changed, this one included. If you must stop per ${TRIAGE}, write ${where}/BLOCKED.md — first line "BLOCKED: <one plain sentence>", then your best default in one sentence, drawn from the nearest existing thing in this repo and naming it, then what changes if the owner says otherwise — and return that first line as your whole result.`
 const FEATURE_BLOCK = (b, step) => ({ blocked: b, blockedPath: `${dir}/BLOCKED.md`, answerKey: f, answerStep: step, dispatches: tally })
 
+// A run may start at the tasks. The front half stops at the task list for the
+// owner, and a resume cannot cross sessions, so the run that builds is a new
+// one: startAt: 'tasks' skips plan, lenses, pre-mortem and breakdown and reads
+// the task directories the earlier run committed on the feature branch.
+let tasks
+if (A.startAt === 'tasks') {
+  count('haiku')
+  const listed = await agent(
+    `${ANSWER(f, 'tasklist')}List the directory names under ${dir}/tasks, one bare name per line, nothing else: no bullets, no backticks, no trailing slash. Ignore files such as coverage.md. If the directory does not exist, return the single word NONE.`,
+    { agentType: 'coding:breakdown', phase: 'Break down', label: 'tasks: already cut', model: 'haiku' })
+  if (bad(listed)) return { halted: 'Break down', ...FEATURE_BLOCK(listed || 'BLOCKED: the agent listing the task directories died before returning them', 'tasklist'), blockedPath: null }
+  // Landing order is the number in the name; a directory listing promises no
+  // order of its own, and the merge step is handed this order as the truth.
+  tasks = listed.split('\n').map(s => s.trim().replace(/^[-*`\s]+|[`/:\s]+$/g, '')).filter(s => /^[0-9]{2}-[a-z0-9-]+$/.test(s)).sort()
+  if (!tasks.length) return { halted: 'Break down', ...FEATURE_BLOCK(`BLOCKED: startAt is "tasks" but no task directory names came back from ${dir}/tasks. The listing returned: ${listed.slice(0, 200)}`, 'tasklist'), blockedPath: null }
+  log(`tasks: ${tasks.length}, already cut`)
+} else {
 phase('Plan')
 count('opus')
 const fp = await agent(
@@ -187,12 +207,13 @@ if (bad(pm)) return { halted: 'Pre-mortem', ...FEATURE_BLOCK(pm || 'BLOCKED: the
 phase('Break down')
 count('opus')
 const bdText = await agent(
-  `${ANSWER(f, 'breakdown')}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md, ${dir}/premortem.md, ${A.requirements}${RULES ? `, ${RULES}` : ''} and ${A.decisions}. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, each with its Success line filled in: at most five tasks, every one a thing the owner or a customer can see working when it is done, none that exists only to serve another task (a harness, a library, a recording, a stand-in, a test environment is part of the task that first needs it, never a task), the Success line one plain sentence of at most twenty words${RULES ? `, and the "Asked on every slice" list in ${RULES} answered inside the tasks it touches, never as a task` : ''}. The task carrying the plan's journey is marked "Journey: yes"; the plan's structural rules go into that task's "Structural rules". A task that cannot start until another task's work exists — the package, the file, the table it builds on is created by that one, and a worktree cut from ${FB} does not have it — carries one "After: <that task's directory name>" line, at most one name and always a lower-numbered task; most tasks carry none. Every rule must land in a task: if ${SPEC} exists it is the feature's binding spec and every numbered rule in it (S<slice>.<n>)${RULES ? `, and every numbered line of the "Asked on every slice" list in ${RULES} (X<n>),` : ''} is named on the "Rules:" line of the task that satisfies it; write ${dir}/tasks/coverage.md from ${TPL('coverage')}, one row per rule, and a rule with no task and no "deferred" mark in the spec itself is a BLOCKED, not a row. Then delete the lens-*.md and premortem.md files. Then, in ${FT}, git add the feature directory — the new task files, coverage.md and the deletions — and commit it. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'breakdown')}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md, ${dir}/premortem.md, ${A.requirements}${RULES ? `, ${RULES}` : ''} and ${A.decisions}. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, each with its Success line filled in: at most five tasks, every one a thing the owner or a customer can see working when it is done, none that exists only to serve another task (a harness, a library, a recording, a stand-in, a test environment is part of the task that first needs it, never a task), the Success line one plain sentence of at most twenty words${RULES ? `, and the "Asked on every slice" list in ${RULES} answered inside the tasks it touches, never as a task` : ''}. The task carrying the plan's journey is marked "Journey: yes"; the plan's structural rules go into that task's "Structural rules". A task that cannot start until another task's work exists — the package, the file, the table it builds on is created by that one, and a worktree cut from ${FB} does not have it — carries one "After: <that task's directory name>" line, at most one name and always a lower-numbered task; most tasks carry none. Every rule must land in a task: if ${SPEC} exists it is the feature's binding spec and every numbered rule in it (S<slice>.<n>)${RULES ? `, and every numbered line of the "Asked on every slice" list in ${RULES} (X<n>),` : ''} is named on the "Rules:" line of the task that satisfies it; write ${dir}/tasks/coverage.md from ${TPL('coverage')}, one row per rule, and a rule with no task and no "deferred", "working rule" or "runbook item" mark in the spec itself is a BLOCKED, not a row; "plan only" and "note" are not places, so a rule no test would catch becomes a fitness test in some task or a halt. Then delete the lens-*.md and premortem.md files. Then, in ${FT}, git add the feature directory — the new task files, coverage.md and the deletions — and commit it. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:breakdown', phase: 'Break down' })
 if (bad(bdText)) return { halted: 'Break down', ...FEATURE_BLOCK(bdText || 'BLOCKED: the breakdown agent died before writing any task', 'breakdown') }
-const tasks = bdText.split('\n').map(s => s.trim()).filter(s => /^[0-9]{2}-[a-z0-9-]+$/.test(s))
+tasks = bdText.split('\n').map(s => s.trim()).filter(s => /^[0-9]{2}-[a-z0-9-]+$/.test(s))
 if (!tasks.length) return { halted: 'Break down', ...FEATURE_BLOCK(`BLOCKED: breakdown returned no task names. It returned: ${bdText.slice(0, 200)}`, 'breakdown') }
 log(`tasks: ${tasks.length}`)
+}
 
 // A task may carry one "After: <task>" line in its criteria.md — it cannot
 // start until that task's work exists. This script has no filesystem, so one
@@ -258,8 +279,8 @@ if (graphBad.length) {
 }
 log(`waves: ${waves.map((w, i) => `${i + 1} — ${w.join(', ')}`).join(' | ')}`)
 
-if (CONFIRM) {
-  log('stopping for the owner to read the task list — resume with confirmTasks: false')
+if (CONFIRM && A.startAt !== 'tasks') {
+  log('stopping for the owner to read the task list — a new run with startAt: "tasks" builds them')
   return { awaiting: 'confirm', feature: f, tasks, waves, taskDir: `${dir}/tasks`, dispatches: tally }
 }
 

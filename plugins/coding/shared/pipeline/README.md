@@ -158,8 +158,10 @@ It stops twice on purpose, and once when something is wrong.
 **After the breakdown**, the run returns `awaiting: confirm` with the task
 list. `/software` shows the owner one line per task — each task's success
 sentence, in their words — in a single message. That is their check that what
-the pipeline calls success is what they meant. They say go, and the run resumes
-with `confirmTasks: false`; every finished step returns cached.
+the pipeline calls success is what they meant, shown with the coverage table
+that maps every rule to a task. They say go, and a new run with `startAt:
+"tasks"` builds the committed task list (inside the same session, a resume with
+`confirmTasks: false` also works; it cannot cross sessions).
 
 **On BLOCKED**, a step that cannot proceed writes `BLOCKED.md` in its output
 directory and returns its first line. The run stops. `/software` relays the

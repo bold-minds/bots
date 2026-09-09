@@ -137,10 +137,12 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    task list: read each task's `criteria.md` **`Success:` line** and show the
    owner one line per task, in their words, in one message — that is their
    "what counts as success" check, and it is the only time they see the tasks.
-   Then resume: same `scriptPath` and `resumeFromRunId`, **the same args object
-   as the first run**, plus `confirmTasks: false`. Finished steps return cached
-   and cost nothing. If they said earlier not to be asked, pass `confirmTasks:
-   false` from the start.
+   Then, on their word, a new run with the same args plus `startAt: "tasks"`:
+   it skips the front half and builds the task list already committed on the
+   feature branch. (A resume with `resumeFromRunId` and `confirmTasks: false`
+   also works inside the session that ran the front half; it cannot cross
+   sessions.) If they said earlier not to be asked, pass `confirmTasks: false`
+   from the start.
 
    **On a block** it comes back with the question. Where the question is is
    what `blocks[].blockedPath` tells you, and there are two kinds:
