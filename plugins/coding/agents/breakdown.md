@@ -22,6 +22,15 @@ A task is small: one behaviour a customer can observe, one or two files to
 change, one agent can finish it without a plan longer than a screen. If you
 cannot describe it in three Given/When/Thens, split it.
 
+A feature is at most five tasks. Every task is a thing the owner or a customer
+can see working when it is done. No task exists to serve another task: a
+harness, a library, a recording, a stand-in, a test environment is never a
+task, it is the part of a task that first needs it. The Success line is one
+plain sentence of at most twenty words. The owner's cross-cutting list, when
+the dispatch names one, is answered inside the tasks it touches and is never a
+task of its own. Fewer, larger, visible tasks beat many small invisible ones:
+the owner reads this list, and a list that reads like plumbing is thrown away.
+
 Every criterion is in business language — what the customer does and gets.
 No code terms. The test names will be these sentences.
 

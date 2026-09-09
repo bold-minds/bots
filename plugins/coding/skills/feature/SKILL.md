@@ -82,6 +82,9 @@ const TPL = (n) => `${SHARED}/templates/${n}.md`
 const TRIAGE = `${SHARED}/triage.md`
 const ENTRY = A.entry || 'the program\'s main entry points'
 const STUB = A.stub || 'the local end-to-end environment, if the repo has one'
+// The owner's cross-cutting file, when the repo has one: its "Asked on every
+// slice" list is answered inside every feature and is never a task.
+const RULES = A.rules || ''
 const BASE = A.defaultBranch || 'the branch the feature branch was created from'
 const CONFIRM = A.confirmTasks !== false
 // A review BLOCK that is rework goes back to the builder, not to the owner.
@@ -155,14 +158,14 @@ const FEATURE_BLOCK = (b, step) => ({ blocked: b, blockedPath: `${dir}/BLOCKED.m
 phase('Plan')
 count('opus')
 const fp = await agent(
-  `${ANSWER(f, 'plan')}Read ${dir}/spec.md, ${A.requirements}, ${A.decisions}, and enough of the code to know what already exists. Entry points: ${ENTRY}. Write ${dir}/plan.md from ${TPL('featureplan')}. Then, in ${FT} — a worktree already on branch ${FB} — git add the plan and commit it. Return "planned" and nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'plan')}Read ${dir}/spec.md, ${A.requirements}, ${A.decisions},${RULES ? ` ${RULES} — answer its "Asked on every slice" list for this feature inside the plan, one line each —` : ''} and enough of the code to know what already exists. Entry points: ${ENTRY}. Write ${dir}/plan.md from ${TPL('featureplan')}. Then, in ${FT} — a worktree already on branch ${FB} — git add the plan and commit it. Return "planned" and nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:featureplan', phase: 'Plan' })
 if (bad(fp)) return { halted: 'Plan', ...FEATURE_BLOCK(fp || 'BLOCKED: the feature-plan agent died before writing its file', 'plan') }
 
 phase('Lenses')
 const LENSES = [['architecture', 'opus'], ['sre', 'opus'], ['security', 'opus'], ['performance', 'sonnet'], ['database', 'sonnet'], ['qa', 'opus'], ['staff', 'opus']]
 const lenses = await parallel(LENSES.map(([l, m]) => () => { count(m); return agent(
-  `${ANSWER(f, 'lenses')}Lens: ${l}. Read ${dir}/spec.md and ${dir}/plan.md. Load ${SHARED}/lenses/${l}.md; if ${P}/lenses/${l}.md exists, load it too — it is this repo's history for this lens. Nothing about other lenses. Write ${dir}/lens-${l}.md from ${TPL('lens')}. Do not run git: you are one of several lenses writing into ${FT} at the same time, and the next step commits all of your files together. Return the number of findings and nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'lenses')}Lens: ${l}. Read ${dir}/spec.md and ${dir}/plan.md${RULES ? `, and the "Asked on every slice" list in ${RULES}: a plan that leaves one of those unanswered is a finding` : ''}. Load ${SHARED}/lenses/${l}.md; if ${P}/lenses/${l}.md exists, load it too — it is this repo's history for this lens. Nothing about other lenses. Write ${dir}/lens-${l}.md from ${TPL('lens')}. Do not run git: you are one of several lenses writing into ${FT} at the same time, and the next step commits all of your files together. Return the number of findings and nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:lens', phase: 'Lenses', label: `lens: ${l}`, model: m }) }))
 const dead = lenses.findIndex(r => !r)
 if (dead >= 0) return { halted: 'Lenses', ...FEATURE_BLOCK(`BLOCKED: the ${LENSES[dead][0]} lens agent died before writing its file`, 'lenses') }
@@ -173,14 +176,14 @@ log(`lenses: ${LENSES.length} written`)
 phase('Pre-mortem')
 count('opus')
 const pm = await agent(
-  `${ANSWER(f, 'premortem')}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md — there are ${LENSES.length}, one of them the security lens, and its last sentence is written for you — and ${A.decisions}. Write ${dir}/premortem.md from ${TPL('premortem')}. Then, in ${FT}, git add the whole feature directory — your file and every lens file — and commit it. Return the number of kept cases and nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'premortem')}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md — there are ${LENSES.length}, one of them the security lens, and its last sentence is written for you — and ${A.decisions}${RULES ? `, and the "Asked on every slice" list in ${RULES}, each of whose lines is a failure to imagine` : ''}. Write ${dir}/premortem.md from ${TPL('premortem')}. Then, in ${FT}, git add the whole feature directory — your file and every lens file — and commit it. Return the number of kept cases and nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:premortem', phase: 'Pre-mortem' })
 if (bad(pm)) return { halted: 'Pre-mortem', ...FEATURE_BLOCK(pm || 'BLOCKED: the pre-mortem agent died before writing its file', 'premortem') }
 
 phase('Break down')
 count('opus')
 const bdText = await agent(
-  `${ANSWER(f, 'breakdown')}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md, ${dir}/premortem.md, ${A.requirements} and ${A.decisions}. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, each with its Success line filled in. The task carrying the plan's journey is marked "Journey: yes"; the plan's structural rules go into that task's "Structural rules". A task that cannot start until another task's work exists — the package, the file, the table it builds on is created by that one, and a worktree cut from ${FB} does not have it — carries one "After: <that task's directory name>" line, at most one name and always a lower-numbered task; most tasks carry none. Then delete the lens-*.md and premortem.md files. Then, in ${FT}, git add the feature directory — the new task files and the deletions — and commit it. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'breakdown')}Read ${dir}/spec.md, ${dir}/plan.md, every ${dir}/lens-*.md, ${dir}/premortem.md, ${A.requirements}${RULES ? `, ${RULES}` : ''} and ${A.decisions}. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, each with its Success line filled in: at most five tasks, every one a thing the owner or a customer can see working when it is done, none that exists only to serve another task (a harness, a library, a recording, a stand-in, a test environment is part of the task that first needs it, never a task), the Success line one plain sentence of at most twenty words${RULES ? `, and the "Asked on every slice" list in ${RULES} answered inside the tasks it touches, never as a task` : ''}. The task carrying the plan's journey is marked "Journey: yes"; the plan's structural rules go into that task's "Structural rules". A task that cannot start until another task's work exists — the package, the file, the table it builds on is created by that one, and a worktree cut from ${FB} does not have it — carries one "After: <that task's directory name>" line, at most one name and always a lower-numbered task; most tasks carry none. Then delete the lens-*.md and premortem.md files. Then, in ${FT}, git add the feature directory — the new task files and the deletions — and commit it. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:breakdown', phase: 'Break down' })
 if (bad(bdText)) return { halted: 'Break down', ...FEATURE_BLOCK(bdText || 'BLOCKED: the breakdown agent died before writing any task', 'breakdown') }
 const tasks = bdText.split('\n').map(s => s.trim()).filter(s => /^[0-9]{2}-[a-z0-9-]+$/.test(s))

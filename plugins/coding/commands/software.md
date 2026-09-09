@@ -123,8 +123,9 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    --show-toplevel`); `plugin` (`${CLAUDE_PLUGIN_ROOT}`); `featureTree` (the
    worktree path above); `defaultBranch`; and from
    `<root>/.claude/pipeline/config.md`: `decisions`, `requirements`, `gate`,
-   `test`, `entry`, `stub`. Keep the `runId` and `scriptPath` from every
-   result.
+   `test`, `entry`, `stub`, and `rules` when the line is there (the owner's
+   cross-cutting file, whose "Asked on every slice" list every feature
+   answers). Keep the `runId` and `scriptPath` from every result.
 
    **It stops twice on purpose.** After the breakdown it comes back with the
    task list: read each task's `criteria.md` **`Success:` line** and show the
