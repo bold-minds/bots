@@ -6,6 +6,10 @@ any task runs. Not the title again.>
 
 Feature: <feature name>
 From: <the line in spec.md this comes from>
+Rules: <every rule id this task satisfies, from the feature's binding spec
+(S<slice>.<n>) and the owner's cross-cutting list (X<n>), comma separated.
+The coverage table in tasks/coverage.md is built from these lines, and a rule
+no task names halts the feature. A task with no rule behind it does not exist.>
 Journey: yes / no   <exactly one task per feature is "yes"; it gets an
 end-to-end test — one that walks the whole path a customer walks, through the
 real environment, not a unit test>

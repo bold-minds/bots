@@ -112,6 +112,12 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    lines (the feature, what success means, what is not this feature) and wait
    for one word.
 
+   When the run stops at the task list, show the owner the coverage table
+   (`tasks/coverage.md`, one row per rule and the task that carries it) with
+   the Success lines, never the Success lines alone. Claire, 8 Sept: "I'm not
+   going to approve any slice without seeing the mapping of tasks to
+   requirements/rules."
+
    **What it does.** It runs on its own: a feature-level plan, seven technical
    lenses on that plan, a pre-mortem, a breakdown into small tasks, then for
    each task the current state, tests that fail first, a short plan, the build,

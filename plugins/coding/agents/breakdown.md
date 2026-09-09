@@ -31,6 +31,16 @@ the dispatch names one, is answered inside the tasks it touches and is never a
 task of its own. Fewer, larger, visible tasks beat many small invisible ones:
 the owner reads this list, and a list that reads like plumbing is thrown away.
 
+Every rule lands in a task, and the record of it is `tasks/coverage.md`. When
+the dispatch names a binding spec, its numbered rules (S<slice>.<n>) and the
+numbered lines of the owner's cross-cutting list (X<n>) each go on the
+"Rules:" line of the task that satisfies them, and the coverage table has one
+row per rule saying which task and where. A rule with no task, unless the spec
+itself marks it as another slice's, is a BLOCKED naming the rule; never a row
+that says "later". A task whose "Rules:" line is empty has no reason to exist.
+The owner reads the coverage table to know nothing fell between the spec and
+the tasks, so it is complete or it is wrong.
+
 Every criterion is in business language — what the customer does and gets.
 No code terms. The test names will be these sentences.
 
