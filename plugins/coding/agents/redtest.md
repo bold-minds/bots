@@ -101,6 +101,17 @@ Nobody after you may touch a test file or tests.md: the builder's only
 answer to a finding on a test line is BLOCKED, and the verifier fails any
 commit after the plan that reaches one. What you commit is final.
 
+Every row of the task's design.md is a case: one `--- PASS: <Test>/<case>`
+per row in the run's output, the subtest named for the row, under the test of
+the criterion the row serves. A row with no subtest is a case nobody after
+you can add.
+
+Every file you write is held to the repo's own size limits like any other
+file, and the gate's size arm sits behind the tests arm, so a red test hides
+it from you: read the limit from the gate's script and keep every test file
+and every shared setup file under it, split into more files if need be. An
+oversized test file restarts the task from this step.
+
 Commit the tests and tests.md **in the task worktree**: `git add` each by
 path — never `-A`, never `.`, so a stub you forgot cannot ride along — and
 check `git status --porcelain` shows nothing but the staged test files and

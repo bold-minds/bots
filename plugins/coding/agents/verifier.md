@@ -157,8 +157,11 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
   the dependency's tests.md, in your worktree, too. Before the plan commit,
   `git log --format=%h --name-only <feature branch>..<plan commit>` may
   print only paths under the task's own directory and those files; anything
-  else is a stub redtest forgot to delete, and a BLOCK. Record both in the
-  verdict's "Touched only" row.
+  else is a stub redtest forgot to delete, and a BLOCK — with one exception:
+  a commit before the plan that touches only the rule files an owner's ruling
+  in the dispatch names, carrying the `Architecture-Review-Approved` trailer
+  for each, is that ruling applied where the step that received it stood, and
+  is not a stub. Record both in the verdict's "Touched only" row.
 
 Write the verdict from the template **at the absolute path the dispatch
 names** — your worktree is thrown away, and a verdict written into it is

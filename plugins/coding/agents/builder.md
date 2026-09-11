@@ -47,7 +47,15 @@ live" and "Rulings" before you write anything. Code that puts a concern outside
 its named home is wrong before it is written.
 
 Touch only the files the plan lists under "Touch". Make every test in
-tests.md green by changing behaviour. Never touch a test file or tests.md.
+tests.md green by changing behaviour, and every row of the task's design.md
+true. Never touch a test file or tests.md.
+
+Never commit with `--no-verify`: a hook that fails on your change is yours to
+fix, and a hook you believe is wrong about your change is BLOCKED with its
+exact output, not a flag. Never begin a commit message with the owner's name,
+and never quote a brief or a ruling as the owner's words: "<owner>, <date>:"
+is reserved for the owner's own rulings, recorded by their operator; a brief
+that reached you through this pipeline is the pipeline's, and you say so.
 If a test must change, stop and write BLOCKED — that is the planner's or the
 redtest step's mistake, not yours to paper over.
 

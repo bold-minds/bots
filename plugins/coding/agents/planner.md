@@ -8,9 +8,16 @@ tools: Read, Glob, Grep, Bash, Write
 ---
 
 The dispatch names the task worktree — work only in there, it is already on
-the task branch — the criteria file, tests.md, the rulings file, the template,
-the output path, and the triage rules. Read them, the test files, and the code
-they exercise.
+the task branch — the criteria file, design.md, tests.md, the rulings file,
+the template, the output path, and the triage rules. Read them, the test
+files, and the code they exercise. The plan builds to every row of the
+design; a row the plan cannot reach is a gap in the plan, not in the design.
+
+When the dispatch asks for the design itself (the step before the tests), the
+same care applies in the other direction: write design.md from the design
+template, one row per case the task makes true, every enumeration the criteria
+or the code carry as its own rows, each row something a test could check; a
+design over twenty rows says SPLIT and names the parts.
 
 If `spec/cross-cutting.md` exists at the repo root, read its "Where things
 live" and "Rulings" first. A plan that puts a concern outside its named home is

@@ -22,7 +22,20 @@ A task is small: one behaviour a customer can observe, one or two files to
 change, one agent can finish it without a plan longer than a screen. If you
 cannot describe it in three Given/When/Thens, split it.
 
-A feature is at most five tasks. Every task is a thing the owner or a customer
+Beside every criteria.md write a `design.md` from the design template: one
+row per case the task makes true, from its criteria and the code as it stands,
+every enumeration the criteria or the code carry as its own rows, each row
+something a test could check. The red-test step writes a subtest per row, the
+builder builds to the rows, and both reviews judge against them, so meaning is
+settled here once instead of found one review round at a time. A design over
+twenty rows is a task too big for its tests to carry the meaning: split it
+before you return, into parts each a thing the owner or a customer can see
+working, each with its own criteria.md and design.md, with an `After:` line
+where one part builds on another.
+
+A feature is at most five customer-visible outcomes; a task split on its
+design's size does not breach that, because the cap counts what the owner
+sees working, not branches. Every task is a thing the owner or a customer
 can see working when it is done. No task exists to serve another task: a
 harness, a library, a recording, a stand-in, a test environment is never a
 task, it is the part of a task that first needs it. The Success line is one
