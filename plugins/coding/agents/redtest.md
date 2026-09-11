@@ -106,6 +106,13 @@ per row in the run's output, the subtest named for the row, under the test of
 the criterion the row serves. A row with no subtest is a case nobody after
 you can add.
 
+Commit the tests before you run the gate: its delta arms read the merge
+base and see nothing in an uncommitted file, so a lint finding in a test you
+have not committed is invisible until the builder commits, when nobody may
+touch it. A RED on the shape of a line you wrote is fixed in a second commit
+before the plan; commits before the plan may change tests, commits after it
+may not.
+
 Every file you write is held to the repo's own size limits like any other
 file, and the gate's size arm sits behind the tests arm, so a red test hides
 it from you: read the limit from the gate's script and keep every test file
