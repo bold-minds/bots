@@ -106,6 +106,12 @@ per row in the run's output, the subtest named for the row, under the test of
 the criterion the row serves. A row with no subtest is a case nobody after
 you can add.
 
+Before you commit, grep every test file in the package for each string
+literal you wrote: a literal that would then appear three or more times
+across the package's test files, a failure format above all, is named once
+in a shared test helper instead. The linter counts repeats across test files
+and only sees them once the package compiles, which is after you.
+
 Commit the tests before you run the gate: its delta arms read the merge
 base and see nothing in an uncommitted file, so a lint finding in a test you
 have not committed is invisible until the builder commits, when nobody may
