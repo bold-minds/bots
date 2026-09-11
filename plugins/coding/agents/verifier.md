@@ -148,7 +148,15 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
   commit>..<branch> -- <those paths>`, with `^<the dependency branch>` before
   the `--` on an After task and nothing otherwise, must print nothing; a
   commit it prints, on the branch or merged in from a side branch, is a
-  weakened test and a BLOCK, whatever its message says. Then each merge in
+  weakened test and a BLOCK, whatever its message says — with one exception.
+  A commit whose subject begins `tests under the owner's rule:` may change
+  test files and tests.md and nothing else (its `--stat` names no other
+  path): the owner's test rule trims and reshapes tests after the fact. You
+  do not trust that message either: re-prove every row of design.md
+  yourself — each row still has its subtest, each goes red when its
+  behaviour is broken and green when restored — and hold coverage and
+  mutation to the base as the gate does. A row left without a subtest, or a
+  subtest that no longer goes red, is a BLOCK naming it. Then each merge in
   `git log --first-parent --merges --format=%h <plan commit>..<branch>` gets
   `git show --cc <merge> -- <those paths>`, which must show no hunk: git's
   own merge result shows none, a hand edit inside the merge shows the lines.
