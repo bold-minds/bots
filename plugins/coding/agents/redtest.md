@@ -101,6 +101,12 @@ Nobody after you may touch a test file or tests.md: the builder's only
 answer to a finding on a test line is BLOCKED, and the verifier fails any
 commit after the plan that reaches one. What you commit is final.
 
+The owner's test rule, when the cross-cutting file carries one, binds every
+file you write: black box, in an external test package against the module's
+public surface, never inside the package; one scenario or branch per test,
+table-driven where rows share a shape; coverage 80% or more; and the fewest
+tests that achieve those three. A test that adds no scenario is bloat.
+
 Every row of the task's design.md is a case: one `--- PASS: <Test>/<case>`
 per row in the run's output, the subtest named for the row, under the test of
 the criterion the row serves. A row with no subtest is a case nobody after
