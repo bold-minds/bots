@@ -12,9 +12,9 @@ The only command in this plugin. Everything below is model-triggered from its ow
 
 ## Skills
 
-### slice
+### feature
 
-Writes, checks and maintains one slice page: the one-page spec that is also the tests, the PR and the board card. Eight sections, every page, in order (Shows, Journey, Scenarios, Flow, Solution, Observed, References, Changelog); scenarios in the owner's words, each naming a requirement id; observability only in Observed; architecture choices only as ADRs in References; a Changelog for anything after approval. `check.sh` holds the shape mechanically. The owner reads every page before anything is built.
+One feature, from its page to live. First the page: the one-page spec that is also the tests, the PR and the board card. Eight sections, every page, in order (Shows, Journey, Scenarios, Flow, Solution, Observed, References, Changelog); scenarios in the owner's words, each naming a requirement id; observability only in Observed; architecture choices only as ADRs in References; a Changelog for anything after approval. `check.sh` holds the shape mechanically, and the owner reads every page before anything is built. Then, on their go, the pipeline runs unattended: plan, seven lenses, pre-mortem, breakdown, the tasks in waves, one serial merge, the whole feature, one push.
 
 ### write-code
 

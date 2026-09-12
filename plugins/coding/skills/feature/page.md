@@ -1,12 +1,6 @@
----
-name: slice
-description: Write, check and maintain one slice page — the one-page spec that is also the test, the PR and the board card. Use when the owner asks for a slice, a page, a spec for the next step, or when /software needs the next page before the pipeline can run. Eight sections, every page, in order; scenarios in the owner's words, each naming a requirement id; observability only in Observed; architecture choices only as ADRs in References; a Changelog for anything after approval.
-argument-hint: <slice-name>
----
+# The page
 
-# slice
-
-One slice is one page, one PR, one board card. This skill writes the page, checks it mechanically, puts it in front of the owner, and keeps its Changelog after approval. The owner's word on the shape (2026-09-12): "many short docs where each one is very self-contained… a very long list of slices which are all very short to read and for you to implement and for me to skim in a PR. Slow is smooth, and smooth is fast."
+One feature is one page, one PR, one board card; the owner calls it a slice. The `feature` skill writes the page, checks it mechanically, puts it in front of the owner, and keeps its Changelog after approval. The owner's word on the shape (2026-09-12): "many short docs where each one is very self-contained… a very long list of slices which are all very short to read and for you to implement and for me to skim in a PR. Slow is smooth, and smooth is fast."
 
 ## The slice
 
@@ -55,11 +49,11 @@ Nothing else reaches them unless they ask. A question that needs them is one lin
 
 1. **Find the step.** Read the product's requirements file and `<root>/spec/<release>.md`. The next page is the customer's next step or builds on the last live one. Name it in the customer's words.
 2. **Write the page** at `<root>/spec/<nn>-<name>.md` from `template.md`. Scenarios from the requirements file or the owner's words only. Vendors as roles in Components, with the ADR in References.
-3. **Check it:** `bash ${CLAUDE_PLUGIN_ROOT}/skills/slice/check.sh <root>/spec/<nn>-<name>.md`. Fix every line it prints. It checks the eight headings and their order, a requirement id on every scenario, a non-empty Journey, an empty Changelog before approval, no line shared with another page under `spec/`, and no observability vendor named outside Observed.
+3. **Check it:** `bash ${CLAUDE_PLUGIN_ROOT}/skills/feature/check.sh <root>/spec/<nn>-<name>.md`. Fix every line it prints. It checks the eight headings and their order, a requirement id on every scenario, a non-empty Journey, an empty Changelog before approval, no line shared with another page under `spec/`, and no observability vendor named outside Observed.
 4. **Show the owner the page**, whole, in the chat. Wait for their edit or their go. Nothing is built before it.
 5. **Add it to `<root>/spec/<release>.md`** in order, and to the board.
 6. **After approval, every change is a dated Changelog line**, including any two-way-door default the build took.
 
 ## Building on it
 
-`/software` runs the page through the `feature` pipeline: the scenarios are the red tests, the Journey is the feature verify, the board is updated at every step. The board is a Claude artifact, one per product: the ship date and days left in the header; one card per slice with a five-stop track (page, approved, building, in review, live); a dated line per card, replaced never appended; a "waiting on the owner" box. `<root>/spec/<release>.md` is its written form; the two say the same thing.
+On the owner's go, the run in `SKILL.md` §2 takes the page through the pipeline: the scenarios are the red tests, the Journey is the feature verify, the board is updated at every step. The board is a Claude artifact, one per product: the ship date and days left in the header; one card per slice with a five-stop track (page, approved, building, in review, live); a dated line per card, replaced never appended; a "waiting on the owner" box. `<root>/spec/<release>.md` is its written form; the two say the same thing.
