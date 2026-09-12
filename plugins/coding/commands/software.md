@@ -102,10 +102,13 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    git -C <root> worktree add <root>/../wt-<name> -b pipeline/<name> <default branch>
    ```
 
-   if `pipeline/<name>` does not already exist. Write the spec at
-   `<root>/../wt-<name>/.claude/pipeline/features/<name>/spec.md` from
-   `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/templates/spec.md`, in their words,
-   as they talk, and commit it there.
+   if `pipeline/<name>` does not already exist. The spec is the slice page:
+   write it with the `slice` skill at `<root>/spec/<nn>-<name>.md`, run its
+   `check.sh`, show the owner the whole page and wait for their edit or go.
+   Copy the approved page to
+   `<root>/../wt-<name>/.claude/pipeline/features/<name>/spec.md` and commit it
+   there. `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/templates/spec.md` is the old
+   shape and is not used for new features.
 
    Fire the pipeline when two things are true: the spec has their definition of
    success, and they said go — or said earlier not to ask. Otherwise show three

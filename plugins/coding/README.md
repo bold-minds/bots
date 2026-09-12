@@ -12,6 +12,10 @@ The only command in this plugin. Everything below is model-triggered from its ow
 
 ## Skills
 
+### slice
+
+Writes, checks and maintains one slice page: the one-page spec that is also the tests, the PR and the board card. Eight sections, every page, in order (Shows, Journey, Scenarios, Flow, Solution, Observed, References, Changelog); scenarios in the owner's words, each naming a requirement id; observability only in Observed; architecture choices only as ADRs in References; a Changelog for anything after approval. `check.sh` holds the shape mechanically. The owner reads every page before anything is built.
+
 ### write-code
 
 Orchestrates the full code-writing workflow: captures intent, detects the domain (Go, frontend, DevOps, SRE), loads the matching standards, writes the code, and runs every applicable gate in the gauntlet — build, lint, typecheck, tests, coverage, BDD acceptance scenarios, and (for parsers, decoders, money math, permission checks, state machines) mutation testing and fuzzing. A failing gate gets fixed and re-run, never loosened. The gauntlet's tiers and thresholds are defaults the user owns, overridable per project in `builds/<project>/scope.md`.
