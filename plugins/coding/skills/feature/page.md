@@ -36,6 +36,7 @@ Observability appears in Observed and nowhere else on the page.
 - **Every ADR in References is named and approved before the page is approved.**
 - **Any difference between environments is settled before the first page that depends on it.**
 - **Which files a slice may touch is the builder's plan**, never the page.
+- **The template changes only with the owner's approval.** When a page cannot say what it needs inside the eight sections, do not bend the page quietly: write it in the shape it needs, put one line under the title, `Template: proposes <the change, one sentence>`, and show it with the page. Approved, the change lands in `template.md`, `check.sh` and this file in the same commit, and the line comes off the page. Refused, the page is rewritten to fit.
 
 ## The owner reads three times per slice
 
@@ -50,7 +51,7 @@ Nothing else reaches them unless they ask. A question that needs them is one lin
 1. **Find the step.** Read the product's requirements file and `<root>/spec/<release>.md`. The next page is the customer's next step or builds on the last live one. Name it in the customer's words.
 2. **Write the page** at `<root>/spec/<nn>-<name>.md` from `template.md`. Scenarios from the requirements file or the owner's words only. Vendors as roles in Components, with the ADR in References.
 3. **Check it:** `bash ${CLAUDE_PLUGIN_ROOT}/skills/feature/check.sh <root>/spec/<nn>-<name>.md`. Fix every line it prints. It checks the eight headings and their order, a requirement id on every scenario, a non-empty Journey, an empty Changelog before approval, no line shared with another page under `spec/`, and no observability vendor named outside Observed.
-4. **Show the owner the page**, whole, in the chat. Wait for their edit or their go. Nothing is built before it.
+4. **Show the owner the page**, whole, in the chat, with any `Template: proposes` line first. Wait for their edit or their go. Nothing is built before it.
 5. **Add it to `<root>/spec/<release>.md`** in order, and to the board.
 6. **After approval, every change is a dated Changelog line**, including any two-way-door default the build took.
 
