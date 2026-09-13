@@ -2,13 +2,13 @@
 # check.sh <type> <file> [--approved] [--reviewed] [--story <story.md>]
 # One checker for every file the owner reads. Prints one line per defect;
 # exit 0 when the file is clean, 1 when it is not, 2 when it cannot be read.
-#   type        story | trd | coverage | pr | card
+#   type        story | trd | coverage | pr | card | adr
 #   --approved  story: approved, so the Changelog may be non-empty
 #   --reviewed  trd: reviewed, so a 'Reviewed: <date>' line must be there
 #   --story F   coverage: the story whose scenario numbers every row must match
 set -u
 
-type="${1:?usage: check.sh <story|trd|coverage|pr|card> <file> [--approved] [--reviewed] [--story <file>]}"
+type="${1:?usage: check.sh <story|trd|coverage|pr|card|adr> <file> [--approved] [--reviewed] [--story <file>]}"
 page="${2:?usage: check.sh <type> <file>}"
 shift 2
 approved=0; reviewed=0; story=""
@@ -30,7 +30,7 @@ say() { echo "$page: $*"; bad=1; }
 
 # Caps, in lines (card: words after the dash). The owner reads these; a file
 # over its cap is a file that was not cut.
-CAP_STORY=60; CAP_TRD=100; CAP_COVERAGE_ROWS=20; CAP_PR=40; CAP_CARD_WORDS=40
+CAP_STORY=60; CAP_TRD=100; CAP_COVERAGE_ROWS=20; CAP_PR=40; CAP_CARD_WORDS=40; CAP_ADR=25
 # The TRD's cap counts every line, but what the owner reads is the group
 # lines — ten a section at most — so the bullets under them can be many and
 # short, which is the point.
@@ -259,6 +259,25 @@ check_pr() {
   [ "$l" -le "$CAP_PR" ] || say "$l lines; the PR body's cap is $CAP_PR"
 }
 
+check_adr() {
+  head -1 "$page" | grep -qE '^# ADR [0-9]{4} — .+' || say "first line is not '# ADR NNNN — <the decision, one sentence>'"
+  local n; n="$(head -1 "$page" | grep -oE 'ADR [0-9]{4}' | tr -dc '0-9')"
+  [ -n "$n" ] && ! grep -qE "^$n-" <<<"$(basename "$page")" && say "file name does not start with $n-"
+  grep -qE '^Decided: [0-9]{4}-[0-9]{2}-[0-9]{2} \(.+\)$' "$page" || say "no 'Decided: <YYYY-MM-DD> (<who>; <where>)' line"
+  headings_are Decision Why "Reopens if"
+  local sec line
+  for sec in Decision Why "Reopens if"; do
+    [ "$(section "$sec" | grep -cE '^- ' || true)" -gt 0 ] || say "$sec has no bullet"
+    while IFS= read -r line; do
+      [ -z "${line//[[:space:]]/}" ] && continue
+      grep -qE '^- ' <<<"$line" || say "$sec: a line that is not a bullet: ${line}"
+      [ "$(wc -w <<<"$line")" -le 30 ] || say "$sec: a bullet over 30 words: ${line}"
+    done <<<"$(section "$sec")"
+  done
+  local l; l="$(lines)"
+  [ "$l" -le "$CAP_ADR" ] || say "$l lines; an ADR's cap is $CAP_ADR"
+}
+
 check_card() {
   local n; n="$(lines)"
   [ "$n" -eq 1 ] || say "a card is one line; found $n"
@@ -278,6 +297,7 @@ case "$type" in
   coverage) check_coverage ;;
   pr) check_pr ;;
   card) check_card ;;
+  adr) check_adr ;;
   root) echo "$root" ;;   # the repo root the checker resolved for this file; for the self-test
   *) echo "unknown type: $type (story|trd|coverage|pr|card)"; exit 2 ;;
 esac

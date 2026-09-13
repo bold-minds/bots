@@ -43,8 +43,10 @@ TRD from the template:
   means refactoring a large amount of existing code. **You write the ADR
   here**, at `docs/adr/NNNN-<slug>.md`, from the ruling behind it — the
   rulings files, the survey, the attic, a decision the owner has recorded
-  anywhere the dispatch names — as the decision, the date, the reasoning and
-  what reopens it, a screen at most, and add its line to `docs/adr/README.md`.
+  anywhere the dispatch names — from `shared/hil/templates/adr.md` (Decided
+  line; Decision, Why, Reopens if; bullets only; 25 lines), passing
+  `shared/hil/check.sh adr`, and add its line to `docs/adr/README.md`. A
+  deferral is not an ADR: it goes on the requirements file's backlog.
   The owner approves the ADR with the TRD. `ADR pending` is allowed only
   when no ruling exists anywhere, and then it is a BLOCKED question to the
   owner, not a line to leave; `existing, no ADR` is for a thing already in

@@ -116,6 +116,16 @@ expect_fail "card with a made-up state" "card is not" card "$tmp/k2.md"
 { cat "$ex/card.md"; echo "And a second line."; } > "$tmp/k3.md"
 expect_fail "card of two lines" "one line" card "$tmp/k3.md"
 
+# adr: the example passes; a prose line, a missing Reopens, a bad title each fail
+expect_pass "adr" adr "$ex/0001-ci-on-github-actions.md"
+mkdir -p "$tmp/adr"
+{ sed '/^## Why/,$d' "$ex/0001-ci-on-github-actions.md"; echo "## Why"; echo "Because it is cheaper and safer."; sed -n '/^## Reopens if/,$p' "$ex/0001-ci-on-github-actions.md"; } > "$tmp/adr/0001-x.md"
+expect_fail "adr with a prose line" "not a bullet" adr "$tmp/adr/0001-x.md"
+sed '/^## Reopens if/,$d' "$ex/0001-ci-on-github-actions.md" > "$tmp/adr/0001-y.md"
+expect_fail "adr without Reopens if" "expected 3 headings" adr "$tmp/adr/0001-y.md"
+sed 's/^# ADR 0001 — /# /' "$ex/0001-ci-on-github-actions.md" > "$tmp/adr/0001-z.md"
+expect_fail "adr with no number in the title" "first line is not" adr "$tmp/adr/0001-z.md"
+
 # 3. The repo root from inside a linked worktree is the worktree, not nothing.
 repo="$tmp/repo"; git init -q "$repo" && git -C "$repo" commit -q --allow-empty -m init
 git -C "$repo" worktree add -q "$tmp/wt" -b wt 2>/dev/null

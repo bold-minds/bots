@@ -13,6 +13,7 @@ standardized, clear, easy to scan, plain language, and short.")
 | the coverage table | Tasks | `templates/coverage.md` | `check.sh coverage <file> --story <story>` | 20 rows |
 | the PR body | Code Review | `templates/pr.md` | `check.sh pr <file>` | 40 lines |
 | the card | Launched | `templates/card.md` | `check.sh card <file>` | one line, two sentences, 40 words |
+| an ADR | Design, with the TRD | `templates/adr.md` | `check.sh adr <file>` | 25 lines; Decision, Why, Reopens if — bullets only |
 
 `check.sh` prints one line per defect and exits 0 when clean, 1 when not, 2
 when it cannot read the file. The repo root comes from `git rev-parse
