@@ -11,7 +11,7 @@ A feature is one page, one PR, one board card. The owner calls it a slice; same 
 
 ## 1. The page
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/feature/page.md`: the eight sections, the rules, the process, and the owner's three reads. Write the page at `<root>/spec/<nn>-<name>.md` from `template.md`, check it with `check.sh`, show the owner the whole page, and wait for their edit or their go. **Nothing below runs before that.**
+Read `${CLAUDE_PLUGIN_ROOT}/skills/feature/page.md`: the eight sections, the rules, the process, and the owner's three reads. Write the page at `<root>/docs/product/features/<nn>-<name>.md` from `template.md`, check it with `check.sh`, show the owner the whole page, and wait for their edit or their go. **Nothing below runs before that.**
 
 ## 2. The run
 
