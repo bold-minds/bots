@@ -1,17 +1,17 @@
 ---
 name: feature
-description: One feature, from its page to live. First the page — the one-page spec that is also the tests, the PR and the board card; eight sections in the owner's words, checked by check.sh, read by the owner before anything is built. Then, on their go, the pipeline unattended — a feature plan, seven lenses, pre-mortem, breakdown, a stop for the owner to read the task list, then the tasks in waves, each task current-state → red tests → plan → build → review, then one serial merge, then the feature as a whole, then one push. Halts on BLOCKED. Use when the owner asks for a feature, a slice, a page, or the next step; /software calls it with arguments from the repo's .claude/pipeline/config.md.
+description: One feature, from its story to live. First the story — the one-page spec that is also the tests, the PR and the board card; eight sections in the owner's words, one new wire at most, checked by check.sh, read by the owner before anything is built. Then, on their go, the pipeline unattended — a feature plan, seven lenses, pre-mortem, breakdown, a stop for the owner to read the task list, then the tasks in waves, each task current-state → red tests → plan → build → review, then one serial merge, then the feature as a whole, then one push. Halts on BLOCKED. Use when the owner asks for a feature, a slice, a story, or the next step; /software calls it with arguments from the repo's .claude/pipeline/config.md.
 argument-hint: <feature-name>
 allowed-tools: Workflow, Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # feature
 
-A feature is one page, one PR, one board card. The owner calls it a slice; same thing.
+A feature is one story, one PR, one board card. The owner also calls it a slice; same thing.
 
-## 1. The page
+## 1. The story
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/feature/page.md`: the eight sections, the rules, the process, and the owner's three reads. Write the page at `<root>/docs/product/features/<nn>-<name>.md` from `template.md`, check it with `check.sh`, show the owner the whole page, and wait for their edit or their go. **Nothing below runs before that.**
+Read `${CLAUDE_PLUGIN_ROOT}/skills/feature/story.md`: the eight sections, the rules, the process, and the owner's three reads. Write the story at `<root>/docs/product/stories/<nn>-<name>.md` from `template.md`, check it with `check.sh`, show the owner the whole story, and wait for their edit or their go. **Nothing below runs before that.**
 
 ## 2. The run
 

@@ -103,9 +103,9 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    ```
 
    if `pipeline/<name>` does not already exist. The spec is the feature's
-   page: `/feature` §1 writes it at `<root>/spec/<nn>-<name>.md`, runs
-   `check.sh`, shows the owner the whole page and waits for their edit or go.
-   Copy the approved page to
+   story: `/feature` §1 writes it at `<root>/docs/product/stories/<nn>-<name>.md`,
+   runs `check.sh`, shows the owner the whole story and waits for their edit or
+   go. Copy the approved story to
    `<root>/../wt-<name>/.claude/pipeline/features/<name>/spec.md` and commit it
    there. `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/templates/spec.md` is the old
    shape and is not used for new features.
