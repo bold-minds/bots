@@ -135,7 +135,10 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    `<root>/.claude/pipeline/config.md`: `decisions`, `requirements`, `gate`,
    `test`, `entry`, `stub`, and `rules` when the line is there (the owner's
    cross-cutting file, whose "Asked on every slice" list every feature
-   answers). Keep the `runId` and `scriptPath` from every result.
+   answers). A relative path in `config.md` is resolved against `root` before
+   it is passed — every agent runs in its own worktree, and a relative path
+   handed through would resolve somewhere else in each. Keep the `runId` and
+   `scriptPath` from every result.
 
    **It stops twice on purpose.** After the breakdown it comes back with the
    task list: show the owner `tasks/coverage.md` with each task's `criteria.md`
