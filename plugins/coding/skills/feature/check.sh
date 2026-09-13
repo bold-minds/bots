@@ -56,11 +56,6 @@ f="$(section Flow)"
 grep -qE '^Legend:' <<<"$f" || say "Flow has no Legend:"
 grep -qE '^Components:' <<<"$f" || say "Flow has no Components:"
 grep -qE '^[0-9]+\..*(New|Existing)\.?[[:space:]]*$' <<<"$f" || say "Flow has no numbered connection marked New or Existing"
-# One new wire per story: one new service, which may need a connection each
-# way. More than two New connections means a second new service; split.
-newc="$(grep -cE '^[0-9]+\..*[[:space:]]New\.?[[:space:]]*$' <<<"$f" || true)"
-[ "$newc" -gt 2 ] && say "$newc New connections in Flow: one new wire per story, split it"
-
 # 5. Solution, Observed, References are non-empty (a 'None' line counts).
 for sec in Solution Observed References; do
   [ "$(section "$sec" | nonblank)" -gt 0 ] || say "$sec is empty (write 'None new' or 'None' if so)"

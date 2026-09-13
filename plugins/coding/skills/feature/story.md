@@ -6,7 +6,7 @@ One feature is one story, one PR, one board card; the owner also calls it a slic
 
 - One story, one PR, one board card. A slice that needs two PRs is two slices.
 - Every slice is the customer's next step, or builds on a step already live.
-- **One new wire per story.** The first story that touches a new service or piece of infrastructure does the least business it can: it proves that one wire. A story whose Flow lists more than one New connection to a new service is two stories. The stories after it build on that. There are no story types.
+- **Every story is end to end and shows a customer something.** A story is sized by taking business out of it, never by taking an end off it. A story that brings new services or infrastructure carries no business rules: it runs the whole path with the plainest content that proves it (a hello page, a "Got it." reply), and the business stories after it put the content in. There are no story types.
 
 ## The story
 
@@ -51,7 +51,7 @@ Nothing else reaches them unless they ask. A question that needs them is one lin
 Stories live under `<root>/docs/product/`: the requirements file is `docs/product/requirements.md`, the stories are `docs/product/stories/<nn>-<name>.md`, their order is `docs/product/<release>.md`, and ADRs are `docs/adr/`. (Claire, 12 Sept.)
 
 1. **Find the step.** Read `docs/product/requirements.md` and `docs/product/<release>.md`. The next story is the customer's next step or builds on the last live one. Name it in the customer's words.
-2. **Write the story** at `docs/product/stories/<nn>-<name>.md` from `template.md`. Scenarios from the requirements file or the owner's words only. Vendors as roles in Components, with the ADR in References. One new wire.
+2. **Write the story** at `docs/product/stories/<nn>-<name>.md` from `template.md`. Scenarios from the requirements file or the owner's words only. Vendors as roles in Components, with the ADR in References.
 3. **Check it:** `bash ${CLAUDE_PLUGIN_ROOT}/skills/feature/check.sh docs/product/stories/<nn>-<name>.md`. Fix every line it prints. It checks the eight headings and their order, a requirement id on every scenario, a non-empty Journey, an empty Changelog before approval, no line shared with another story in the directory, and no observability vendor named outside Observed.
 4. **Show the owner the story**, whole, in the chat, with any `Template: proposes` line first. Wait for their edit or their go. Nothing is built before it.
 5. **Add it to `docs/product/<release>.md`** in order, and to the board.

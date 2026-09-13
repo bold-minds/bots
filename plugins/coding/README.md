@@ -14,7 +14,7 @@ The only command in this plugin. Everything below is model-triggered from its ow
 
 ### feature
 
-One feature, from its story to live. First the story: the one-page spec that is also the tests, the PR and the board card. Eight sections, every story, in order (Shows, Journey, Scenarios, Flow, Solution, Observed, References, Changelog); scenarios in the owner's words, each naming a requirement id; one new wire at most; observability only in Observed; architecture choices only as ADRs in References; a Changelog for anything after approval. `check.sh` holds the shape mechanically, and the owner reads every story before anything is built. Then, on their go, the pipeline runs unattended: plan, seven lenses, pre-mortem, breakdown, the tasks in waves, one serial merge, the whole feature, one push.
+One feature, from its story to live. First the story: the one-page spec that is also the tests, the PR and the board card. Eight sections, every story, in order (Shows, Journey, Scenarios, Flow, Solution, Observed, References, Changelog); scenarios in the owner's words, each naming a requirement id; every story end to end, sized by taking business out; observability only in Observed; architecture choices only as ADRs in References; a Changelog for anything after approval. `check.sh` holds the shape mechanically, and the owner reads every story before anything is built. Then, on their go, the pipeline runs unattended: plan, seven lenses, pre-mortem, breakdown, the tasks in waves, one serial merge, the whole feature, one push.
 
 ### write-code
 
