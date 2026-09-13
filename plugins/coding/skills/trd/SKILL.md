@@ -1,6 +1,6 @@
 ---
 name: trd
-description: The Design stop. Input a story: writes its TRD (Flow, Solution, Observed, References) from the story and the code, has seven technical lenses and a pre-mortem review the draft, resolves every finding into the TRD's Review table, checks it, and puts it in front of the owner. Input an existing TRD: review and resolve only. Never edits the story; a behaviour the review wants is proposed as a scenario for the owner to accept or refuse. Use when a story is approved and has no approved TRD, or when a TRD needs its review.
+description: The Design stop. Input a story: writes its TRD (Flow, Solution, Observed, References) from the story and the code, has seven technical lenses and a pre-mortem review the draft, folds every finding into the TRD so the owner reads one cohesive draft, checks it, and puts it in front of them with only the lines that need their word. Input an existing TRD: review and resolve only. Never edits the story; a behaviour the review wants is proposed as a scenario for the owner to accept or refuse. Use when a story is approved and has no approved TRD, or when a TRD needs its review.
 argument-hint: <story.md | story.trd.md>
 allowed-tools: Agent, Read, Glob, Grep, Bash, Write
 ---
@@ -24,8 +24,11 @@ when the line is there.
 
 **Output**: `docs/product/stories/<nn>-<name>.trd.md` in the shape
 `shared/hil/templates/trd.md` gives, passing `shared/hil/check.sh trd <file>
---reviewed`, shown to the owner whole, Review section last. Nothing is
-committed until they say go.
+--reviewed` — one cohesive draft with the review's findings folded in and
+nothing of the review on it; plus the trail at
+`<root>/.claude/pipeline/reviews/<nn>-<name>-<date>.md`, which the owner
+never reads. Shown to the owner whole. Nothing is committed until they say
+go.
 
 ## The run
 
@@ -55,27 +58,32 @@ Let `P` be `${CLAUDE_PLUGIN_ROOT}`, `HIL` be `${P}/shared/hil`, `root` be
    returns its table as text.
 
 3. **Resolve** — dispatch `coding:trd` with `TRD`, the story, the eight review
-   texts verbatim, the template, the checker, the triage rules, and the word
-   **resolve**. It rewrites the Review section — one row per finding, each
-   `TRD:`, `Story:` or `Dismissed:` — makes every `TRD:` change in the
-   sections above, runs the checker with `--reviewed`, and returns the row
-   count and the number of `Story:` rows.
+   texts verbatim, the template, the checker, the triage rules, the trail
+   path `<root>/.claude/pipeline/reviews/<nn>-<name>-<YYYY-MM-DD>.md`, and
+   the word **resolve**. It folds every finding into the TRD's sections so
+   the draft reads as one piece, adds the `Reviewed:` line, writes the trail,
+   runs the checker with `--reviewed`, and returns only the lines for the
+   owner: proposed scenarios and refused findings, or "nothing".
 
 4. **Check and show.** Run `bash ${HIL}/check.sh trd ${TRD} --reviewed`
    yourself; a line printed is a defect, and the file is not shown until it
-   prints none. Then show the owner the whole TRD in the chat, Review last,
-   and wait. Their reads of it:
+   prints none. Then show the owner the whole TRD in the chat, and under it
+   the lines the resolve returned — nothing else about the review — and wait.
+   Their reads of it:
    - an edit — apply it, run the checker again, show again;
-   - a `Story:` row accepted — append the proposed scenario to the story's
-     Scenarios, next number, with its requirement id, and one dated line in
-     the story's Changelog; then `check.sh story --approved` on the story;
-   - a `Story:` row refused — leave the row, note `refused <date>` after it;
-   - **go** — commit the TRD (and the story if it changed) on the branch the
-     story is on, `docs/product: <nn>-<name> TRD approved`, and report the
-     stop moved to Design: done.
+   - a proposed scenario accepted — append it to the story's Scenarios, next
+     number, with its requirement id, and one dated line in the story's
+     Changelog; then `check.sh story --approved` on the story;
+   - a proposed scenario refused — one line in the trail; nothing changes;
+   - a refusal overruled — fold that finding into the TRD, run the checker,
+     show again;
+   - **go** — commit the TRD, the trail, and the story if it changed, on the
+     branch the story is on, `docs/product: <nn>-<name> TRD approved`, and
+     report the stop moved to Design: done.
 
 A TRD is never shown with a failing checker, never shown twice for one
-finding, and never written for a story the owner has not approved.
+finding, never carries a word about its own review, and is never written for
+a story the owner has not approved.
 
 ## Cost
 

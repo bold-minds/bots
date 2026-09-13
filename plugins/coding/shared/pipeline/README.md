@@ -23,9 +23,10 @@ the owner read it) — both in the shapes `shared/hil/` checks:
   References appears, and every vendor inside it is ruled. The verifier holds
   every task's diff to all three; the feature verify holds the whole
   feature's files to Solution.
-- **Review** (TRD): every finding the lenses and the pre-mortem raised and
-  what became of it; its "Story:" outcomes were accepted or refused by the
-  owner before the run.
+- **Reviewed: <date>** (TRD): the seven lenses and the pre-mortem have
+  reviewed it and their findings are folded into the sections; the TRD
+  carries nothing else of its review. The trail is
+  `.claude/pipeline/reviews/<nn>-<name>-<date>.md`.
 - **Changelog** (story): every change after approval, one dated line —
   including an owner's answer to a BLOCKED.
 - **The survey** (`docs/product/survey.md`, optional): one row per
@@ -253,8 +254,8 @@ top-level technical direction; and before writing anything, ask whether the
 next step gets quality or rework from it.
 
 **Nothing outlives its usefulness.** A file dies the moment its successor
-exists: the lens and pre-mortem findings live on in the TRD's Review section
-and nowhere else, and the whole feature directory dies at the cleaner. There is exactly one deliberate
+exists: the lens and pre-mortem findings live on as TRD lines and in the
+review trail, and the whole feature directory dies at the cleaner. There is exactly one deliberate
 exception. `features/_shipped.md`, one line per shipped feature, is the index
 from a feature to the tests that guard it — the map you need after everything
 else is gone, and a line, not a document. What the feature was for is the

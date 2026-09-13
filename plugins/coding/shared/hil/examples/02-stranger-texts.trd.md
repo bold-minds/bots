@@ -41,6 +41,3 @@ Alerts:
 
 ## References
 - None
-
-## Review
-Not yet reviewed.

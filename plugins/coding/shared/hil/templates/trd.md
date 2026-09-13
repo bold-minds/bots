@@ -1,6 +1,7 @@
 # <the story's title> — design
 
 Story: <nn>-<name>.md
+Reviewed: <YYYY-MM-DD — the line is absent until the seven lenses and the pre-mortem have reviewed the draft and their findings are folded into the sections below; nothing of the review itself appears here>
 
 ## Flow
 <diagram>
@@ -28,11 +29,3 @@ Alerts:
 
 ## References
 - <item>: ADR <n>            (or: <item>: ADR pending / <item>: existing, no ADR / None)
-
-## Review
-Not yet reviewed.
-
-<after review, a table replaces that line:>
-| # | Finding | From | Outcome |
-|---|---|---|---|
-| 1 | <one sentence> | <lens name or pre-mortem> | TRD: <the line added> / Story: proposed "<scenario, one line>" / Dismissed: <why, one line> |

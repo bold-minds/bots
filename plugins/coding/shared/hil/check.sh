@@ -4,7 +4,7 @@
 # exit 0 when the file is clean, 1 when it is not, 2 when it cannot be read.
 #   type        story | trd | coverage | pr | card
 #   --approved  story: approved, so the Changelog may be non-empty
-#   --reviewed  trd: reviewed, so the Review section must hold the table
+#   --reviewed  trd: reviewed, so a 'Reviewed: <date>' line must be there
 #   --story F   coverage: the story whose scenario numbers every row must match
 set -u
 
@@ -143,7 +143,7 @@ check_trd() {
   if [ -z "$st" ]; then say "no 'Story:' line"
   elif [ ! -f "$dir/$st" ] && [ ! -f "$st" ]; then say "Story: names a file that is not there: $st"
   fi
-  headings_are Flow Solution Observed References Review
+  headings_are Flow Solution Observed References
   for h in Journey Scenarios Changelog; do
     grep -qE "^## $h" "$page" && say "'$h' is on the story, not the TRD"
   done
@@ -162,17 +162,13 @@ check_trd() {
       || say "References item without 'ADR <n>', 'ADR pending' or 'existing, no ADR': ${line}"
   done < <(section References | grep -E '^- ')
 
-  local r rows
-  r="$(section Review)"
-  rows="$(grep -cE '^\| *[0-9]+ *\|' <<<"$r" || true)"
+  # The review leaves one line — Reviewed: <date> — and nothing else: its
+  # findings are folded into the sections, and the owner reads one draft.
+  grep -qE '^## Review' "$page" && say "a Review section: the review's findings go into the sections, the trail goes to .claude/pipeline/reviews/, and nothing of it stays on the TRD"
   if [ "$reviewed" -eq 1 ]; then
-    [ "$rows" -gt 0 ] || say "reviewed, but the Review section holds no findings table"
-    while IFS= read -r line; do
-      grep -qE '\| *(TRD|Story|Dismissed): [^|]+\|[[:space:]]*$' <<<"$line" \
-        || say "Review row whose Outcome is not 'TRD: …', 'Story: …' or 'Dismissed: …': ${line}"
-    done < <(grep -E '^\| *[0-9]+ *\|' <<<"$r")
+    grep -qE '^Reviewed: [0-9]{4}-[0-9]{2}-[0-9]{2}$' "$page" || say "reviewed, but no 'Reviewed: <YYYY-MM-DD>' line"
   else
-    { [ "$rows" -gt 0 ] || grep -qE '^Not yet reviewed\.' <<<"$r"; } || say "Review is neither 'Not yet reviewed.' nor a findings table"
+    grep -qE '^Reviewed: ' "$page" && say "a 'Reviewed:' line on a TRD that has not been reviewed"
   fi
 
   local outside

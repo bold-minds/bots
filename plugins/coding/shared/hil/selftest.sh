@@ -51,8 +51,13 @@ expect_fail "story over 60 lines" "cap is 60" story "$tmp/b4.md"
 { sed '/^## Changelog/,$d' "$ex/01-text-answered.md"; echo '   Then it receives "That'"'"'s the three free previews for this number."'; echo; echo '## Changelog'; } > "$tmp/b5.md"
 expect_fail "story sharing a Then line" "line also in" story "$tmp/b5.md"
 
-# trd: Review says reviewed but holds no table
-expect_fail "trd --reviewed with no table" "no findings table" trd "$tmp/02-stranger-texts.trd.md" --reviewed
+# trd: --reviewed but no Reviewed: line
+expect_fail "trd --reviewed without a Reviewed: line" "no 'Reviewed:" trd "$tmp/02-stranger-texts.trd.md" --reviewed
+# trd: a Reviewed: line on an unreviewed TRD
+expect_fail "trd with a Reviewed: line, checked unreviewed" "has not been reviewed" trd "$tmp/01-text-answered.trd.md"
+# trd: a Review section — the review leaves nothing on the TRD
+{ cat "$ex/01-text-answered.trd.md"; printf '\n## Review\n| 1 | a finding | sre | TRD: a line |\n'; } > "$tmp/b10.trd.md"
+expect_fail "trd with a Review section" "a Review section" trd "$tmp/b10.trd.md" --reviewed
 # trd: a References item with no ADR
 sed 's/^- Hosting: ADR 2$/- Hosting: DigitalOcean/' "$ex/01-text-answered.trd.md" > "$tmp/b6.trd.md"
 expect_fail "trd References without an ADR" "References item without" trd "$tmp/b6.trd.md" --reviewed

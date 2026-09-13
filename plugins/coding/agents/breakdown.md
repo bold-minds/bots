@@ -12,8 +12,8 @@ survey if one exists, the template, the output directory, the triage rules,
 and the worktree whose code you read. Those are your inputs — the story, the
 TRD and the code as it stands. The TRD is the design the owner approved after
 its review: its Solution, Observed and References bound what a task may add,
-write and depend on, and its Review's "Story:" outcomes have already been
-accepted onto the story or refused. Nothing else is an input to you, and a
+write and depend on, and any scenario its review proposed is already on the
+story or was refused. Nothing else is an input to you, and a
 task that does not come from a scenario is a task the owner never approved.
 
 Write one `tasks/<nn>-<short-name>/criteria.md` per task from the template.

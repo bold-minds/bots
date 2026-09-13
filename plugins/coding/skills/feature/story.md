@@ -19,7 +19,7 @@ Four sections, every story, in this order. Nothing else. No prose. No text copie
 | **Scenarios** | Given / When / Then in the owner's words, one behaviour each, numbered from 1, each naming its requirement id in brackets on its first line. Each scenario is the rule and is the test: the text on the story is the scenario file that runs. |
 | **Changelog** | Empty at approval. Every change after approval is one dated line. |
 
-**The TRD** (`<nn>-<name>.trd.md`, beside the story) carries the technical half — Flow, Solution, Observed, References, and the Review that the lenses and the pre-mortem write — and is engineering's, written after the story is approved and read by the owner as their second read (Claire, 13 Sept: "making the story file short is no prob with me"). Its template and checker are in `shared/hil/` too. Nothing technical appears on the story: no vendor, no package, no endpoint, no log line.
+**The TRD** (`<nn>-<name>.trd.md`, beside the story) carries the technical half — Flow, Solution, Observed, References, reviewed by the seven lenses and the pre-mortem before the owner sees it, with their findings folded in and nothing of the review left on it — and is engineering's, written after the story is approved and read by the owner as their second read (Claire, 13 Sept: "making the story file short is no prob with me"). Its template and checker are in `shared/hil/` too. Nothing technical appears on the story: no vendor, no package, no endpoint, no log line.
 
 ## Rules
 
@@ -39,7 +39,7 @@ Four sections, every story, in this order. Nothing else. No prose. No text copie
 ## The owner reads five times per story
 
 1. **The story, before anything is designed.** Every story. Ten minutes. They edit it or say go.
-2. **The TRD, before anything is built.** Flow, Solution, Observed, References, and the Review — every lens and pre-mortem finding with what became of it. Proposed scenarios are theirs to accept or refuse. They say go.
+2. **The TRD, before anything is built.** Flow, Solution, Observed, References — one cohesive draft, already reviewed. Under it, only what needs their word: a scenario the review proposes (theirs to accept or refuse) and any finding the writer refused (theirs to overrule). They say go.
 3. **The coverage table, with each task's success sentence.** One row per scenario naming the task that carries it; never a task list alone. They say go.
 4. **The PR.** Tests named in their words at the top, the verifier's verdict as the body, the diff below. They skim; `/software` merges when the PR's CI is green (the owner, 13 Sept: "you will be merging").
 5. **The board card, after launch.** One line, two sentences.

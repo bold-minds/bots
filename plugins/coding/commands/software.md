@@ -116,7 +116,7 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
 
    Fire the pipeline when three things are true: the story is approved (it
    is listed in `docs/product/<release>.md` with its approval), its TRD is
-   approved (committed with a reviewed Review section), and they said go —
+   approved (committed, carrying its `Reviewed:` line), and they said go —
    or said earlier not to ask. Otherwise show three lines (the feature, its
    Shows line, its scenario count) and wait for one word.
 

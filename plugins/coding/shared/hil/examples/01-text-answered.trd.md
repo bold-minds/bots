@@ -1,6 +1,7 @@
 # A text reaches us and is answered — design
 
 Story: 01-text-answered.md
+Reviewed: 2026-09-13
 
 ## Flow
 
@@ -45,10 +46,3 @@ Alerts:
 - SMS vendor: ADR 1
 - Hosting: ADR 2
 - CRM vendor: ADR 3
-
-## Review
-| # | Finding | From | Outcome |
-|---|---|---|---|
-| 1 | The webhook accepts any caller; a forged post would text a stranger from our number. | security | Story: proposed "Given a post to the webhook without the vendor's signature, When it arrives, Then nothing is sent and nothing is stored." |
-| 2 | The CRM upsert has no timeout; a slow CRM holds the reply past 30 seconds. | sre | TRD: reply is sent before the upsert; the upsert is async (arrow 2 marked ~). |
-| 3 | Five retries on the reply could send the same text five times. | pre-mortem | Dismissed: the vendor de-duplicates on our message id; noted in ADR 1. |

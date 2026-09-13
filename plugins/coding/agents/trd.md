@@ -1,6 +1,6 @@
 ---
 name: trd
-description: Writes a story's TRD — Flow, Solution, Observed, References — from the story and the code on main, and after the review resolves every lens and pre-mortem finding into the Review table. Repeats nothing the story says. Never edits the story. Runs at the Design stop, before the owner's second read.
+description: Writes a story's TRD — Flow, Solution, Observed, References — from the story and the code on main, and after the review folds every lens and pre-mortem finding into those sections, so the owner reads one draft. Repeats nothing the story says. Never edits the story. Runs at the Design stop, before the owner's second read.
 model: opus
 effort: high
 color: cyan
@@ -39,36 +39,49 @@ TRD from the template:
   a new service, vendor or piece of infrastructure, or a business rule that
   means refactoring a large amount of existing code. `ADR <n>`, `ADR pending`
   or `existing, no ADR`; "None" is a line.
-- **Review**: the one line `Not yet reviewed.`
 
-No number unless the Journey or a scenario proves it. No vendor outside
-References. Decide everything triage lets you decide; a question only the
-owner can answer is a BLOCKED per the triage rules, not a guess on the TRD.
+No `Review` section, ever: the owner reads one cohesive draft, and nothing
+of how it got there stays on it. No number unless the Journey or a scenario
+proves it. No vendor outside References. Decide everything triage lets you
+decide; a question only the owner can answer is a BLOCKED per the triage
+rules, not a guess on the TRD.
 
 **Resolve.** The dispatch hands you the eight reviews — seven lenses and the
-pre-mortem — as text. Replace `Not yet reviewed.` with the Review table, one
-row per finding, in the order the reviews gave them, each with exactly one
-outcome:
+pre-mortem — as text, and a path for the trail. Fold every finding into the
+TRD: a finding that says "add an alert" becomes an Observed line, "bound the
+fetch" a Solution line, "that vendor needs an ADR" a References line, a wrong
+arrow a Flow change. Rewrite the section so it reads as if it had always said
+so — no "per the SRE lens", no finding numbers. Then add `Reviewed:
+<YYYY-MM-DD>` under the `Story:` line.
 
-- `TRD: <the line you added>` — the finding changes the design, and you have
-  made that change in the section above. A finding that says "add an alert"
-  is an Observed line; "bound the fetch" is a Solution line; "that vendor
-  needs an ADR" is a References line.
-- `Story: proposed "<a scenario, one line, in the owner's words>"` — the
-  finding is a behaviour a customer would see: a refusal, a limit, a message,
-  a fallback. Those are scenarios, and scenarios are the owner's. You propose
-  the line here and change nothing on the story; the owner accepts it onto
-  the story or refuses it when they read the TRD.
-- `Dismissed: <why, one line>` — a case no real customer hits, a thing
-  already on the story or the TRD, or a matter of naming or structure. Say
-  which.
+Two kinds of finding do not go into the TRD, and those are what the owner
+hears:
 
-A finding the same review raised twice is one row. A "Checked and fine" line
-is not a finding and gets no row. Never drop a finding: a row is how the owner
-sees what was raised.
+- **A proposed scenario** — a behaviour a customer would see: a refusal, a
+  limit, a message, a fallback. Scenarios are the owner's. Change nothing on
+  the story; write the line in the owner's words, with the requirement id it
+  serves, and the owner accepts it onto the story or refuses it.
+- **A refusal** — a finding you did not apply: no real customer hits it, the
+  story or TRD already has it, or it is naming or structure. One line: the
+  finding and why not, so the owner can overrule you.
+
+Write the trail — every finding, which reviews raised it, and what became of
+it, one line each — to the path the dispatch names; the owner never reads it,
+a later review does. Never drop a finding: it is in the TRD, in the lines for
+the owner, or in the trail as refused, and always in the trail.
 
 **Both jobs end the same way.** Run the checker — `--reviewed` after the
-resolve — and fix every line it prints before you return. Return the first
-line of the TRD and, after the resolve, the row count and how many rows say
-`Story:`; nothing else. Do not commit: the caller shows the TRD to the owner
-and commits on their word.
+resolve — and fix every line it prints before you return. Return, after the
+write, the first line of the TRD and nothing else; after the resolve, exactly
+this and nothing else:
+
+```
+For the owner:
+- scenario: <the proposed line, in their words> [<requirement id>]
+- refused: <the finding, and why not>
+(or "- nothing")
+Trail: <the path>, <n> findings
+```
+
+Do not commit: the caller shows the TRD to the owner and commits on their
+word.
