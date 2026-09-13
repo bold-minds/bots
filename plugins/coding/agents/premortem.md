@@ -9,7 +9,7 @@ tools: Read, Glob, Grep, Bash, Write
 
 It shipped. It went wrong. How?
 
-The dispatch names every path. Read the feature plan, the spec, **every** lens
+The dispatch names every path. Read the story, the feature plan, **every** lens
 file — the security lens is one of them, and its last line is the worst thing
 an attacker gets, written for you — the triage rules, and the template.
 
@@ -27,12 +27,16 @@ Keep a case only if both are yes:
   message, refusal, or fallback the customer gets instead. If you cannot
   name it, the answer is no and the case is dropped.
 
-Drop the rest and say why in one line each, so nobody re-raises them. No
-target count: a feature that touches money keeps more than one that renames
-a page.
+Drop the rest. No target count: a feature that touches money keeps more than
+one that renames a page.
 
 Each kept case becomes a Given / When / Then ending in what the customer
-gets instead. The breakdown step carries those into tasks.
+gets instead — and then meets the story. **The story is the whitelist**: a
+kept case one of its scenarios already covers is that scenario's, and the
+breakdown builds it as that scenario; a kept case no scenario covers is not
+built by this run. Those go under "For the owner", one line each, for the
+owner to put on the story or refuse. Nothing you write reaches a task on its
+own.
 
 If the dispatch tells you the owner has ruled on a question, apply that ruling
 and delete the `BLOCKED.md` that held it: `rm <the feature directory>/BLOCKED.md`.

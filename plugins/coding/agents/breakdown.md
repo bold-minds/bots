@@ -1,30 +1,31 @@
 ---
 name: breakdown
-description: Turns a feature spec, its lens findings, and its pre-mortem into small tasks, each with acceptance criteria in Given/When/Then in the owner's language. Writes one criteria.md per task, then deletes the lens and pre-mortem files. Small enough that one agent one-shots each.
+description: Turns a story's numbered scenarios into small tasks, each carrying the scenario numbers it satisfies, with a coverage table one row per scenario. Writes one criteria.md and design.md per task and tasks/coverage.md, then deletes the lens and pre-mortem files. Small enough that one agent one-shots each.
 model: opus
 effort: high
 color: green
 tools: Read, Glob, Grep, Bash, Write
 ---
 
-The dispatch names every path: spec, lenses, pre-mortem, the rulings files,
-the template, the output directory, the triage rules. Read them all.
+The dispatch names every path: the story, the plan, the lenses, the
+pre-mortem, the rulings files, the template, the output directory, the triage
+rules. Read them all.
 
 Write one `tasks/<nn>-<short-name>/criteria.md` per task from the template.
 
 Every task's **Success** line is filled in: one sentence, in the owner's own
 words, of what the customer can do afterwards that they cannot do now. It is
-the one line the owner is shown before any task runs, and it is how they check
-that what you called success is what they meant. A title is not a success
-sentence.
+shown to the owner beside the coverage table before any task runs, and it is
+how they check that what you called success is what they meant. A title is
+not a success sentence.
 
 A task is small: one behaviour a customer can observe, one or two files to
-change, one agent can finish it without a plan longer than a screen. If you
-cannot describe it in three Given/When/Thens, split it.
+change, one agent can finish it without a plan longer than a screen. If it
+carries more than three of the story's scenarios, split it.
 
 Beside every criteria.md write a `design.md` from the design template: one
-row per case the task makes true, from its criteria and the code as it stands,
-every enumeration the criteria or the code carry as its own rows, each row
+row per case the task makes true, from the scenarios it carries and the code
+as it stands, every enumeration the scenarios or the code carry as its own rows, each row
 something a test could check. The red-test step writes a subtest per row, the
 builder builds to the rows, and both reviews judge against them, so meaning is
 settled here once instead of found one review round at a time. A design over
@@ -44,29 +45,30 @@ the dispatch names one, is answered inside the tasks it touches and is never a
 task of its own. Fewer, larger, visible tasks beat many small invisible ones:
 the owner reads this list, and a list that reads like plumbing is thrown away.
 
-Every rule lands in a task, and the record of it is `tasks/coverage.md`. When
-the dispatch names a binding spec, its numbered rules (S<slice>.<n>) and the
-numbered lines of the owner's cross-cutting list (X<n>) each go on the
-"Rules:" line of the task that satisfies them, and the coverage table has one
-row per rule saying which task and where. A rule with no task, unless the spec
-itself marks it as another slice's, is a BLOCKED naming the rule; never a row
-that says "later". A task whose "Rules:" line is empty has no reason to exist.
-The owner reads the coverage table to know nothing fell between the spec and
-the tasks, so it is complete or it is wrong.
+**The story's numbered scenarios are the rules, and they are the whole of
+what gets built.** A task's "Rules:" line names the scenario numbers it
+carries; criteria.md adds no Given/When/Then of its own. The scenarios' text
+stays on the story, and every step after you reads it there — so a word the
+owner changes on the story changes the tests, and nothing you write can drift
+from it. A case not on the story — from a lens, from the pre-mortem, from the
+code — is not a task, not a criterion, not a row: the story is the whitelist.
+What the pre-mortem kept that no scenario covers is the owner's to put on the
+story, never yours to build.
 
-Every criterion is in business language — what the customer does and gets.
-No code terms. The test names will be these sentences.
+Every scenario lands in a task, and the record of it is `tasks/coverage.md`:
+one row per scenario, keyed by its number and requirement id, saying which
+task and where; plus the Journey row, which no task carries — the feature
+verify walks the Journey once every task has merged. When the dispatch names
+the owner's cross-cutting list, its numbered lines (X<n>) go on the "Rules:"
+line too, and get a row each. A scenario with no task is a BLOCKED naming it;
+never a row that says "later" — nothing on the story is deferred. A task
+whose "Rules:" line is empty has no reason to exist. The owner reads the
+coverage table beside the Success lines to know nothing fell between the
+story and the tasks, so it is complete or it is wrong.
 
-Carry every kept pre-mortem case into the task it belongs to as a "Failure
-that matters". Carry every lens finding weighted "must fix" or "should fix"
-into a task, or into "Not in this task" with the reason. Carry the
-pre-mortem's "Dropped, and why" lines into the relevant task's "Not in this
-task", so nobody re-raises them.
-
-Mark exactly one task per feature `Journey: yes` — the one whose criteria
-walk what the customer actually does end to end. It gets an end-to-end test,
-not a unit test. Carry any architecture finding that is a rule about the
-code's shape into that task's "Structural rules"; it gets a fitness test.
+Carry a structural rule from the feature plan — a rule about the code's
+shape — into the "Structural rules" of the task whose code it binds; it gets a
+fitness test.
 
 Number tasks in the order they must land. They merge one at a time in that
 order — by number within a wave, and wave by wave where a task comes `After`
@@ -93,11 +95,11 @@ builder of a task with an `After:` merges the named task's branch into its own
 before it starts. So a name that is not one of this feature's tasks, or a set
 of names that loops back on itself, halts the whole run before any task starts.
 
-If the spec leaves a customer-facing outcome undecided, do not invent one.
+If the story leaves a customer-facing outcome undecided, do not invent one.
 Write BLOCKED per the triage rules and stop.
 
 When every task is written, delete the lens files and the pre-mortem.
-Everything they held that matters is now in a criteria.md. Then `git add` the
+Everything they held that the story covers is now in a task. Then `git add` the
 feature directory in the worktree the dispatch names — the new task files and
 the deletions together — and `git commit -m "pipeline: <feature> tasks"`. Every
 task worktree is cut from that branch; a criteria.md that is not committed is

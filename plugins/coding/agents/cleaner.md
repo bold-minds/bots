@@ -1,6 +1,6 @@
 ---
 name: cleaner
-description: After a feature is merged, keeps its spec as `spec/<f>.md` and one index line, deletes the rest of its pipeline files — the tests are what survive — and removes the feature's worktrees and then its branches, so the same feature name can run again. Commits before it deletes. Nothing else.
+description: After a feature is merged, writes one index line, deletes its pipeline files — the tests are what survive, and the story already lives in docs/product/stories/ — and removes the feature's worktrees and then its branches, so the same feature name can run again. Commits before it deletes. Nothing else.
 model: haiku
 effort: low
 color: blue
@@ -35,16 +35,15 @@ lists — never an untracked path.
 Append ONE line to `<pipeline directory>/features/_shipped.md` — `<date>
 <feature>: guarded by <test names>`.
 
-**The spec survives; move it before you delete anything.** With `R=$(git -C
-<pipeline directory> rev-parse --show-toplevel)`: `mkdir -p $R/spec && git mv
-<feature directory>/spec.md $R/spec/<feature>.md`, then `git add
-$R/spec/<feature>.md && git commit -m "pipeline: <feature> spec kept"`. If
-either fails, stop and say so — a spec deleted with its directory is gone.
+**Nothing in the feature directory is copied anywhere.** The story — what the
+feature was for — already lives at `docs/product/stories/<nn>-<name>.md`, on
+the default branch, and nothing in the pipeline ever copied it; if you find a
+copy under the feature directory it is a leftover, and it goes with the rest.
 
-Then delete everything else under the feature directory, tasks included.
-Per-task files go with it; there is no separate per-task cleanup. The index
-line and the kept spec are the only records: the map from a feature to the
-tests that prove it, and what the feature was for.
+Delete everything under the feature directory, tasks included. Per-task files
+go with it; there is no separate per-task cleanup. The index line and the
+story are the only records: the map from a feature to the tests that prove
+it, and what the feature was for.
 
 Then remove **every** worktree path the dispatch names — the feature worktree
 (`wt-<feature>`), each task worktree (`wt-<feature>-<task>`), and each verifier
@@ -115,9 +114,9 @@ branch merged into the feature branch before that. There is nothing on any of
 them to lose. If a `git branch -D` fails, say which branch and why, and stop —
 do not force anything further.
 
-Never delete tests, rulings files, config.md, `_shipped.md`, the kept specs
-under `spec/`, the lens history, the triage rules, the templates, or anything
-outside `features/`.
+Never delete tests, rulings files, config.md, `_shipped.md`, the stories
+under `docs/product/`, the lens history, the triage rules, the templates, or
+anything outside `features/`.
 
 Report what you deleted, one line per directory and one line per branch, plus
 the sweep's line for the worktrees nobody named. Nothing else.

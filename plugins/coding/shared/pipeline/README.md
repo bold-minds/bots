@@ -1,8 +1,28 @@
 # The pipeline
 
-The owner says what a feature should do, in `/software`. The pipeline turns
-that into tested, reviewed code with no one watching. They are asked only when
-a step genuinely cannot decide.
+The owner approves a story — `docs/product/stories/<nn>-<name>.md`, written
+by `/feature` §1 in their words. The pipeline turns that story into tested,
+reviewed code with no one watching. They are asked only when a step genuinely
+cannot decide.
+
+## The story is the input
+
+Every step reads the story where it lives; nothing copies it. Its sections
+are what the pipeline runs on:
+
+- **Scenarios**, numbered, each naming its requirement id: the rules. The
+  breakdown maps them to tasks by number; `redtest` copies each one's
+  Given/When/Then verbatim into the feature file; the verifier diffs the two.
+- **Journey**: the feature's definition of done. No task carries it; the
+  feature verify walks it once every task has merged.
+- **Solution**, **Observed**, **References**: whitelists. Only the packages,
+  endpoints and envs Solution lists may be added; only the log lines, events
+  and alerts Observed lists may be written; no vendor outside References
+  appears, and every vendor inside it is ruled. The verifier holds every
+  task's diff to all three; the feature verify holds the whole feature's
+  files to Solution.
+- **Changelog**: every change after approval, one dated line — including an
+  owner's answer to a BLOCKED.
 
 ## Roles
 
@@ -11,30 +31,32 @@ a step genuinely cannot decide.
   are involved only when something is completely failing or when no automated
   process exists. A design that needs them on the normal path is a wrong
   design.
-- **`/software`**: the session the owner types in. It writes each feature's
-  spec in their words and fires `/feature` when it has their definition of
-  success and their go. It never does the pipeline's work.
-- **`/feature`**: everything else. Each step is one agent, one fresh session,
+- **`/feature`**: the story, its check, the owner's read of it; after launch,
+  QA against it (`--qa`).
+- **`/software`**: the session the owner types in. It fires the `pipeline`
+  skill on an approved story when it has the owner's go, relays what comes
+  back, and never does the pipeline's work.
+- **`pipeline`**: everything else. Each step is one agent, one fresh session,
   one short input file, one short output file.
 
 ## Steps
 
 | # | step | agent | model | writes |
 |---|------|-------|-------|--------|
-| 1 | spec | `/software` | — | `features/<f>/spec.md`; creates branch `pipeline/<f>` **and a worktree on it** |
-| 2 | feature plan | `featureplan` | opus | `features/<f>/plan.md` — approach, state, outside calls, the journey, structural rules |
+| 1 | story | `/feature` §1, then `/software` | — | `docs/product/stories/<nn>-<name>.md`, approved by the owner; `/software` creates branch `pipeline/<f>` **and a worktree on it** |
+| 2 | feature plan | `featureplan` | opus | `features/<f>/plan.md` — approach, state, outside calls, structural rules; nothing the story already says |
 | 3 | lenses | `lens` ×7 — architecture, sre, security, qa, staff on opus; performance, database on sonnet | mixed | `features/<f>/lens-<x>.md` |
-| 4 | pre-mortem | `premortem` | opus | `features/<f>/premortem.md` |
-| 5 | break down | `breakdown` | opus | `features/<f>/tasks/<t>/criteria.md`, each with its success sentence; deletes 3–4's files |
-| — | **stop** | `/software` | — | shows the owner each task's success sentence, one line each, one message; resumes on their go |
-| 6 | current state | `state` | sonnet | cuts the task worktree from `pipeline/<f>`; `tasks/<t>/state.md`, committed there |
-| 7 | red tests | `redtest` | opus | test files, `tasks/<t>/tests.md`, committed on the task branch |
+| 4 | pre-mortem | `premortem` | opus | `features/<f>/premortem.md`; a kept case the story does not cover goes to the owner, never to a task |
+| 5 | break down | `breakdown` | opus | `features/<f>/tasks/<t>/criteria.md` — the scenario numbers it carries and its success sentence — `design.md` beside each, and `tasks/coverage.md`, one row per scenario; deletes 3–4's files |
+| — | **stop** | `/software` | — | shows the owner the coverage table with each task's success sentence, one message; resumes on their go |
+| 6 | current state | `state` | sonnet | cuts the task worktree from `pipeline/<f>`; `tasks/<t>/state.md`, one row per scenario, committed there |
+| 7 | red tests | `redtest` | opus | the feature file with the scenarios verbatim, the step definitions, `tasks/<t>/tests.md`, committed on the task branch |
 | 8 | plan | `planner` | opus | `tasks/<t>/plan.md`, committed |
 | 9 | build | `builder` | opus | the task branch `pipeline/<f>--<t>`, gate green |
-| 10 | review | `code-reviewer` (fix-code's nine lenses) ∥ `verifier` (mutations, gate, rulings, touched files) | opus ×2 | `tasks/<t>/verdict.md`; PASS needs both; a BLOCK that is rework goes back to `builder` and both reviews run again, twice at most; **neither merges** |
+| 10 | review | `code-reviewer` (fix-code's nine lenses) ∥ `verifier` (mutations, gate, rulings, touched files, the story's three whitelists) | opus ×2 | `tasks/<t>/verdict.md`; PASS needs both; a BLOCK that is rework goes back to `builder` and both reviews run again, twice at most; **neither merges** |
 | 11 | merge | `merger` | haiku | merges every passed task branch into `pipeline/<f>`, one at a time, in landing order |
-| 12 | feature | `featureverify` | sonnet | `features/<f>/verdict.md` — the journey end to end, every fitness test, every task's tests together, the gate; on PASS, the one push if config permits |
-| 13 | clean | `cleaner` | haiku | after the owner merges: keeps the spec as `spec/<f>.md`, deletes the feature directory and the worktrees; one index line |
+| 12 | feature | `featureverify` | sonnet | `features/<f>/verdict.md` — the story's Journey walked end to end, every fitness test, every task's tests together, the gate, the files held to Solution; on PASS, the one push if config permits |
+| 13 | clean | `cleaner` | haiku | after the owner merges: deletes the feature directory, the worktrees and the branches; one index line. The story stays where it lives |
 | 14 | prove | `/software` runs config's `live:` command | — | pass/fail |
 
 Steps 6–10 run per task, in order. Tasks in a feature run in parallel within a
@@ -88,15 +110,15 @@ already passed. The one exception is a task with an `After:`, above: its branch
 already holds the named task's commits, so both of its reviews are diffed
 against the named branch's tip instead.
 
-The seven lenses at step 3 review the *plan and the spec*, before code exists.
+The seven lenses at step 3 review the *plan and the story*, before code exists.
 `fix-code`'s nine lenses at step 10 review the *code*. Different stage,
 different questions.
 
 Planner, redtest, breakdown and the code review sit on the strongest model on
 purpose: the planner is the only gate that interrupts the owner, redtest is the
 only guard against a test that proves nothing, and breakdown holds the one-way
-doors — it authors every acceptance criterion, picks the one journey task, and
-deletes the lens files and the pre-mortem. `featureverify` and `merger` are
+doors — it maps every scenario to a task, writes the coverage table the owner
+reads, and deletes the lens files and the pre-mortem. `featureverify` and `merger` are
 cheap because neither has a judgement to make: one re-runs five things that are
 green or not, the other merges a named list in a named order.
 
@@ -156,10 +178,11 @@ before they design and applied by the reviewers against every diff.
 It stops twice on purpose, and once when something is wrong.
 
 **After the breakdown**, the run returns `awaiting: confirm` with the task
-list. `/software` shows the owner one line per task — each task's success
-sentence, in their words — in a single message. That is their check that what
-the pipeline calls success is what they meant, shown with the coverage table
-that maps every rule to a task. They say go, and a new run with `startAt:
+list. `/software` shows the owner the coverage table — one row per scenario on
+the story, naming the task that carries it — with each task's success
+sentence, in their words, in a single message; never the success sentences
+alone. That is their second read, and their check that nothing fell between
+the story and the tasks. They say go, and a new run with `startAt:
 "tasks"` builds the committed task list (inside the same session, a resume with
 `confirmTasks: false` also works; it cannot cross sessions).
 
@@ -224,20 +247,22 @@ next step gets quality or rework from it.
 
 **Nothing outlives its usefulness.** A file dies the moment its successor
 exists: the lens files and the pre-mortem die at the breakdown, the whole
-feature directory dies at the cleaner. There are exactly two deliberate
-exceptions. `features/_shipped.md`, one line per shipped feature, is the index
+feature directory dies at the cleaner. There is exactly one deliberate
+exception. `features/_shipped.md`, one line per shipped feature, is the index
 from a feature to the tests that guard it — the map you need after everything
-else is gone, and a line, not a document. And the spec: the cleaner moves
-`features/<f>/spec.md` to `spec/<f>.md` at the repo root and commits it before
-the directory dies, because what the feature was for outlives the run that
-built it.
+else is gone, and a line, not a document. What the feature was for is the
+story, and the story was never in the feature directory: it lives at
+`docs/product/stories/<nn>-<name>.md` before the run and after it. (History:
+until 13 Sept 2026 the owner-read file was a `spec.md` copied into the
+feature directory and moved to `spec/<f>.md` by the cleaner; the story
+replaced it, and nothing is copied or moved now.)
 
-Inputs are not outputs and are never deleted: the lens checklists (generic and
-this repo's overlay), `triage.md`, the templates, and `config.md` are what the
-pipeline is made of, not what it produced.
+Inputs are not outputs and are never deleted: the story, the lens checklists
+(generic and this repo's overlay), `triage.md`, the templates, and `config.md`
+are what the pipeline is made of, not what it produced.
 
-Language: business terms in every file the owner might read — `spec.md`,
-`criteria.md`, `BLOCKED.md`. Files that only feed the next step —
+Language: business terms in every file the owner might read — the story,
+`criteria.md`, `coverage.md`, `BLOCKED.md`. Files that only feed the next step —
 `lens-*.md`, `premortem.md`, `state.md`, `plan.md`, `tests.md`, `verdict.md`
 — may cite code: a finding with a file:line is one the breakdown can act on.
 Headings and "why it matters" lines stay in business terms regardless. (The

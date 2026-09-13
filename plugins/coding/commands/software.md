@@ -104,24 +104,22 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    git -C <root> worktree add <root>/../wt-<name> -b pipeline/<name> <default branch>
    ```
 
-   if `pipeline/<name>` does not already exist. The spec is the feature's
-   story: `/feature` §1 writes it at `<root>/docs/product/stories/<nn>-<name>.md`,
+   if `pipeline/<name>` does not already exist. The story is the feature's
+   spec: `/feature` §1 writes it at `<root>/docs/product/stories/<nn>-<name>.md`,
    runs `check.sh`, shows the owner the whole story and waits for their edit or
-   go. Copy the approved story to
-   `<root>/../wt-<name>/.claude/pipeline/features/<name>/spec.md` and commit it
-   there. `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/templates/spec.md` is the old
-   shape and is not used for new features.
+   go. Nothing copies it: every step of the run reads it at that path, passed
+   as `story`, and a word the owner changes there changes the tests.
 
-   Fire the pipeline when two things are true: the spec has their definition of
-   success, and they said go — or said earlier not to ask. Otherwise show three
-   lines (the feature, what success means, what is not this feature) and wait
-   for one word.
+   Fire the pipeline when two things are true: the story is approved (it is
+   listed in `docs/product/<release>.md` with its approval), and they said go —
+   or said earlier not to ask. Otherwise show three lines (the feature, its
+   Shows line, its scenario count) and wait for one word.
 
    When the run stops at the task list, show the owner the coverage table
-   (`tasks/coverage.md`, one row per rule and the task that carries it) with
-   the Success lines, never the Success lines alone. Claire, 8 Sept: "I'm not
-   going to approve any slice without seeing the mapping of tasks to
-   requirements/rules."
+   (`tasks/coverage.md`, one row per scenario on the story and the task that
+   carries it) with the Success lines, never the Success lines alone. Claire,
+   8 Sept: "I'm not going to approve any slice without seeing the mapping of
+   tasks to requirements/rules."
 
    **What it does.** It runs on its own: a feature-level plan, seven technical
    lenses on that plan, a pre-mortem, a breakdown into small tasks, then for
@@ -132,16 +130,17 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
 
    **Pass, as a JSON object:** `feature`; `root` (`git rev-parse
    --show-toplevel`); `plugin` (`${CLAUDE_PLUGIN_ROOT}`); `featureTree` (the
-   worktree path above); `defaultBranch`; and from
+   worktree path above); `story` (the approved story's absolute path);
+   `defaultBranch`; and from
    `<root>/.claude/pipeline/config.md`: `decisions`, `requirements`, `gate`,
    `test`, `entry`, `stub`, and `rules` when the line is there (the owner's
    cross-cutting file, whose "Asked on every slice" list every feature
    answers). Keep the `runId` and `scriptPath` from every result.
 
    **It stops twice on purpose.** After the breakdown it comes back with the
-   task list: read each task's `criteria.md` **`Success:` line** and show the
-   owner one line per task, in their words, in one message — that is their
-   "what counts as success" check, and it is the only time they see the tasks.
+   task list: show the owner `tasks/coverage.md` with each task's `criteria.md`
+   **`Success:` line** beside its rows, in their words, in one message — that
+   is their second read, and it is the only time they see the tasks.
    Then, on their word, a new run with the same args plus `startAt: "tasks"`:
    it skips the front half and builds the task list already committed on the
    feature branch. (A resume with `resumeFromRunId` and `confirmTasks: false`
@@ -181,9 +180,10 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    with the ruling in front of it — deleting its `BLOCKED.md` if there was one
    — and everything before it stays cached. Never write the
    answer into `BLOCKED.md`: a finished step is cached by its prompt, so an
-   answer that is not in the prompt never re-runs the step that asked. Note in
-   the spec's "Open questions" that it was answered, one line. Never start a
-   fresh run — that re-runs every lens.
+   answer that is not in the prompt never re-runs the step that asked. Record
+   the ruling as one dated line in the story's Changelog — the story is the
+   record of every change after approval. Never start a fresh run — that
+   re-runs every lens.
 
    One halt is a restart, not an answer: a case redtest left out of a task's
    tests. No step after the plan commit may touch a test, so no answer can
@@ -233,9 +233,9 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    `<root>/../vf-<name>-*` and `<root>/../wt-<name>-*`, anchored on the name
    and never `*<name>*`, for any tree a run left under a path nobody passed it,
    and prints what the sweep found — including that it found nothing, which is
-   the only thing that says the sweep ran. It moves the spec to
-   `<root>/spec/<name>.md` and commits it; the rest of the feature directory
-   goes. **Then it deletes the branches** — `pipeline/<name>` and every
+   the only thing that says the sweep ran. The whole feature directory goes —
+   the story was never in it and stays at `docs/product/stories/`. **Then it
+   deletes the branches** — `pipeline/<name>` and every
    `pipeline/<name>--<task>` — which is why it runs only after the merge: the
    work is on the default branch by then, and nothing else in the pipeline ever
    deletes a branch, so without this the same feature name is fatal on its
@@ -247,15 +247,14 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    what it cost. The whole of it:
    `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/README.md`.
 
-   **The owner does not have to describe features one by one.** The
-   requirements file named in `config.md` is a pile of specs already written:
-   each requirement is a feature, its text is the owner's words, and its
-   success line is what success means. "Run A1 through A4", "run section C",
-   "run everything that isn't met" — write a spec per requirement from that
-   file and fire each one. The pipeline's own current-state step decides what
-   is already true (it gets a guarding test, no build) and what is not (it gets
-   built). A few at a time; each run costs real money and the first ones find
-   the pipeline's own defects.
+   **The owner does not have to describe features one by one.** The stories
+   are listed in order in `docs/product/<release>.md`, each approved before it
+   is fired. "Run story 01", "run the next one that isn't live" — fire
+   `pipeline` on that story. Where a requirement has no story yet, `/feature`
+   §1 writes one first and the owner reads it. The pipeline's own
+   current-state step decides what is already true (it gets a guarding test,
+   no build) and what is not (it gets built). A few at a time; each run costs
+   real money and the first ones find the pipeline's own defects.
 3. **`write-code`** — the single bounded change that does not need the
    pipeline, built against the gauntlet. The gauntlet is the definition of
    done; `scope.md`'s out-list is the boundary. Name what is explicitly out

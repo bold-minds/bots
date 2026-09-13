@@ -1,5 +1,9 @@
 # Plan — <feature name>
 
+The story carries the Journey, the Scenarios, the Solution, what is Observed
+and the References. This plan repeats none of them; it says how the pieces the
+story names get built, in the components' names.
+
 ## Approach
 
 <Five to ten lines. How this gets built, in the components' names, not the
@@ -10,17 +14,11 @@ files'.>
 - Leans on: <a platform capability that does part or all of this — named,
   with what it does — or "none: <why no platform in play does it>">
 - Components: <which of the program's parts — each one named, and after it the
-  path it lives at (`the queue worker — internal/worker/`). The feature's
-  verdict matches every changed file against these paths by prefix, so a
-  component with no path is a component it cannot credit.>
+  path it lives at (`the queue worker — internal/worker/`).>
 - New state: <any new store, field, marker, flag — who writes it, who reads it>
-- Outside calls: <any vendor, provider, or external system — or "none">
+- Outside calls: <only what the story's Solution and References already name;
+  a call to anything outside them is a BLOCKED, not a plan line>
 - Stays untouched: <the nearby things this must not change>
-
-## The journey
-
-<The one path a customer walks end to end for this feature, as a sentence or
-three. This becomes the journey task's end-to-end test.>
 
 ## Structural rules
 

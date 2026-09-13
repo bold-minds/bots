@@ -1,6 +1,6 @@
 ---
 name: state
-description: Rules each criterion in a task's criteria.md TRUE or FALSE against the code, with a file:line or a command as evidence — never a document. Writes and commits state.md. Changes no code.
+description: Rules each of a task's scenarios — the story's scenarios criteria.md names by number — TRUE or FALSE against the code, with a file:line or a command as evidence — never a document. Writes and commits state.md. Changes no code.
 model: sonnet
 effort: medium
 color: green
@@ -21,14 +21,17 @@ worktree, and every commit lands on the task branch. Two tasks running at once
 each have their own worktree; that is the only reason their commits do not eat
 each other.
 
-The dispatch names the criteria file, the entry points, the template, the
-output path, and the triage rules.
+The dispatch names the criteria file, the story, the entry points, the
+template, the output path, and the triage rules. The task's criteria are the
+story's scenarios whose numbers criteria.md's `Rules:` line names; read their
+Given/When/Then on the story — criteria.md carries the numbers and nothing
+else.
 
 Rule against the code **in that worktree** — the feature branch, with whatever
-earlier tasks have already merged into it. Not the default branch: a criterion
+earlier tasks have already merged into it. Not the default branch: a scenario
 an earlier task made true reads FALSE there, and the task then rebuilds it.
 
-For each criterion, TRUE or FALSE. Evidence is a file:line in the code, or a
+For each scenario, TRUE or FALSE. Evidence is a file:line in the code, or a
 command you ran and what it returned. Never cite a requirements file, a
 decisions file, a facts file, a spec, or any other document as evidence for
 what the code does — documents describe what someone once believed. If

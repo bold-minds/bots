@@ -1,16 +1,10 @@
 # Coverage — <feature name>
 
-Every rule the feature's binding spec and the owner's cross-cutting list carry, and the task that satisfies it. This table is what the owner reads to know nothing was dropped between the spec and the tasks; a rule with no task is a halt, not a row, unless one of the two sections below names where it is held.
+One row per numbered scenario on the story, and the task that carries it. This table, beside each task's Success line, is the owner's second read: it is how they know nothing fell between the story and the tasks. A scenario with no task is a halt, not a row — nothing on the story is deferred, trimmed or held elsewhere.
 
-| Rule | In the owner's words (short) | Task | Where in the task |
+| Scenario | In the owner's words (short) | Task | Where in the task |
 |---|---|---|---|
-| S<slice>.<n> | <the rule, trimmed> | <task directory name> | <Success / Failure / Structural / Not in this task, and which line> |
-| X<n> | <the cross-cutting line> | <every task it applies to; a cross-cutting line the feature has no work for says "no work in this feature: <why, one line>" and names the plan line that says so> | <where> |
-
-## Deferred by the tasks
-
-<Rules the spec carries that these tasks deliberately leave to a later slice, one per line, with the slice named. Only rules the spec itself marks as belonging elsewhere; anything else is a halt.>
-
-## Held outside the tasks
-
-<Rules the spec itself marks as a working rule or a runbook item, one per line, each naming exactly where it is held (which document, which check, which person). A rule the spec does not mark this way never appears here. "Plan only" and "note" are not places: a rule that a test would not catch is either a fitness test in some task or a halt.>
+| Journey | <the Journey's Then, trimmed> | every task, together | walked by the feature verify once every task has merged; no task's test |
+| 1 [<requirement id>] | <the scenario's Then, trimmed> | <task directory name> | Rules line; the test named for it |
+| 2 [<requirement id>] | <…> | <…> | <…> |
+| X<n> | <a line of the owner's cross-cutting list, when the dispatch names one> | <every task it applies to; a line the feature has no work for says "no work in this feature: <why, one line>"> | <where> |

@@ -11,9 +11,9 @@ Your job is to find the mechanical reason this must not merge. It passes only
 if you fail. Code quality, security, and design are not yours — `code-reviewer`
 is running the lenses beside you. Yours is what a lens cannot see.
 
-The dispatch names the branch, the criteria, tests.md, the plan, the test
-command, the gate command, the rulings file, the template, and the absolute
-output path.
+The dispatch names the branch, the criteria, the story, tests.md, the plan,
+the test command, the gate command, the rulings file, the template, and the
+absolute output path.
 
 Check the branch out in a worktree of your own, **detached** — the task branch
 is already checked out in the build worktree, and git refuses a second checkout
@@ -61,13 +61,29 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
 
 - Run every test in tests.md with the named command. A skip is a fail, and so
   is a test that never ran.
-- Read criteria.md against the table: every criterion has a row, and a
-  criterion that enumerates — each of N names, three states — has every case
-  it counts as a subtest line of that criterion's test run, `--- PASS:
-  <Test>/<case>`, one per case criteria.md names, or per item the code
-  enumerates where criteria.md only counts. A criterion or a case with no
+- **Hold the diff to the story, section by section, as whitelists.** The
+  story is what the owner approved; what is on it is the slice and what is
+  not, is not.
+  - **Solution**: every package, endpoint, env, workflow or config file the
+    diff adds is one a Solution line names. One it adds that no line names is
+    a BLOCK naming it. "None new" accounts for nothing.
+  - **Observed**: every non-error log line, product event and alert the diff
+    writes is one Observed lists, with the fields it lists. One Observed does
+    not list is a BLOCK; so is a phone number, an email address or message
+    text in any of them — customer id only. Errors are logged always and are
+    not listed.
+  - **References**: no vendor, service or piece of infrastructure appears in
+    the diff that References does not name. One outside it is a BLOCK — and
+    one inside it is ruled, never a question.
+- Read criteria.md's `Rules:` line, then those scenarios on the story, against
+  tests.md's table: every scenario has a row, its Given/When/Then is in the
+  feature file verbatim — diff the two; a word changed is a BLOCK — and a
+  scenario that enumerates — each of N names, three states — has every case
+  it counts as a subtest line of that scenario's test run, `--- PASS:
+  <Test>/<case>`, one per case the scenario names, or per item the code
+  enumerates where the scenario only counts. A scenario or a case with no
   test is a BLOCK, and because no test may change after the plan commit it
-  is the owner's: write BLOCKED.md naming the criterion and the cases
+  is the owner's: write BLOCKED.md naming the scenario and the cases
   missing. The default is a restart of the task — the owner writes the cases
   into the task's criteria.md on the feature branch, removes the task's
   worktree and branch, and answers at its `state` step, so state, red tests,

@@ -1,16 +1,20 @@
 # Tests — <task name>
 
-| criterion | test | level | now | proves it |
+| scenario | test | level | now | proves it |
 |---|---|---|---|---|
-| <first line of the Given> | `TestX_InTheOwnersWords` in `<file>` | unit / integration / end-to-end / fitness | RED / GREEN | <what was broken on purpose and the test went red> |
+| <its number on the story, and the first line of its Given> | `<the scenario, verbatim>` in `<the feature file>`; steps in `<file>` | unit / integration / fitness | RED / GREEN | <what was broken on purpose and the test went red> |
+
+The story's scenario text is the scenario file: each scenario's
+Given/When/Then is copied verbatim from the story into the feature file, with
+its number and requirement id, and the step definitions are the test code.
+Nothing is re-authored here; a word changed on the story changes the test.
 
 Levels: **unit** for a rule, **integration** for a store or a queue,
-**end-to-end** for the whole path a customer walks through the real
-environment, **fitness** for a rule about the shape of the code — a test that
-reads the code and fails if the rule is broken.
+**fitness** for a rule about the shape of the code — a test that reads the
+code and fails if the rule is broken. The Journey is not a task's test: the
+feature verify walks it once every task has merged.
 
-Test names are the criterion in the owner's words. Failure messages say what
-the customer would have experienced.
+Failure messages say what the customer would have experienced.
 
 A GREEN test with no "proves it" entry is not finished. Break the thing it
 guards; watch it go red; restore; then record what you broke.
@@ -47,7 +51,7 @@ line the committed tests stop at, and say which it is: these tests failing; or
 the missing behaviour showing earlier — `undefined: <symbol>`, a new package
 with no non-test files, a package not attached to any component — naming the
 symbol, package or component the builder must add, or the After: task that
-already provides it; or no RED, because every criterion is TRUE or the gate
+already provides it; or no RED, because every scenario is TRUE or the gate
 has no arm that runs this module's tests. Say
 that the lint and boundary arms between that line and the tests arm, if any,
 ran green with a stub in place, and that the stub is gone from this commit.>

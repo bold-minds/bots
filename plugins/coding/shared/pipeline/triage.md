@@ -4,7 +4,7 @@ Ask yourself these, in order. The first one that answers, decides.
 
 1. **What is the benefit of doing this?** None → don't do it, don't ask.
 2. **Is there already a ruling?** Check the rulings files. Yes → apply it,
-   cite it, move on — **unless the spec asks for the opposite. The owner's new
+   cite it, move on — **unless the story asks for the opposite. The owner's new
    words contradicting the owner's old ruling is not yours to resolve: stop and
    ask, quoting both. Never pick one silently, in either direction.**
 3. **Is there prior art — in this repo, in a platform we already pay for, or
@@ -20,8 +20,9 @@ Ask yourself these, in order. The first one that answers, decides.
    use — a dependency-review tool, if one is installed, answers that; do not
    guess. Write our own only after writing down why the package does not fit,
    and take the dependency to the owner: a new one is a new external system,
-   already one of the four below. Reuse or extend what exists; never build a
-   second one beside it. Any default you propose — including the default
+   already one of the four below — unless the story's References names it,
+   in which case it is ruled and never asked. Reuse or extend what exists;
+   never build a second one beside it. Any default you propose — including the default
    inside a BLOCKED question — comes from the nearest existing thing, named,
    not from invention.
 4. **Does the answer change what a customer is promised — what they get,
@@ -40,10 +41,15 @@ never theirs even when changing it costs a lot.
 ## Ask the owner only if the question is one of these
 
 - It changes a promise to a customer: what they get, when, what it costs.
-- It costs money, or commits to a vendor, or changes a provider.
+- It costs money, or commits to a vendor, or changes a provider — **except a
+  vendor, service or piece of infrastructure the story's References names**:
+  every item there has its ADR approved before the story is, so it is ruled,
+  and the same goes for a package, endpoint or env the story's Solution
+  lists. Only what the story does not name is asked.
 - It contradicts an existing ruling — including one of their own newer
   sentences contradicting an older ruling.
-- It is top-level technical direction: caching, storage, a new external system.
+- It is top-level technical direction: caching, storage, a new external system
+  the story does not name.
 - **The gate says `architecture review needed`.** That check exists to put a
   named list in front of the owner, and it clears on an
   `Architecture-Review-Approved:` trailer that is their signature. No agent
