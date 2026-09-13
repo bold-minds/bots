@@ -44,7 +44,9 @@ TRD from the template:
   here**, at `docs/adr/NNNN-<slug>.md`, from the ruling behind it — the
   rulings files, the survey, the attic, a decision the owner has recorded
   anywhere the dispatch names — from `shared/hil/templates/adr.md` (Decided
-  line; Decision, Why, Reopens if; bullets only; 25 lines), passing
+  line, dated the day it is written; Decision, Options — every alternative
+  on the table and why not, "not evaluated" where none was weighed, never an
+  invented comparison — and Why; bullets only; 30 lines), passing
   `shared/hil/check.sh adr`, and add its line to `docs/adr/README.md`. A
   deferral is not an ADR: it goes on the requirements file's backlog.
   The owner approves the ADR with the TRD. `ADR pending` is allowed only

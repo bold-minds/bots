@@ -263,10 +263,11 @@ check_adr() {
   head -1 "$page" | grep -qE '^# ADR [0-9]{4} — .+' || say "first line is not '# ADR NNNN — <the decision, one sentence>'"
   local n; n="$(head -1 "$page" | grep -oE 'ADR [0-9]{4}' | tr -dc '0-9')"
   [ -n "$n" ] && ! grep -qE "^$n-" <<<"$(basename "$page")" && say "file name does not start with $n-"
-  grep -qE '^Decided: [0-9]{4}-[0-9]{2}-[0-9]{2} \(.+\)$' "$page" || say "no 'Decided: <YYYY-MM-DD> (<who>; <where>)' line"
-  headings_are Decision Options Why "Reopens if"
+  grep -qE '^Decided: [0-9]{4}-[0-9]{2}-[0-9]{2} \(.+\)$' "$page" || say "no 'Decided: <YYYY-MM-DD> (<who>)' line"
+  grep -qE '^## Reopens' "$page" && say "a 'Reopens if' section: an ADR is the decision, its options and why; reopening is the owner's, not a clause"
+  headings_are Decision Options Why
   local sec line
-  for sec in Decision Options Why "Reopens if"; do
+  for sec in Decision Options Why; do
     [ "$(section "$sec" | grep -cE '^- ' || true)" -gt 0 ] || say "$sec has no bullet"
     while IFS= read -r line; do
       [ -z "${line//[[:space:]]/}" ] && continue

@@ -1,6 +1,6 @@
 # ADR <NNNN> — <the decision, one sentence>
 
-Decided: <YYYY-MM-DD> (<who>; <where the ruling is recorded>)
+Decided: <YYYY-MM-DD> (<who>)
 
 ## Decision
 - <one fact of what was decided, per bullet>
@@ -10,6 +10,3 @@ Decided: <YYYY-MM-DD> (<who>; <where the ruling is recorded>)
 
 ## Why
 - <one reason, per bullet>
-
-## Reopens if
-- <one new fact that would reopen it, per bullet>
