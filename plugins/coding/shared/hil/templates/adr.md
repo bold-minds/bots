@@ -5,6 +5,9 @@ Decided: <YYYY-MM-DD> (<who>; <where the ruling is recorded>)
 ## Decision
 - <one fact of what was decided, per bullet>
 
+## Options
+- <an alternative that was on the table, and why not, one bullet each; "not evaluated: <why>" when it was not weighed — never an invented comparison>
+
 ## Why
 - <one reason, per bullet>
 

@@ -30,7 +30,7 @@ say() { echo "$page: $*"; bad=1; }
 
 # Caps, in lines (card: words after the dash). The owner reads these; a file
 # over its cap is a file that was not cut.
-CAP_STORY=60; CAP_TRD=100; CAP_COVERAGE_ROWS=20; CAP_PR=40; CAP_CARD_WORDS=40; CAP_ADR=25
+CAP_STORY=60; CAP_TRD=100; CAP_COVERAGE_ROWS=20; CAP_PR=40; CAP_CARD_WORDS=40; CAP_ADR=30
 # The TRD's cap counts every line, but what the owner reads is the group
 # lines — ten a section at most — so the bullets under them can be many and
 # short, which is the point.
@@ -264,9 +264,9 @@ check_adr() {
   local n; n="$(head -1 "$page" | grep -oE 'ADR [0-9]{4}' | tr -dc '0-9')"
   [ -n "$n" ] && ! grep -qE "^$n-" <<<"$(basename "$page")" && say "file name does not start with $n-"
   grep -qE '^Decided: [0-9]{4}-[0-9]{2}-[0-9]{2} \(.+\)$' "$page" || say "no 'Decided: <YYYY-MM-DD> (<who>; <where>)' line"
-  headings_are Decision Why "Reopens if"
+  headings_are Decision Options Why "Reopens if"
   local sec line
-  for sec in Decision Why "Reopens if"; do
+  for sec in Decision Options Why "Reopens if"; do
     [ "$(section "$sec" | grep -cE '^- ' || true)" -gt 0 ] || say "$sec has no bullet"
     while IFS= read -r line; do
       [ -z "${line//[[:space:]]/}" ] && continue
