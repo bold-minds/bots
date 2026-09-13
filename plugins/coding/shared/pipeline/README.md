@@ -47,7 +47,7 @@ are what the pipeline runs on:
 | 2 | feature plan | `featureplan` | opus | `features/<f>/plan.md` — approach, state, outside calls, structural rules; nothing the story already says |
 | 3 | lenses | `lens` ×7 — architecture, sre, security, qa, staff on opus; performance, database on sonnet | mixed | `features/<f>/lens-<x>.md` |
 | 4 | pre-mortem | `premortem` | opus | `features/<f>/premortem.md`; a kept case the story does not cover goes to the owner, never to a task |
-| 5 | break down | `breakdown` | opus | `features/<f>/tasks/<t>/criteria.md` — the scenario numbers it carries and its success sentence — `design.md` beside each, and `tasks/coverage.md`, one row per scenario; deletes 3–4's files |
+| 5 | break down | `breakdown` | opus | `features/<f>/tasks/<t>/criteria.md` — the scenario numbers it carries and its success sentence — `design.md` beside each, and `tasks/coverage.md`, one row per scenario. Reads the story and the code only; 2–4's files are not its inputs |
 | — | **stop** | `/software` | — | shows the owner the coverage table with each task's success sentence, one message; resumes on their go |
 | 6 | current state | `state` | sonnet | cuts the task worktree from `pipeline/<f>`; `tasks/<t>/state.md`, one row per scenario, committed there |
 | 7 | red tests | `redtest` | opus | the feature file with the scenarios verbatim, the step definitions, `tasks/<t>/tests.md`, committed on the task branch |
@@ -118,7 +118,7 @@ Planner, redtest, breakdown and the code review sit on the strongest model on
 purpose: the planner is the only gate that interrupts the owner, redtest is the
 only guard against a test that proves nothing, and breakdown holds the one-way
 doors — it maps every scenario to a task, writes the coverage table the owner
-reads, and deletes the lens files and the pre-mortem. `featureverify` and `merger` are
+reads, from the story and the code alone. `featureverify` and `merger` are
 cheap because neither has a judgement to make: one re-runs five things that are
 green or not, the other merges a named list in a named order.
 
@@ -246,7 +246,8 @@ top-level technical direction; and before writing anything, ask whether the
 next step gets quality or rework from it.
 
 **Nothing outlives its usefulness.** A file dies the moment its successor
-exists: the lens files and the pre-mortem die at the breakdown, the whole
+exists: the plan, the lens files and the pre-mortem feed nothing after the
+pre-mortem step (the breakdown reads the story and the code) and the whole
 feature directory dies at the cleaner. There is exactly one deliberate
 exception. `features/_shipped.md`, one line per shipped feature, is the index
 from a feature to the tests that guard it — the map you need after everything

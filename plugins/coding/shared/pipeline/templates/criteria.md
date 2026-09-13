@@ -22,8 +22,8 @@ when this task can start from the feature branch as it stands.>
 
 ## Structural rules
 
-<Only if the feature plan named one: a rule about the shape of the code
-itself, in one sentence — "the worker never imports the server package",
+<Only if the story itself states one, in its Flow's Components or its
+Solution: a rule about the shape of the code itself, in one sentence — "the worker never imports the server package",
 "nothing under mcp/ reaches the live copy except through the fence". Each gets
 a fitness test: a test that reads the code and fails if the rule is broken.
 This section is about the code rather than the customer, which is why it is the

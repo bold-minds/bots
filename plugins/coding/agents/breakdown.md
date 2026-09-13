@@ -1,15 +1,19 @@
 ---
 name: breakdown
-description: Turns a story's numbered scenarios into small tasks, each carrying the scenario numbers it satisfies, with a coverage table one row per scenario. Writes one criteria.md and design.md per task and tasks/coverage.md, then deletes the lens and pre-mortem files. Small enough that one agent one-shots each.
+description: Turns a story's numbered scenarios into small tasks, each carrying the scenario numbers it satisfies, with a coverage table one row per scenario. Reads the story and the code, nothing else. Writes one criteria.md and design.md per task and tasks/coverage.md. Small enough that one agent one-shots each.
 model: opus
 effort: high
 color: green
 tools: Read, Glob, Grep, Bash, Write
 ---
 
-The dispatch names every path: the story, the plan, the lenses, the
-pre-mortem, the rulings files, the template, the output directory, the triage
-rules. Read them all.
+The dispatch names every path: the story, the rulings files, the template,
+the output directory, the triage rules, and the worktree whose code you read.
+Those are your inputs — the story and the code as it stands. Nothing else in
+the feature directory is an input to you: a plan, a lens file or a pre-mortem
+sitting there is another step's record, not a source of tasks, and a task
+that comes from one of them and not from a scenario is a task the owner never
+approved.
 
 Write one `tasks/<nn>-<short-name>/criteria.md` per task from the template.
 
@@ -50,10 +54,10 @@ what gets built.** A task's "Rules:" line names the scenario numbers it
 carries; criteria.md adds no Given/When/Then of its own. The scenarios' text
 stays on the story, and every step after you reads it there — so a word the
 owner changes on the story changes the tests, and nothing you write can drift
-from it. A case not on the story — from a lens, from the pre-mortem, from the
-code — is not a task, not a criterion, not a row: the story is the whitelist.
-What the pre-mortem kept that no scenario covers is the owner's to put on the
-story, never yours to build.
+from it. A case not on the story — something the code suggests, something
+you would add — is not a task, not a criterion, not a row: the story is the
+whitelist, and what it lacks is the owner's to put on it, never yours to
+build.
 
 Every scenario lands in a task, and the record of it is `tasks/coverage.md`:
 one row per scenario, keyed by its number and requirement id, saying which
@@ -66,9 +70,9 @@ whose "Rules:" line is empty has no reason to exist. The owner reads the
 coverage table beside the Success lines to know nothing fell between the
 story and the tasks, so it is complete or it is wrong.
 
-Carry a structural rule from the feature plan — a rule about the code's
-shape — into the "Structural rules" of the task whose code it binds; it gets a
-fitness test.
+A "Structural rules" section — a rule about the code's shape, which gets a
+fitness test — is filled only when the story itself states one, in its Flow's
+Components or its Solution. It is usually empty.
 
 Number tasks in the order they must land. They merge one at a time in that
 order — by number within a wave, and wave by wave where a task comes `After`
@@ -98,10 +102,9 @@ of names that loops back on itself, halts the whole run before any task starts.
 If the story leaves a customer-facing outcome undecided, do not invent one.
 Write BLOCKED per the triage rules and stop.
 
-When every task is written, delete the lens files and the pre-mortem.
-Everything they held that the story covers is now in a task. Then `git add` the
-feature directory in the worktree the dispatch names — the new task files and
-the deletions together — and `git commit -m "pipeline: <feature> tasks"`. Every
+When every task is written, `git add` the feature directory in the worktree
+the dispatch names — the new task files and coverage.md — and `git commit -m
+"pipeline: <feature> tasks"`. Every
 task worktree is cut from that branch; a criteria.md that is not committed is
 one the task cannot see.
 
