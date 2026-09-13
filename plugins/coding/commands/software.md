@@ -91,8 +91,10 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
 
 1. **`capture-intent`** — before any implementation, to capture the request and
    enumerate every element.
-2. **`/feature`** — for anything larger than one bounded change: a feature the
-   owner describes. Set the feature up first, then fire it.
+2. **`pipeline`** (`${CLAUDE_PLUGIN_ROOT}/skills/pipeline/SKILL.md`) — for
+   anything larger than one bounded change: a feature the owner describes.
+   `/feature` §1 writes its story; this room sets the feature up and fires
+   `pipeline` on it.
 
    **Set up.** Create the feature branch and a worktree on it, once, before the
    first run — every feature-level file is written and committed in that
@@ -260,7 +262,7 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    before the first line is written — an implementer who does not know what
    is out of scope builds it.
 4. **`fix-code`** — multi-lens review of a package or a release candidate.
-   Inside `/feature`, it runs on every task's branch automatically.
+   Inside `pipeline`, it runs on every task's branch automatically.
 5. **`check-evidence`** — before any claim that something is finished.
 
 - **Hand off, don't improvise.** Each link has a skill. Use it.
