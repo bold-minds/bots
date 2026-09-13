@@ -33,6 +33,8 @@ Observability appears in Observed and nowhere else on the story.
 - **Overlap is merged, never deleted.** Two scenarios describing one behaviour become one; the merged scenario carries `(merged)` on its first line until the owner has read it.
 - **No ceiling.** At ten scenarios the story splits into two stories. Nothing is trimmed.
 - **Copy and numbers on the story are approved by reading.** Change a word on the story and the test changes with it.
+- **No number unless it will be measured and proven.** A time, a count, an amount on the story is a claim the Journey or a scenario proves; a number nobody will measure is a guess and does not go on the story.
+- **No specific example unless it is labelled as one.** A concrete address, name or value on the story anchors the tests to it; write the class of thing ("a web address"), and label anything concrete "for example".
 - **Every ADR in References is named and approved before the story is approved.**
 - **Any difference between environments is settled before the first story that depends on it.**
 - **Which files a slice may touch is the builder's plan**, never the story.
