@@ -17,6 +17,7 @@ Then …
 <diagram>
 
 Legend:
++  new in this story
 ~  async
 *  <retry policy>
 
