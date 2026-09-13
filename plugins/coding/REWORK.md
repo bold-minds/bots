@@ -82,8 +82,10 @@ Files: new `shared/board/render.sh` (or a small agent), `docs/product/<release>.
 Change: `<release>.md` gains one line per story: `<nn> <stop> <state> <date> — <two sentences>`; a renderer turns it into the artifact HTML (the existing design) and republishes to the product's artifact URL. `/feature` writes the line at Story and Launched; `/software` at Tasks, Building, Code Review.
 Done when: republishing is a command, and no room draws the board by hand.
 
-### B11. Who merges (Claire's ruling)
-`software.md:214-219` says the owner runs the absolute gate and merges. Claire, 8 Sept: "I don't plan to do the merges." Options: the owner skims the PR and clicks merge (their third read is the merge); or the pipeline merges when the PR's CI is green and the owner has commented "go". Until ruled, `software.md` stands.
+### B11. Who merges: `/software` (ruled 13 Sept 10:54, "you will be merging")
+Files: `commands/software.md:214-219` and the feature phase of the script.
+Change: after the PR opens and its CI is green, `/software` merges it (`gh pr merge --merge`) and runs the config's `live:` check; the owner's PR read is a skim, not a gate. The absolute-mode gate run that `software.md:214` gave the owner becomes the PR's CI. A red there is the backlog's and the merge waits for the story that owns it.
+Done when: a passing run ends merged, with the merge commit and the live check's result in its report.
 
 ### B12. `/software` slimmed
 Files: `commands/software.md` lines 100–245 (resume mechanics) → `shared/pipeline/README.md`; onboarding (lines 28–37) reads `docs/product/<release>.md` and `docs/adr/` instead of kb `builds/<project>/{scope,decisions}.md`; `debt.md` moves beside the ADRs.

@@ -44,7 +44,7 @@ Observability appears in Observed and nowhere else on the story.
 
 1. **The story, before anything is built.** Every story. Ten minutes. They edit it or say go.
 2. **The task list, with its coverage table.** One row per scenario naming the task that carries it; never a task list alone. They say go.
-3. **The PR.** Tests named in their words at the top, the verifier's verdict as the body, the diff below. They merge.
+3. **The PR.** Tests named in their words at the top, the verifier's verdict as the body, the diff below. They skim; `/software` merges when the PR's CI is green (the owner, 13 Sept: "you will be merging").
 4. **The board card, after launch.** Two dated sentences.
 
 Nothing else reaches them unless they ask. A question that needs them is one line with a default, and only for a one-way door; everything else takes the default and goes in the story's Changelog.
