@@ -40,11 +40,12 @@ Observability appears in Observed and nowhere else on the story.
 - **Which files a slice may touch is the builder's plan**, never the story.
 - **The template changes only with the owner's approval.** When a story cannot say what it needs inside the eight sections, do not bend the story quietly: write it in the shape it needs, put one line under the title, `Template: proposes <the change, one sentence>`, and show it with the story. Approved, the change lands in `template.md`, `check.sh` and this file in the same commit, and the line comes off the story. Refused, the story is rewritten to fit.
 
-## The owner reads three times per slice
+## The owner reads four times per story
 
 1. **The story, before anything is built.** Every story. Ten minutes. They edit it or say go.
-2. **The PR.** Tests named in their words at the top, the verifier's verdict as the body, the diff below.
-3. **The board card, after merge.** Two dated sentences.
+2. **The task list, with its coverage table.** One row per scenario naming the task that carries it; never a task list alone. They say go.
+3. **The PR.** Tests named in their words at the top, the verifier's verdict as the body, the diff below. They merge.
+4. **The board card, after launch.** Two dated sentences.
 
 Nothing else reaches them unless they ask. A question that needs them is one line with a default, and only for a one-way door; everything else takes the default and goes in the story's Changelog.
 
@@ -61,4 +62,4 @@ Stories live under `<root>/docs/product/`: the requirements file is `docs/produc
 
 ## Building on it
 
-On the owner's go, the run in `SKILL.md` §2 takes the story through the pipeline: the scenarios are the red tests, the Journey is the feature verify, the board is updated at every step. The board is a Claude artifact, one per product: the ship date and days left in the header; one card per story with three stops, each a state the owner can see and one of their reads: **Defined** (the story approved), **Coded** (tests green, verified, pushed, the PR open), **Launched** (merged, deployed by CI, the Journey passing in production); a dated line per card, replaced never appended; a "waiting on the owner" box. `docs/product/<release>.md` is its written form; the two say the same thing.
+On the owner's go, the run in `SKILL.md` §2 takes the story through the pipeline: the scenarios are the red tests, the Journey is the feature verify, the board is updated at every step. The board is a Claude artifact, one per product: the ship date and days left in the header; one card per story with six stops: **Requirements** (every scenario has its id), **Story** (approved), **Tasks** (the task list and coverage table approved), **Building** (tests green, verified, pushed), **Code Review** (the PR merged), **Launched** (deployed by CI, the Journey passing in production, the card's two sentences written); each stop is done, happening now, waiting on the owner, waiting on a dependency, or not started; a dated line per card, replaced never appended; a "waiting on the owner" box. `docs/product/<release>.md` is its written form; the two say the same thing.
