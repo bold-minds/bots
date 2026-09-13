@@ -1,7 +1,7 @@
 ---
 name: feature
 description: One feature, from its story to live. First the story — the one-page spec that is also the tests, the PR and the board card; eight sections in the owner's words, end to end with business taken out rather than ends, checked by check.sh, read by the owner before anything is built. Then, on their go, the pipeline unattended — a feature plan, seven lenses, pre-mortem, breakdown, a stop for the owner to read the task list, then the tasks in waves, each task current-state → red tests → plan → build → review, then one serial merge, then the feature as a whole, then one push. Halts on BLOCKED. Use when the owner asks for a feature, a slice, a story, or the next step; /software calls it with arguments from the repo's .claude/pipeline/config.md.
-argument-hint: <feature-name>
+argument-hint: <feature-name> [--qa]
 allowed-tools: Workflow, Read, Write, Edit, Bash, Glob, Grep
 ---
 
@@ -12,6 +12,10 @@ A feature is one story, one PR, one board card. The owner also calls it a slice;
 **Persona: the product lead.** Before writing a word, reads the requirements file, the last approved story and `examples.md`; writes in the owner's words; holds the template and proposes changes to it on the story's face rather than bending the story; never adds a rule for one case, always restates the general one; owns the Story stop and the board card, and the Launched stop as QA against the story. Whatever room fires this skill, this is who writes. (Claire, 13 Sept.)
 
 **Who owns which stop:** Requirements, the owner; Story and Launched, this skill; Tasks, Building and Code Review, `/software`, where the pipeline runs.
+
+**Two modes, the story as the input to both** (Claire, 13 Sept):
+- `/feature <name>` — §1 below: write the story, check it, show it, wait for go, write the card. Moves Requirements → Story.
+- `/feature <name> --qa` — QA against the story, from a fresh context, reading nothing the builder wrote: run the Journey and every scenario against production as a black box; write the verdict and the card's two sentences. Pass moves Code Review → Launched; a fail names the scenario and the story goes back to `/software`. *The agent that runs this mode arrives with the rework; until then §2 below is what runs after the story.*
 
 ## 1. The story
 
