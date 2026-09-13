@@ -14,7 +14,7 @@ The only command in this plugin. Everything below is model-triggered from its ow
 
 ### feature
 
-One feature, from its story to live. First the story: the one-page spec that is also the tests, the PR and the board card. Eight sections, every story, in order (Shows, Journey, Scenarios, Flow, Solution, Observed, References, Changelog); scenarios in the owner's words, each naming a requirement id; every story end to end, sized by taking business out; observability only in Observed; architecture choices only as ADRs in References; a Changelog for anything after approval. `check.sh` holds the shape mechanically, and the owner reads every story before anything is built. Then, on their go, the pipeline runs unattended: plan, seven lenses, pre-mortem, breakdown, the tasks in waves, one serial merge, the whole feature, one push.
+One feature's story. The one-page spec that is also the tests, the PR and the board card: Shows, Journey, Scenarios, Changelog, in the owner's words; every scenario names a requirement id; every story end to end, sized by taking business out; a Changelog for anything after approval. The technical half — Flow, Solution, Observed, References, and the review the seven lenses and the pre-mortem write — is the TRD beside it, engineering's, written after the story is approved. Every file the owner reads (story, TRD, coverage table, PR, card) has a template, a checker and a cap in `shared/hil/`; `shared/hil/check.sh <type> <file>` holds the shape mechanically, and the owner reads the story before anything is designed. Then `pipeline` runs unattended on story + TRD.
 
 ### write-code
 

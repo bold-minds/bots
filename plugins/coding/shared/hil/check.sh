@@ -1,0 +1,262 @@
+#!/usr/bin/env bash
+# check.sh <type> <file> [--approved] [--reviewed] [--story <story.md>]
+# One checker for every file the owner reads. Prints one line per defect;
+# exit 0 when the file is clean, 1 when it is not, 2 when it cannot be read.
+#   type        story | trd | coverage | pr | card
+#   --approved  story: approved, so the Changelog may be non-empty
+#   --reviewed  trd: reviewed, so the Review section must hold the table
+#   --story F   coverage: the story whose scenario numbers every row must match
+set -u
+
+type="${1:?usage: check.sh <story|trd|coverage|pr|card> <file> [--approved] [--reviewed] [--story <file>]}"
+page="${2:?usage: check.sh <type> <file>}"
+shift 2
+approved=0; reviewed=0; story=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --approved) approved=1 ;;
+    --reviewed) reviewed=1 ;;
+    --story) story="${2:?--story needs a file}"; shift ;;
+    *) echo "unknown option: $1"; exit 2 ;;
+  esac
+  shift
+done
+[ -f "$page" ] || { echo "no such file: $page"; exit 2; }
+page="$(cd "$(dirname "$page")" && pwd)/$(basename "$page")"
+dir="$(dirname "$page")"
+
+bad=0
+say() { echo "$page: $*"; bad=1; }
+
+# Caps, in lines (card: words after the dash). The owner reads these; a file
+# over its cap is a file that was not cut.
+CAP_STORY=60; CAP_TRD=80; CAP_COVERAGE_ROWS=20; CAP_PR=40; CAP_CARD_WORDS=40
+
+# The repo root: from a linked worktree .git is a file, so ask git, and only
+# walk when the file is not in a repo at all.
+root="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null)"
+if [ -z "$root" ]; then
+  root="$dir"; while [ "$root" != "/" ] && [ ! -e "$root/.git" ]; do root="$(dirname "$root")"; done
+fi
+
+# Observability vendors: named only in a TRD's Observed (or References). From
+# the repo's .claude/slice-observability, one per line, else a default list.
+vendors=()
+if [ -f "$root/.claude/slice-observability" ]; then
+  mapfile -t vendors < "$root/.claude/slice-observability"
+else
+  vendors=("Better Stack" "PostHog" "Datadog" "Sentry" "Grafana")
+fi
+
+section() {  # section <Heading> — the body under "## Heading"
+  awk -v h="## $1" '
+    $0 == h {on=1; next}
+    /^## / {on=0}
+    on {print}
+  ' "$page"
+}
+nonblank() { grep -cvE '^[[:space:]]*$' || true; }
+lines() { grep -cvE '^[[:space:]]*$' "$page" || true; }
+
+headings_are() {  # headings_are <H1> <H2> … — exactly these ## headings, in order
+  local want=("$@")
+  mapfile -t have < <(grep -E '^## ' "$page" | sed -E 's/^## +//; s/ +$//')
+  if [ "${#have[@]}" -ne "${#want[@]}" ]; then
+    say "expected ${#want[@]} headings (${want[*]}), found ${#have[@]}: ${have[*]:-none}"
+    return
+  fi
+  for i in "${!want[@]}"; do
+    [ "${have[$i]}" = "${want[$i]}" ] || say "heading $((i+1)) is '${have[$i]}', expected '${want[$i]}'"
+  done
+}
+
+# No line shared with a sibling of the same type. Given/When lines, headings,
+# labels and None lines are exempt: a shared precondition is a fixture, a label
+# is a label. Then/And lines and every technical line must be this file's own.
+shared_lines() {  # shared_lines <glob> <exempt-regex> <body> [skip-name-regex]
+  local glob="$1" exempt="$2" body="$3" skip="${4:-}" other line
+  for other in "$dir"/$glob; do
+    [ "$other" = "$page" ] && continue
+    [ -f "$other" ] || continue
+    [ -n "$skip" ] && grep -qE "$skip" <<<"$(basename "$other")" && continue
+    while IFS= read -r line; do
+      [ -z "${line//[[:space:]]/}" ] && continue
+      grep -qE "$exempt" <<<"$line" && continue
+      [ "${#line}" -lt 24 ] && continue
+      grep -qFx -- "$line" "$other" && say "line also in $(basename "$other"): ${line}"
+    done <<<"$body"
+  done
+}
+
+vendors_outside() {  # vendors_outside <text> <where> — a vendor named in <text> is a defect
+  local text="$1" where="$2" v
+  for v in "${vendors[@]}"; do
+    [ -n "$v" ] || continue
+    grep -qF "$v" <<<"$text" && say "'$v' named $where"
+  done
+}
+
+check_story() {
+  head -1 "$page" | grep -qE '^# .+' || say "first line is not the slice title"
+  grep -qE '^Shows: .+' "$page" || say "no 'Shows:' line"
+  headings_are Journey Scenarios Changelog
+  for h in Flow Solution Observed References; do
+    grep -qE "^## $h" "$page" && say "'$h' is on the TRD, not the story"
+  done
+
+  local j s n line
+  j="$(section Journey)"
+  for k in Given When Then; do
+    grep -qE "^[[:space:]]*(And )?$k " <<<"$j" || say "Journey has no '$k' line"
+  done
+
+  s="$(section Scenarios)"
+  n="$(grep -cE '^[[:space:]]*[0-9]+\.' <<<"$s" || true)"
+  [ "$n" -gt 0 ] || say "no scenarios"
+  while IFS= read -r line; do
+    grep -qE '^[[:space:]]*[0-9]+\.[[:space:]]*\[[^]]+\]' <<<"$line" || say "scenario without a requirement id: ${line}"
+  done < <(grep -E '^[[:space:]]*[0-9]+\.' <<<"$s")
+  [ "$n" -gt 10 ] && say "$n scenarios: split the story at ten"
+  # Numbered 1..n in order: the coverage table and the tests key on these.
+  local expect=1 got
+  while IFS= read -r got; do
+    [ "$got" -eq "$expect" ] || say "scenario numbered $got where $expect was expected"
+    expect=$((expect+1))
+  done < <(grep -oE '^[[:space:]]*[0-9]+\.' <<<"$s" | tr -dc '0-9\n')
+
+  if [ "$approved" -eq 0 ] && [ "$(section Changelog | nonblank)" -gt 0 ]; then
+    say "Changelog is not empty before approval"
+  fi
+
+  vendors_outside "$(cat "$page")" "on the story (observability lives on the TRD's Observed)"
+
+  # Siblings that are TRDs are not stories; skip them.
+  local exempt='^(#|##|Shows:|[[:space:]]*(Given|When) |[[:space:]]*[0-9]+\. \[)'
+  shared_lines '*.md' "$exempt" "$(cat "$page")" '\.trd\.md$'
+  local l; l="$(lines)"
+  [ "$l" -le "$CAP_STORY" ] || say "$l lines; the story's cap is $CAP_STORY"
+}
+
+check_trd() {
+  head -1 "$page" | grep -qE '^# .+ — design$' || say "first line is not '# <story title> — design'"
+  local st; st="$(grep -E '^Story: ' "$page" | head -1 | sed -E 's/^Story: +//; s/ +$//')"
+  if [ -z "$st" ]; then say "no 'Story:' line"
+  elif [ ! -f "$dir/$st" ] && [ ! -f "$st" ]; then say "Story: names a file that is not there: $st"
+  fi
+  headings_are Flow Solution Observed References Review
+  for h in Journey Scenarios Changelog; do
+    grep -qE "^## $h" "$page" && say "'$h' is on the story, not the TRD"
+  done
+
+  local f
+  f="$(section Flow)"
+  grep -qE '^Legend:' <<<"$f" || say "Flow has no Legend:"
+  grep -qE '^Components:' <<<"$f" || say "Flow has no Components:"
+  grep -qE '^[0-9]+\..*(New|Existing)\.?[[:space:]]*$' <<<"$f" || say "Flow has no numbered connection marked New or Existing"
+  for sec in Solution Observed References; do
+    [ "$(section "$sec" | nonblank)" -gt 0 ] || say "$sec is empty (write 'None new' or 'None' if so)"
+  done
+  # Every References item names its ADR, or says it is pending or pre-existing.
+  while IFS= read -r line; do
+    grep -qE '(: ADR [0-9]+|: ADR pending|: existing, no ADR|^- None$)' <<<"$line" \
+      || say "References item without 'ADR <n>', 'ADR pending' or 'existing, no ADR': ${line}"
+  done < <(section References | grep -E '^- ')
+
+  local r rows
+  r="$(section Review)"
+  rows="$(grep -cE '^\| *[0-9]+ *\|' <<<"$r" || true)"
+  if [ "$reviewed" -eq 1 ]; then
+    [ "$rows" -gt 0 ] || say "reviewed, but the Review section holds no findings table"
+    while IFS= read -r line; do
+      grep -qE '\| *(TRD|Story|Dismissed): [^|]+\|[[:space:]]*$' <<<"$line" \
+        || say "Review row whose Outcome is not 'TRD: …', 'Story: …' or 'Dismissed: …': ${line}"
+    done < <(grep -E '^\| *[0-9]+ *\|' <<<"$r")
+  else
+    { [ "$rows" -gt 0 ] || grep -qE '^Not yet reviewed\.' <<<"$r"; } || say "Review is neither 'Not yet reviewed.' nor a findings table"
+  fi
+
+  local outside
+  outside="$(awk '
+    /^## (Observed|References)/ {skip=1; next}
+    /^## / {skip=0}
+    !skip {print}
+  ' "$page")"
+  vendors_outside "$outside" "outside Observed and References"
+
+  local exempt='^(#|##|Story:|Logs, non-error:|Events:|Alerts:|- None|- None new|None|None new|\|)'
+  local body; body="$(awk '
+    /^## Flow/ {skip=1; next}
+    /^## / {skip=0}
+    !skip {print}
+  ' "$page")"
+  shared_lines '*.trd.md' "$exempt" "$body"
+  local l; l="$(lines)"
+  [ "$l" -le "$CAP_TRD" ] || say "$l lines; the TRD's cap is $CAP_TRD"
+}
+
+check_coverage() {
+  head -1 "$page" | grep -qE '^# Coverage — .+' || say "first line is not '# Coverage — <feature>'"
+  grep -qE '^Story: .+' "$page" || say "no 'Story:' line"
+  grep -qE '^\| *Scenario *\| *In the owner.s words' "$page" || say "table header is not '| Scenario | In the owner's words (short) | Task | Where in the task |'"
+  grep -qE '^\| *Journey *\|' "$page" || say "no Journey row"
+  local rows line n cell
+  rows="$(grep -E '^\| *[0-9]+ \[' "$page" || true)"
+  [ -n "$rows" ] || say "no scenario rows"
+  while IFS= read -r line; do
+    [ -n "$line" ] || continue
+    cell="$(awk -F'|' '{gsub(/^ +| +$/,"",$4); print $4}' <<<"$line")"
+    [ -n "$cell" ] || say "row with no task: ${line}"
+  done <<<"$rows"
+  n="$(grep -cE '^\| *([0-9]+ \[|Journey)' "$page" || true)"
+  [ "$n" -le "$CAP_COVERAGE_ROWS" ] || say "$n rows; the coverage table's cap is $CAP_COVERAGE_ROWS"
+  if [ -n "$story" ]; then
+    [ -f "$story" ] || { say "--story names a file that is not there: $story"; return; }
+    local want have
+    want="$(awk '/^## Scenarios/{on=1;next} /^## /{on=0} on' "$story" | grep -oE '^[[:space:]]*[0-9]+\.' | tr -dc '0-9\n' | sort -n)"
+    have="$(grep -oE '^\| *[0-9]+ \[' "$page" | tr -dc '0-9\n' | sort -n)"
+    for k in $want; do grep -qx "$k" <<<"$have" || say "scenario $k on the story has no row"; done
+    for k in $have; do grep -qx "$k" <<<"$want" || say "row for scenario $k, which the story does not have"; done
+    [ "$(sort <<<"$have" | uniq -d | wc -l)" -eq 0 ] || say "a scenario has more than one row"
+  fi
+}
+
+check_pr() {
+  local first; first="$(grep -vE '^[[:space:]]*$' "$page" | head -1)"
+  [ "$first" = "## Tests" ] || say "first line is not '## Tests'"
+  headings_are Tests Verdict
+  local t; t="$(section Tests)"
+  [ "$(grep -cE '^- ' <<<"$t" || true)" -gt 0 ] || say "Tests holds no lines"
+  while IFS= read -r line; do
+    grep -qE ' — (PASS|RED)( .*)?$' <<<"$line" || say "test line without '— PASS' or '— RED': ${line}"
+  done < <(grep -E '^- ' <<<"$t")
+  grep -qE '^- Journey' <<<"$t" || say "Tests has no Journey line"
+  local v; v="$(section Verdict | grep -vE '^[[:space:]]*$' | head -1)"
+  grep -qE '^# (PASS|BLOCK: .+)$' <<<"$v" || say "Verdict does not open with '# PASS' or '# BLOCK: <sentence>'"
+  local l; l="$(lines)"
+  [ "$l" -le "$CAP_PR" ] || say "$l lines; the PR body's cap is $CAP_PR"
+}
+
+check_card() {
+  local n; n="$(lines)"
+  [ "$n" -eq 1 ] || say "a card is one line; found $n"
+  local c; c="$(grep -vE '^[[:space:]]*$' "$page" | head -1)"
+  grep -qE '^[0-9]{2} (Requirements|Story|Design|Tasks|Building|Code Review|Test|Launched) (done|now|waiting-owner|waiting-dependency|not-started) [0-9]{4}-[0-9]{2}-[0-9]{2} — .+$' <<<"$c" \
+    || say "card is not '<nn> <stop> <state> <YYYY-MM-DD> — <two sentences>'"
+  local tail; tail="${c#* — }"
+  local sentences; sentences="$(grep -oE '[^.]+\.' <<<"$tail" | wc -l)"
+  [ "$sentences" -eq 2 ] || say "the card's text is $sentences sentence(s); it is two"
+  local words; words="$(wc -w <<<"$tail")"
+  [ "$words" -le "$CAP_CARD_WORDS" ] || say "$words words after the dash; the card's cap is $CAP_CARD_WORDS"
+}
+
+case "$type" in
+  story) check_story ;;
+  trd) check_trd ;;
+  coverage) check_coverage ;;
+  pr) check_pr ;;
+  card) check_card ;;
+  root) echo "$root" ;;   # the repo root the checker resolved for this file; for the self-test
+  *) echo "unknown type: $type (story|trd|coverage|pr|card)"; exit 2 ;;
+esac
+
+exit "$bad"

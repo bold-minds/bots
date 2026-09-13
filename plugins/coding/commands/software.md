@@ -106,8 +106,8 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
 
    if `pipeline/<name>` does not already exist. The story is the feature's
    spec: `/feature` §1 writes it at `<root>/docs/product/stories/<nn>-<name>.md`,
-   runs `check.sh`, shows the owner the whole story and waits for their edit or
-   go. Nothing copies it: every step of the run reads it at that path, passed
+   runs `shared/hil/check.sh story`, shows the owner the whole story and waits
+   for their edit or go. Nothing copies it: every step of the run reads it at that path, passed
    as `story`, and a word the owner changes there changes the tests.
 
    Fire the pipeline when two things are true: the story is approved (it is

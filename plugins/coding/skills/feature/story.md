@@ -10,56 +10,53 @@ One feature is one story, one PR, one board card; the owner also calls it a slic
 
 ## The story
 
-Eight sections, every story, in this order. Nothing else. No prose. No text copied from another story. `template.md` beside this file is the skeleton; `examples.md` shows two finished stories.
+Four sections, every story, in this order. Nothing else. No prose. No text copied from another story. The owner's words throughout. `shared/hil/templates/story.md` is the skeleton; `shared/hil/examples/` shows two finished stories with their TRDs.
 
 | Section | What it holds |
 |---|---|
 | **Shows** | One sentence: what a customer or the owner can see when it is done. |
 | **Journey** | One Given / When / Then walking the slice end to end through the real environment, every customer-visible effect asserted. The end-to-end test and the definition of done. Names an environment only where the journey has to differ in one. |
-| **Scenarios** | Given / When / Then in the owner's words, one behaviour each, each naming its requirement id in brackets on its first line. Each scenario is the rule and is the test: the text on the story is the scenario file that runs. |
-| **Flow** | An ASCII sequence diagram, symbols on the arrow labels (`--webhook~->`); every piece new in this story, a participant or an arrow, carries `+`. A **Legend** mapping each symbol (`+` new, async, a retry policy, dead-letter). **Components** saying what each participant is and where it lives, never a bare name. Then the connections as a plain numbered list in the order the events occur, each marked New or Existing. |
-| **Solution** | How the surface changes, one concrete line each: envs added to CI and app config, packages added, external endpoints added with their URL. Leading indicators of misalignment, not an inventory. "None new" is a valid line. |
-| **Observed** | By condition: every non-error log line and what it carries; every product event, its name and what it carries; every alert. Only what this story adds; "None new" is the default. Errors are logged always and not listed. Customer id only, never a phone number, an email or message text. |
-| **References** | Every item on this story that needs an ADR, and the ADR that covers it: a new service, vendor or piece of infrastructure, or a business rule that means refactoring a large amount of existing code. ADRs live in the repo. "None" is a valid line. |
+| **Scenarios** | Given / When / Then in the owner's words, one behaviour each, numbered from 1, each naming its requirement id in brackets on its first line. Each scenario is the rule and is the test: the text on the story is the scenario file that runs. |
 | **Changelog** | Empty at approval. Every change after approval is one dated line. |
 
-Observability appears in Observed and nowhere else on the story.
+**The TRD** (`<nn>-<name>.trd.md`, beside the story) carries the technical half — Flow, Solution, Observed, References, and the Review that the lenses and the pre-mortem write — and is engineering's, written after the story is approved and read by the owner as their second read (Claire, 13 Sept: "making the story file short is no prob with me"). Its template and checker are in `shared/hil/` too. Nothing technical appears on the story: no vendor, no package, no endpoint, no log line.
 
 ## Rules
 
-- **The story is the whitelist.** What is on it is the slice; what is not, is not. No exclusion list. A line or event not in Observed is not written.
+- **The story is the whitelist.** What is on it is the slice; what is not, is not. No exclusion list. The TRD's Solution, Observed and References are the whitelist for what the code may add, write and depend on.
 - **Every scenario names a requirement id.** A scenario without one waits until the owner adds the requirement to the requirements file. A PR never adds one. Nothing comes back because it was built before.
-- **Validations are scenarios.** Every check, limit, refusal or error message is a Given / When / Then in the owner's words, or it does not exist.
+- **Validations are scenarios.** Every check, limit, refusal or error message is a Given / When / Then in the owner's words, or it does not exist. A TRD review that finds one proposes it; the owner puts it on the story or refuses it.
 - **Overlap is merged, never deleted.** Two scenarios describing one behaviour become one; the merged scenario carries `(merged)` on its first line until the owner has read it.
 - **No ceiling.** At ten scenarios the story splits into two stories. Nothing is trimmed.
 - **Copy and numbers on the story are approved by reading.** Change a word on the story and the test changes with it.
 - **No number unless it will be measured and proven.** A time, a count, an amount on the story is a claim the Journey or a scenario proves; a number nobody will measure is a guess and does not go on the story.
 - **No specific example unless it is labelled as one.** A concrete address, name or value on the story anchors the tests to it; write the class of thing ("a web address"), and label anything concrete "for example".
-- **Every ADR in References is named and approved before the story is approved.**
+- **Every ADR in the TRD's References is named and approved before the TRD is approved.**
 - **Any difference between environments is settled before the first story that depends on it.**
-- **Which files a slice may touch is the builder's plan**, never the story.
-- **The template changes only with the owner's approval.** When a story cannot say what it needs inside the eight sections, do not bend the story quietly: write it in the shape it needs, put one line under the title, `Template: proposes <the change, one sentence>`, and show it with the story. Approved, the change lands in `template.md`, `check.sh` and this file in the same commit, and the line comes off the story. Refused, the story is rewritten to fit.
+- **Which files a slice may touch is the builder's plan**, never the story or the TRD.
+- **The template changes only with the owner's approval.** When a story cannot say what it needs inside the four sections, do not bend the story quietly: write it in the shape it needs, put one line under the title, `Template: proposes <the change, one sentence>`, and show it with the story. Approved, the change lands in `shared/hil/templates/story.md`, `shared/hil/check.sh`, `shared/hil/selftest.sh` and this file in the same commit, and the line comes off the story. Refused, the story is rewritten to fit.
 
-## The owner reads four times per story
+## The owner reads five times per story
 
-1. **The story, before anything is built.** Every story. Ten minutes. They edit it or say go.
-2. **The task list, with its coverage table.** One row per scenario naming the task that carries it; never a task list alone. They say go.
-3. **The PR.** Tests named in their words at the top, the verifier's verdict as the body, the diff below. They skim; `/software` merges when the PR's CI is green (the owner, 13 Sept: "you will be merging").
-4. **The board card, after launch.** Two dated sentences.
+1. **The story, before anything is designed.** Every story. Ten minutes. They edit it or say go.
+2. **The TRD, before anything is built.** Flow, Solution, Observed, References, and the Review — every lens and pre-mortem finding with what became of it. Proposed scenarios are theirs to accept or refuse. They say go.
+3. **The coverage table, with each task's success sentence.** One row per scenario naming the task that carries it; never a task list alone. They say go.
+4. **The PR.** Tests named in their words at the top, the verifier's verdict as the body, the diff below. They skim; `/software` merges when the PR's CI is green (the owner, 13 Sept: "you will be merging").
+5. **The board card, after launch.** One line, two sentences.
 
-Nothing else reaches them unless they ask. A question that needs them is one line with a default, and only for a one-way door; everything else takes the default and goes in the story's Changelog.
+Every one of the five has a template, a checker and a cap in `shared/hil/`; the skill that writes it runs the checker first, and nothing that fails is shown. Nothing else reaches them unless they ask. A question that needs them is one line with a default, and only for a one-way door; everything else takes the default and goes in the story's Changelog.
 
 ## Process
 
-Stories live under `<root>/docs/product/`: the requirements file is `docs/product/requirements.md`, the stories are `docs/product/stories/<nn>-<name>.md`, their order is `docs/product/<release>.md`, and ADRs are `docs/adr/`. (Claire, 12 Sept.)
+Stories live under `<root>/docs/product/`: the requirements file is `docs/product/requirements.md`, the stories are `docs/product/stories/<nn>-<name>.md` with their TRDs beside them as `<nn>-<name>.trd.md`, their order is `docs/product/<release>.md`, and ADRs are `docs/adr/`. (Claire, 12 Sept.)
 
-1. **Find the step.** Read `docs/product/requirements.md` and `docs/product/<release>.md`. The next story is the customer's next step or builds on the last live one. Name it in the customer's words.
-2. **Write the story** at `docs/product/stories/<nn>-<name>.md` from `template.md`. Scenarios from the requirements file or the owner's words only. Vendors as roles in Components, with the ADR in References.
-3. **Check it:** `bash ${CLAUDE_PLUGIN_ROOT}/skills/feature/check.sh docs/product/stories/<nn>-<name>.md`. Fix every line it prints. It checks the eight headings and their order, a requirement id on every scenario, a non-empty Journey, an empty Changelog before approval, no line shared with another story in the directory, and no observability vendor named outside Observed.
-4. **Show the owner the story**, whole, in the chat, with any `Template: proposes` line first. Wait for their edit or their go. Nothing is built before it.
+1. **Find the step.** Read `docs/product/requirements.md` and `docs/product/<release>.md`, and `docs/product/survey.md` if one exists. The next story is the customer's next step or builds on the last live one. Name it in the customer's words.
+2. **Write the story** at `docs/product/stories/<nn>-<name>.md` from `shared/hil/templates/story.md`. Scenarios from the requirements file or the owner's words only.
+3. **Check it:** `bash ${CLAUDE_PLUGIN_ROOT}/shared/hil/check.sh story docs/product/stories/<nn>-<name>.md`. Fix every line it prints. It checks the title and the Shows line, the three headings and their order, a Given/When/Then in the Journey, a requirement id on every scenario and their numbering, no more than ten, an empty Changelog before approval, no vendor named, no line shared with another story in the directory, and the cap.
+4. **Show the owner the story**, whole, in the chat, with any `Template: proposes` line first. Wait for their edit or their go. Nothing is designed before it.
 5. **Add it to `docs/product/<release>.md`** in order, and to the board.
-6. **After approval, every change is a dated Changelog line**, including any two-way-door default the build took.
+6. **After approval, every change is a dated Changelog line**, including any two-way-door default the build took and any scenario accepted from the TRD's review.
 
 ## Building on it
 
-On the owner's go, `/software` fires the `pipeline` skill (`skills/pipeline/SKILL.md`) on the story: the scenarios are the red tests, the Journey is the feature verify, the board is updated at every step. The board is a Claude artifact, one per product: the ship date and days left in the header; one card per story with six stops: **Requirements** (every scenario has its id), **Story** (approved), **Tasks** (the task list and coverage table approved), **Building** (tests green, verified, pushed), **Code Review** (the PR merged), **Launched** (deployed by CI, the Journey passing in production, the card's two sentences written); each stop is done, happening now, waiting on the owner, waiting on a dependency, or not started; a dated line per card, replaced never appended; a "waiting on the owner" box. `docs/product/<release>.md` is its written form; the two say the same thing.
+On the owner's go, the Design stop follows: `trd` writes the TRD from the story and the code, the seven lenses and the pre-mortem review it, and the owner reads it. Then `pipeline` runs on story + TRD: the scenarios are the red tests, the Journey is the feature verify, the board is updated at every stop. The board is a Claude artifact, one per product: the ship date and days left in the header; one card per story with eight stops: **Requirements** (every scenario has its id), **Story** (approved), **Design** (the TRD approved), **Tasks** (the coverage table approved), **Building** (tests green, verified, pushed), **Code Review** (the PR merged), **Test** (the Journey and every scenario passing on the test environment), **Launched** (the same in production, the card written); each stop is done, now, waiting on the owner, waiting on a dependency, or not started; a dated line per card, replaced never appended; a "waiting on the owner" box. `docs/product/<release>.md` is its written form; the two say the same thing.
