@@ -107,11 +107,16 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    if `pipeline/<name>` does not already exist. The story is the feature's
    spec: `/feature` §1 writes it at `<root>/docs/product/stories/<nn>-<name>.md`,
    runs `shared/hil/check.sh story`, shows the owner the whole story and waits
-   for their edit or go. Nothing copies it: every step of the run reads it at that path, passed
-   as `story`, and a word the owner changes there changes the tests.
+   for their edit or go. Then the Design stop: the `trd` skill
+   (`${CLAUDE_PLUGIN_ROOT}/skills/trd/SKILL.md`) writes the TRD beside it,
+   has the seven lenses and the pre-mortem review it, and shows the owner;
+   they accept or refuse each proposed scenario and say go. Nothing copies
+   either file: every step of the run reads them at those paths, passed as
+   `story` and `trd`, and a word the owner changes there changes the tests.
 
-   Fire the pipeline when two things are true: the story is approved (it is
-   listed in `docs/product/<release>.md` with its approval), and they said go —
+   Fire the pipeline when three things are true: the story is approved (it
+   is listed in `docs/product/<release>.md` with its approval), its TRD is
+   approved (committed with a reviewed Review section), and they said go —
    or said earlier not to ask. Otherwise show three lines (the feature, its
    Shows line, its scenario count) and wait for one word.
 

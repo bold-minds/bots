@@ -1,6 +1,6 @@
-# Pre-mortem — <feature name>
+# Pre-mortem — <story title>
 
-It shipped. It went wrong. How?
+It shipped. It went wrong. How? Returned as text; nothing is written.
 
 Keep a case only if BOTH are yes:
 - a real customer would plausibly hit it — point at a number if you can
@@ -16,11 +16,6 @@ Keep a case only if BOTH are yes:
 ## What happens when it fails
 
 <Each ✓ row, restated as Given / When / Then, ending in the exact message,
-refusal, or fallback the customer gets. The story is the whitelist: a kept case
-a scenario on the story already covers is that scenario's; one no scenario
-covers is not built by this run — it goes to the owner, in one line each under
-the heading below, to put on the story or refuse.>
-
-## For the owner: cases the story does not cover
-
-<One line each, or "none". Nothing here reaches a task.>
+refusal, or fallback the customer gets. A row a scenario covers names it and
+needs nothing more; a row no scenario covers is a proposed scenario, and the
+TRD writer puts it in the Review table for the owner.>
