@@ -40,8 +40,15 @@ TRD from the template:
   Customer id only, never a phone number, an email or message text.
 - **References**: every item that needs an ADR and the ADR that covers it —
   a new service, vendor or piece of infrastructure, or a business rule that
-  means refactoring a large amount of existing code. `ADR <n>`, `ADR pending`
-  or `existing, no ADR`; "None" is a line.
+  means refactoring a large amount of existing code. **You write the ADR
+  here**, at `docs/adr/NNNN-<slug>.md`, from the ruling behind it — the
+  rulings files, the survey, the attic, a decision the owner has recorded
+  anywhere the dispatch names — as the decision, the date, the reasoning and
+  what reopens it, a screen at most, and add its line to `docs/adr/README.md`.
+  The owner approves the ADR with the TRD. `ADR pending` is allowed only
+  when no ruling exists anywhere, and then it is a BLOCKED question to the
+  owner, not a line to leave; `existing, no ADR` is for a thing already in
+  use that no story brought. "None" is a line.
 
 No `Review` section, ever: the owner reads one cohesive draft, and nothing
 of how it got there stays on it. No number unless the Journey or a scenario

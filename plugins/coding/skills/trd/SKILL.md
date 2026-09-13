@@ -25,10 +25,13 @@ when the line is there.
 **Output**: `docs/product/stories/<nn>-<name>.trd.md` in the shape
 `shared/hil/templates/trd.md` gives, passing `shared/hil/check.sh trd <file>
 --reviewed` — one cohesive draft with the review's findings folded in and
-nothing of the review on it; plus the trail at
+nothing of the review on it; the ADR for every References item that has
+none yet, at `<root>/docs/adr/NNNN-<slug>.md`, written from the ruling
+behind it (an item with no ruling anywhere is a question to the owner, not
+a pending line); plus the trail at
 `<root>/.claude/pipeline/reviews/<nn>-<name>-<date>.md`, which the owner
-never reads. Shown to the owner whole. Nothing is committed until they say
-go.
+never reads. Shown to the owner whole, the new ADRs with it. Nothing is
+committed until they say go.
 
 ## The run
 
@@ -77,9 +80,9 @@ Let `P` be `${CLAUDE_PLUGIN_ROOT}`, `HIL` be `${P}/shared/hil`, `root` be
    - a proposed scenario refused — one line in the trail; nothing changes;
    - a refusal overruled — fold that finding into the TRD, run the checker,
      show again;
-   - **go** — commit the TRD, the trail, and the story if it changed, on the
-     branch the story is on, `docs/product: <nn>-<name> TRD approved`, and
-     report the stop moved to Design: done.
+   - **go** — commit the TRD, its new ADRs, the trail, and the story if it
+     changed, on the branch the story is on, `docs/product: <nn>-<name> TRD
+     approved`, and report the stop moved to Design: done.
 
 A TRD is never shown with a failing checker, never shown twice for one
 finding, never carries a word about its own review, and is never written for
