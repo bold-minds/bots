@@ -8,6 +8,7 @@ page="${1:?usage: check.sh <page.md> [--approved]}"
 approved=0
 [ "${2:-}" = "--approved" ] && approved=1
 [ -f "$page" ] || { echo "no such file: $page"; exit 2; }
+page="$(cd "$(dirname "$page")" && pwd)/$(basename "$page")"
 
 bad=0
 say() { echo "$page: $*"; bad=1; }
