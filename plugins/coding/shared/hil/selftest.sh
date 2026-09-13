@@ -70,6 +70,21 @@ expect_fail "trd Story: pointing nowhere" "not there" trd "$tmp/b8.trd.md" --rev
 # trd: headings out of order
 sed 's/^## Solution$/## Solutions/' "$ex/01-text-answered.trd.md" > "$tmp/b9.trd.md"
 expect_fail "trd heading misspelt" "expected 'Solution'" trd "$tmp/b9.trd.md" --reviewed
+# trd: a group line carrying code
+sed 's/^A text to our number reaches the app and gets a reply\.$/A text to our number reaches pkg\/infra\/texting and gets a reply./' "$ex/01-text-answered.trd.md" > "$tmp/b11.trd.md"
+expect_fail "trd group line with a path in it" "group line with code" trd "$tmp/b11.trd.md" --reviewed
+# trd: a bullet with no group line over it
+sed 's/^A text to our number reaches the app and gets a reply\.$//' "$ex/01-text-answered.trd.md" > "$tmp/b12.trd.md"
+expect_fail "trd bullet with no group line" "no group line above" trd "$tmp/b12.trd.md" --reviewed
+# trd: a bullet that is a paragraph
+sed 's/^- Go package pkg\/infra\/texting$/- Go package pkg\/infra\/texting which wraps the vendor client and holds the number and the retry policy and the parsing/' "$ex/01-text-answered.trd.md" > "$tmp/b13.trd.md"
+expect_fail "trd bullet over 15 words" "15 at most" trd "$tmp/b13.trd.md" --reviewed
+# trd: a group line that is not a sentence
+sed 's/^Each vendor has its own credential\.$/Each vendor has its own credential/' "$ex/01-text-answered.trd.md" > "$tmp/b14.trd.md"
+expect_fail "trd group line without a full stop" "not a sentence" trd "$tmp/b14.trd.md" --reviewed
+# trd: the old numbered connection list in Flow
+{ sed '/^## Solution/,$d' "$ex/01-text-answered.trd.md"; echo '1. Texting → App: inbound text webhook. New.'; echo; sed -n '/^## Solution/,$p' "$ex/01-text-answered.trd.md"; } > "$tmp/b15.trd.md"
+expect_fail "trd Flow with a numbered connection list" "numbered connection list" trd "$tmp/b15.trd.md" --reviewed
 
 # coverage: a scenario on the story with no row
 grep -v '^| 2 \[G7\]' "$ex/coverage.md" > "$tmp/c1.md"

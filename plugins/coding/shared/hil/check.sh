@@ -30,7 +30,10 @@ say() { echo "$page: $*"; bad=1; }
 
 # Caps, in lines (card: words after the dash). The owner reads these; a file
 # over its cap is a file that was not cut.
-CAP_STORY=60; CAP_TRD=80; CAP_COVERAGE_ROWS=20; CAP_PR=40; CAP_CARD_WORDS=40
+CAP_STORY=60; CAP_TRD=100; CAP_COVERAGE_ROWS=20; CAP_PR=40; CAP_CARD_WORDS=40
+# The TRD's cap counts every line, but what the owner reads is the group
+# lines — ten a section at most — so the bullets under them can be many and
+# short, which is the point.
 
 # The repo root: from a linked worktree .git is a file, so ask git, and only
 # walk when the file is not in a repo at all.
@@ -152,11 +155,35 @@ check_trd() {
   f="$(section Flow)"
   grep -qE '^Legend:' <<<"$f" || say "Flow has no Legend:"
   grep -qE '^Components:' <<<"$f" || say "Flow has no Components:"
-  grep -qE '^[0-9]+\..*(New|Existing)\.?[[:space:]]*$' <<<"$f" || say "Flow has no numbered connection marked New or Existing"
-  for sec in Solution Observed References; do
-    [ "$(section "$sec" | nonblank)" -gt 0 ] || say "$sec is empty (write 'None new' or 'None' if so)"
+  grep -qE '^[0-9]+\. .* → ' <<<"$f" && say "Flow carries a numbered connection list; the diagram and its + marks are the connections"
+
+  # Solution and Observed: group lines and their bullets. A group line is one
+  # plain sentence the owner reads — no bullet, no code, no path, no flag —
+  # and every bullet under it is one short fact the verifier holds the code
+  # to. At most ten groups a section; a bullet before any group is a fact
+  # with no sentence over it.
+  local sec line groups words
+  for sec in Solution Observed; do
+    [ "$(section "$sec" | nonblank)" -gt 0 ] || say "$sec is empty (write 'None new.' or 'Nothing new is observed.' if so)"
+    groups=0; local seen_group=0
+    while IFS= read -r line; do
+      [ -z "${line//[[:space:]]/}" ] && continue
+      if grep -qE '^- ' <<<"$line"; then
+        [ "$seen_group" -eq 1 ] || say "$sec: a bullet with no group line above it: ${line}"
+        words="$(wc -w <<<"${line#- }")"
+        [ "$words" -le 15 ] || say "$sec: a bullet of $words words; a bullet is one short fact, 15 at most: ${line}"
+      else
+        seen_group=1; groups=$((groups+1))
+        grep -qE '[`$=/\\]' <<<"$line" && say "$sec: a group line with code in it (backtick, \$, =, / or \\); code goes in the bullets under it: ${line}"
+        grep -qE '\.$' <<<"$line" || say "$sec: a group line that is not a sentence (no full stop): ${line}"
+        words="$(wc -w <<<"$line")"
+        [ "$words" -le 25 ] || say "$sec: a group line of $words words; 25 at most: ${line}"
+      fi
+    done <<<"$(section "$sec")"
+    [ "$groups" -le 10 ] || say "$sec: $groups group lines; ten at most"
   done
-  # Every References item names its ADR, or says it is pending or pre-existing.
+
+  [ "$(section References | nonblank)" -gt 0 ] || say "References is empty (write 'None' if so)"
   while IFS= read -r line; do
     grep -qE '(: ADR [0-9]+|: ADR pending|: existing, no ADR|^- None$)' <<<"$line" \
       || say "References item without 'ADR <n>', 'ADR pending' or 'existing, no ADR': ${line}"
@@ -179,7 +206,7 @@ check_trd() {
   ' "$page")"
   vendors_outside "$outside" "outside Observed and References"
 
-  local exempt='^(#|##|Story:|Logs, non-error:|Events:|Alerts:|- None|- None new|None|None new|\|)'
+  local exempt='^(#|##|Story:|Reviewed:|- None|None new\.|Nothing new is observed\.|None)'
   local body; body="$(awk '
     /^## Flow/ {skip=1; next}
     /^## / {skip=0}

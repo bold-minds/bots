@@ -7,9 +7,9 @@ Reviewed: 2026-09-13
 
 Phone        Texting      App          CRM
   |---text---->|            |             |
-  |            |--webhook~->|             |
-  |            |            |-upsert~*-->|
-  |            |<--reply*---|             |
+  |            |--webhook~+>|             |
+  |            |            |-upsert~*+->|
+  |            |<--reply*+--|             |
   |<---text----|            |             |
 
 Legend:
@@ -23,23 +23,27 @@ Components:
 - App: our Go service on DigitalOcean App Platform.
 - CRM: third-party CRM.
 
-1. Texting → App: inbound text webhook. New.
-2. App → CRM: upsert a person by phone number. New.
-3. App → Texting: outbound text. New.
-
 ## Solution
-- Add envs to CI and app config: TEXTING_TOKEN, CRM_TOKEN, ANALYTICS_TOKEN
-- Add Go packages pkg/infra/texting, pkg/infra/crm
-- Add external endpoint for the texting webhook: https://[env.]stenzil.systems/api/incoming
+A text to our number reaches the app and gets a reply.
+- webhook endpoint https://[env.]stenzil.systems/api/incoming
+- Go package pkg/infra/texting
+- the reply is sent before the CRM upsert, which is async
+
+Every number that texts us is in the CRM once.
+- Go package pkg/infra/crm
+- upsert by phone number, five retries with backoff
+
+Each vendor has its own credential.
+- envs in CI and app config: TEXTING_TOKEN, CRM_TOKEN, ANALYTICS_TOKEN
 
 ## Observed
-Logs, non-error:
+Every text in and out is logged, by customer id only.
 - text in: customer id, text length, time received
 - text out: customer id, time to reply in seconds
 - person upserted in CRM: customer id, new or existing
-Events:
+
+A first text is an event, and a text with no reply is an alert.
 - texted: customer id; whether this is their first text
-Alerts:
 - text in with no text out after 15 minutes: customer id
 
 ## References

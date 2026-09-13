@@ -25,15 +25,18 @@ TRD from the template:
 
 - **Flow**: the ASCII sequence diagram, symbols on the arrow labels, every
   piece new in this story marked `+`; a Legend; Components saying what each
-  participant is and where it lives, never a bare name; the connections as a
-  numbered list in the order the events occur, each New or Existing.
-- **Solution**: how the surface changes, one concrete line each — envs added
-  to CI and app config, packages added, external endpoints added with their
-  URL. Leading indicators of misalignment, not an inventory. "None new" is a
-  line.
-- **Observed**: by condition — every non-error log line and what it carries,
-  every product event and what it carries, every alert. Only what this story
-  adds; "None new" is the default. Errors are logged always and not listed.
+  participant is and where it lives, never a bare name. No numbered list —
+  the diagram is the connections.
+- **Solution**: how the surface changes, in **groups**. A group is one plain
+  sentence the owner reads — no bullet, no code, no path, no flag, at most
+  25 words, ending in a full stop — followed by its facts, one per bullet,
+  each short (15 words at most): a file, a command, a setting, an env, an
+  endpoint with its URL. The owner reads the sentences; the verifier holds
+  the code to the bullets. Ten groups at most; more short bullets beat fewer
+  long ones. "None new." is a group with no bullets.
+- **Observed**: the same shape — a sentence saying what is logged, posted or
+  alerted, then the fields as bullets. Only what this story adds; "Nothing
+  new is observed." is the default. Errors are logged always and not listed.
   Customer id only, never a phone number, an email or message text.
 - **References**: every item that needs an ADR and the ADR that covers it —
   a new service, vendor or piece of infrastructure, or a business rule that
