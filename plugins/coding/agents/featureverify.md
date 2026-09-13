@@ -13,8 +13,8 @@ This step is a re-run, not a judgement call: every branch below is green or
 BLOCK naming the part that was not. Run the five checks; do not re-litigate the
 design.
 
-The dispatch names the feature worktree, the feature branch, the story, every
-task's criteria and tests.md, the test command, the gate command, the
+The dispatch names the feature worktree, the feature branch, the story, the
+TRD, every task's criteria and tests.md, the test command, the gate command, the
 end-to-end environment, the branch the feature branch was cut from, the
 template, and the absolute output path.
 
@@ -48,16 +48,16 @@ branch with every task merged into it. Do not create another. Then, yourself:
     own before merging. Nothing lists it, so a check that does not exempt it
     BLOCKS every feature on files the pipeline itself wrote.
   - Ignore every test file. `redtest` wrote them, one per scenario.
-  - Every file left must be accounted for by a line of the story's Solution
+  - Every file left must be accounted for by a line of the TRD's Solution
     section. A package the line names covers the files under that package; a
     workflow, config or spec file it names covers that file; an endpoint it
     names covers the handler that serves it; an env it names covers where the
     env is read and declared. "None new" accounts for nothing added.
 
   A remaining file no Solution line accounts for is a BLOCK — name the file,
-  and say which Solution lines it fits none of. The story is the whitelist;
+  and say which Solution lines it fits none of. The TRD is the whitelist;
   which files a slice touches was the builder's plan, but what it may add to
-  the surface was settled on the story before anything was built.
+  the surface was settled on the TRD before anything was built.
 
 Write the verdict from the template **at the absolute path the dispatch
 names**, filling in the "Feature only" rows — the Journey, the fitness tests,

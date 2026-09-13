@@ -5,24 +5,31 @@ by `/feature` §1 in their words. The pipeline turns that story into tested,
 reviewed code with no one watching. They are asked only when a step genuinely
 cannot decide.
 
-## The story is the input
+## The story and the TRD are the input
 
-Every step reads the story where it lives; nothing copies it. Its sections
-are what the pipeline runs on:
+Every step reads them where they live; nothing copies them. The story
+(`<nn>-<name>.md`, the owner's words) and its TRD (`<nn>-<name>.trd.md`,
+engineering's design, reviewed by the seven lenses and the pre-mortem before
+the owner read it) — both in the shapes `shared/hil/` checks:
 
-- **Scenarios**, numbered, each naming its requirement id: the rules. The
-  breakdown maps them to tasks by number; `redtest` copies each one's
+- **Scenarios** (story), numbered, each naming its requirement id: the rules.
+  The breakdown maps them to tasks by number; `redtest` copies each one's
   Given/When/Then verbatim into the feature file; the verifier diffs the two.
-- **Journey**: the feature's definition of done. No task carries it; the
-  feature verify walks it once every task has merged.
-- **Solution**, **Observed**, **References**: whitelists. Only the packages,
-  endpoints and envs Solution lists may be added; only the log lines, events
-  and alerts Observed lists may be written; no vendor outside References
-  appears, and every vendor inside it is ruled. The verifier holds every
-  task's diff to all three; the feature verify holds the whole feature's
-  files to Solution.
-- **Changelog**: every change after approval, one dated line — including an
-  owner's answer to a BLOCKED.
+- **Journey** (story): the feature's definition of done. No task carries it;
+  the feature verify walks it once every task has merged.
+- **Solution**, **Observed**, **References** (TRD): whitelists. Only the
+  packages, endpoints and envs Solution lists may be added; only the log
+  lines, events and alerts Observed lists may be written; no vendor outside
+  References appears, and every vendor inside it is ruled. The verifier holds
+  every task's diff to all three; the feature verify holds the whole
+  feature's files to Solution.
+- **Review** (TRD): every finding the lenses and the pre-mortem raised and
+  what became of it; its "Story:" outcomes were accepted or refused by the
+  owner before the run.
+- **Changelog** (story): every change after approval, one dated line —
+  including an owner's answer to a BLOCKED.
+- **The survey** (`docs/product/survey.md`, optional): one row per
+  requirement, what exists on main and in the attic; read where present.
 
 ## Roles
 
@@ -43,27 +50,27 @@ are what the pipeline runs on:
 
 | # | step | agent | model | writes |
 |---|------|-------|-------|--------|
-| 1 | story | `/feature` §1, then `/software` | — | `docs/product/stories/<nn>-<name>.md`, approved by the owner; `/software` creates branch `pipeline/<f>` **and a worktree on it** |
-| 2 | feature plan | `featureplan` | opus | `features/<f>/plan.md` — approach, state, outside calls, structural rules; nothing the story already says |
-| 3 | lenses | `lens` ×7 — architecture, sre, security, qa, staff on opus; performance, database on sonnet | mixed | `features/<f>/lens-<x>.md` |
-| 4 | pre-mortem | `premortem` | opus | `features/<f>/premortem.md`; a kept case the story does not cover goes to the owner, never to a task |
-| 5 | break down | `breakdown` | opus | `features/<f>/tasks/<t>/criteria.md` — the scenario numbers it carries and its success sentence — `design.md` beside each, and `tasks/coverage.md`, one row per scenario. Reads the story and the code only; 2–4's files are not its inputs |
-| — | **stop** | `/software` | — | shows the owner the coverage table with each task's success sentence, one message; resumes on their go |
-| 6 | current state | `state` | sonnet | cuts the task worktree from `pipeline/<f>`; `tasks/<t>/state.md`, one row per scenario, committed there |
-| 7 | red tests | `redtest` | opus | the feature file with the scenarios verbatim, the step definitions, `tasks/<t>/tests.md`, committed on the task branch |
-| 8 | plan | `planner` | opus | `tasks/<t>/plan.md`, committed |
-| 9 | build | `builder` | opus | the task branch `pipeline/<f>--<t>`, gate green |
-| 10 | review | `code-reviewer` (fix-code's nine lenses) ∥ `verifier` (mutations, gate, rulings, touched files, the story's three whitelists) | opus ×2 | `tasks/<t>/verdict.md`; PASS needs both; a BLOCK that is rework goes back to `builder` and both reviews run again, twice at most; **neither merges** |
-| 11 | merge | `merger` | haiku | merges every passed task branch into `pipeline/<f>`, one at a time, in landing order |
-| 12 | feature | `featureverify` | sonnet | `features/<f>/verdict.md` — the story's Journey walked end to end, every fitness test, every task's tests together, the gate, the files held to Solution; on PASS, the one push if config permits |
-| 13 | clean | `cleaner` | haiku | after the owner merges: deletes the feature directory, the worktrees and the branches; one index line. The story stays where it lives |
-| 14 | prove | `/software` runs config's `live:` command | — | pass/fail |
+| 1 | story | `/feature` §1 | — | `docs/product/stories/<nn>-<name>.md`, approved by the owner (their first read) |
+| 2 | design | `trd` — the writer, then seven lenses and the pre-mortem on the draft, then the writer resolving their findings | opus | `docs/product/stories/<nn>-<name>.trd.md` — Flow, Solution, Observed, References, Review; approved by the owner (their second read). The caller then creates branch `pipeline/<f>` **and a worktree on it** |
+| 3 | break down | `breakdown` | opus | `features/<f>/tasks/<t>/criteria.md` — the scenario numbers it carries and its success sentence — `design.md` beside each, and `tasks/coverage.md`, one row per scenario, checked. Reads the story, the TRD, the survey if any, and the code |
+| — | **stop** | the caller | — | shows the owner the coverage table with each task's success sentence, one message (their third read); resumes on their go |
+| 4 | design | `planner` | opus | cuts the task worktree from `pipeline/<f>`; `tasks/<t>/design.md`, one row per case, committed there |
+| 5 | design review | `designreview` | opus | numbered findings, SOUND or GAPS; GAPS sends the design back once |
+| 6 | red tests | `redtest` | opus | rules each scenario TRUE or FALSE against the code; the feature file with the scenarios verbatim, the step definitions, `tasks/<t>/tests.md`, committed on the task branch |
+| 7 | plan | `planner` | opus | `tasks/<t>/plan.md`, committed |
+| 8 | build | `builder` | opus | the task branch `pipeline/<f>--<t>`, gate green |
+| 9 | review | `code-reviewer` (fix-code's nine lenses) ∥ `verifier` (mutations, gate, rulings, touched files, the TRD's three whitelists) | opus ×2 | `tasks/<t>/verdict.md`; PASS needs both; a BLOCK that is rework goes back to `builder` and both reviews run again, twice at most; **neither merges** |
+| 10 | merge | `merger` | haiku | merges every passed task branch into `pipeline/<f>`, one at a time, in landing order |
+| 11 | feature | `featureverify` | sonnet | `features/<f>/verdict.md` — the story's Journey walked end to end, every fitness test, every task's tests together, the gate, the files held to the TRD's Solution; on PASS, the one push if config permits |
+| 12 | clean | `cleaner` | haiku | after the merge: deletes the feature directory, the worktrees and the branches; one index line. The story and TRD stay where they live |
+| 13 | prove | the caller runs config's `live:` command | — | pass/fail |
 
-Steps 6–10 run per task, in order. Tasks in a feature run in parallel within a
-wave, each in **its own worktree** on its own branch off the feature branch —
-one working tree per agent is the only thing that stops two tasks eating each
-other's commits. 11 runs once, after every task has passed, and merges serially.
-12 runs once after that. 13 and 14 run after the owner merges and deploys.
+Steps 1–2 are the Story and Design stops, outside this script. Steps 4–9 run
+per task, in order. Tasks in a feature run in parallel within a wave, each in
+**its own worktree** on its own branch off the feature branch — one working
+tree per agent is the only thing that stops two tasks eating each other's
+commits. 10 runs once, after every task has passed, and merges serially. 11
+runs once after that. 12 and 13 run after the merge and the deploy.
 
 **A task may come `After` one other, and then the tasks run in waves.** Most
 tasks cannot: every task's worktree is cut from the feature branch, so a task
@@ -77,7 +84,7 @@ a barrier, so nothing inside a wave waits for anything. The builder of a task
 with an `After:` merges the named branch into its own as its first act and says
 so in its commit message — by then that branch has passed both reviews, because
 a wave does not start until the wave before it has finished — and both reviews
-at step 10 are diffed against the named branch's tip instead of the feature
+at step 9 are diffed against the named branch's tip instead of the feature
 branch, or every file the named task changed would read as this task's: the
 verifier's touched-files check would BLOCK it for work already reviewed, and
 the code review would hand its builder a rework pass over code it did not
@@ -87,7 +94,7 @@ since that base, and the named task already ran the same gate green against
 that same base, so its files carry no worse verdict here; a review asks a
 different question, an allow-list and a judgement, and both of those answer
 differently depending on whose work is in front of them. Landing order, the
-order step 11 is given, is wave order and then task number inside a wave. A
+order step 10 is given, is wave order and then task number inside a wave. A
 name that is not one of the feature's tasks, or a set of names that loops,
 halts the run before any task starts — the reason is in `blocks[]` with step
 `after` and a `null` `blockedPath`, because the script found it before any
@@ -110,9 +117,9 @@ already passed. The one exception is a task with an `After:`, above: its branch
 already holds the named task's commits, so both of its reviews are diffed
 against the named branch's tip instead.
 
-The seven lenses at step 3 review the *plan and the story*, before code exists.
-`fix-code`'s nine lenses at step 10 review the *code*. Different stage,
-different questions.
+The seven lenses and the pre-mortem at step 2 review the *TRD*, before the
+owner approves it and before code exists. `fix-code`'s nine lenses at step 9
+review the *code*. Different stage, different questions.
 
 Planner, redtest, breakdown and the code review sit on the strongest model on
 purpose: the planner is the only gate that interrupts the owner, redtest is the
@@ -246,9 +253,8 @@ top-level technical direction; and before writing anything, ask whether the
 next step gets quality or rework from it.
 
 **Nothing outlives its usefulness.** A file dies the moment its successor
-exists: the plan, the lens files and the pre-mortem feed nothing after the
-pre-mortem step (the breakdown reads the story and the code) and the whole
-feature directory dies at the cleaner. There is exactly one deliberate
+exists: the lens and pre-mortem findings live on in the TRD's Review section
+and nowhere else, and the whole feature directory dies at the cleaner. There is exactly one deliberate
 exception. `features/_shipped.md`, one line per shipped feature, is the index
 from a feature to the tests that guard it — the map you need after everything
 else is gone, and a line, not a document. What the feature was for is the
@@ -264,7 +270,7 @@ are what the pipeline is made of, not what it produced.
 
 Language: business terms in every file the owner might read — the story,
 `criteria.md`, `coverage.md`, `BLOCKED.md`. Files that only feed the next step —
-`lens-*.md`, `premortem.md`, `state.md`, `plan.md`, `tests.md`, `verdict.md`
+`design.md`, `plan.md`, `tests.md`, `verdict.md`
 — may cite code: a finding with a file:line is one the breakdown can act on.
 Headings and "why it matters" lines stay in business terms regardless. (The
 first live run's lenses cited code freely and were the better for it.)

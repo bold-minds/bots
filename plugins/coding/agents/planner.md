@@ -9,7 +9,7 @@ tools: Read, Glob, Grep, Bash, Write
 
 The dispatch names the task worktree — work only in there, it is already on
 the task branch — the criteria file, the story (the scenarios criteria.md's
-Rules line names, and the Solution and References sections), design.md,
+Rules line names), the TRD (its Solution and References sections), design.md,
 tests.md, the rulings file, the template, the output path, and the triage
 rules. Read them, the test files, and the code they exercise. The plan builds to every row of the
 design; a row the plan cannot reach is a gap in the plan, not in the design.
@@ -42,10 +42,10 @@ down why it does not fit.
 
 Before writing "Flag: none", check: does this touch anything the rulings
 file rules on? A price, money, a promise to a customer, a vendor or external
-system the story does not name? Any yes → one-line flag. **A vendor, service
-or piece of infrastructure the story's References names is ruled** — its ADR
-was approved before the story was — and is never a flag; so is a package,
-endpoint or env the story's Solution lists. One outside them is. The chain
+system the TRD does not name? Any yes → one-line flag. **A vendor, service
+or piece of infrastructure the TRD's References names is ruled** — its ADR
+was approved before the TRD was — and is never a flag; so is a package,
+endpoint or env the TRD's Solution lists. One outside them is. The chain
 halts for the owner on a flag. A false "none" is the worst thing this step
 can do — which is why it runs on the strongest model. File count is never a
 reason to flag; the triage rules decide that.

@@ -121,17 +121,20 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    8 Sept: "I'm not going to approve any slice without seeing the mapping of
    tasks to requirements/rules."
 
-   **What it does.** It runs on its own: a feature-level plan, seven technical
-   lenses on that plan, a pre-mortem, a breakdown into small tasks, then for
-   each task the current state, tests that fail first, a short plan, the build,
-   and two separate reviews. Then it merges the tasks together, one at a time,
-   and checks the whole feature. It comes back with one branch to merge, or one
-   question in plain language.
+   **What it does.** It runs on its own from an approved story and its
+   approved TRD: a breakdown into small tasks with the coverage table, then
+   for each task a design and its adversarial review, tests that fail first,
+   a short plan, the build, and two separate reviews. Then it merges the tasks
+   together, one at a time, and checks the whole feature. It comes back with
+   one branch to merge, or one question in plain language. The design and its
+   review — the seven lenses and the pre-mortem — happened before, on the TRD,
+   at the Design stop.
 
    **Pass, as a JSON object:** `feature`; `root` (`git rev-parse
    --show-toplevel`); `plugin` (`${CLAUDE_PLUGIN_ROOT}`); `featureTree` (the
-   worktree path above); `story` (the approved story's absolute path);
-   `defaultBranch`; and from
+   worktree path above); `story` (the approved story's absolute path); `trd`
+   (its approved TRD's absolute path); `survey` when
+   `docs/product/survey.md` exists; `defaultBranch`; and from
    `<root>/.claude/pipeline/config.md`: `decisions`, `requirements`, `gate`,
    `test`, `entry`, `stub`, and `rules` when the line is there (the owner's
    cross-cutting file, whose "Asked on every slice" list every feature
@@ -186,7 +189,7 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    answer that is not in the prompt never re-runs the step that asked. Record
    the ruling as one dated line in the story's Changelog — the story is the
    record of every change after approval. Never start a fresh run — that
-   re-runs every lens.
+   re-runs every step that had finished.
 
    One halt is a restart, not an answer: a case redtest left out of a task's
    tests. No step after the plan commit may touch a test, so no answer can
@@ -198,13 +201,13 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    step reads that file. Remove the task's worktree and branch —
    `git -C <feature worktree> worktree remove --force ../wt-<feature>-<task>`,
    then `git -C <feature worktree> branch -D pipeline/<feature>--<task>`.
-   Then resume with `answerStep: "state"` for that task — not the `review`
+   Then resume with `answerStep: "design"` for that task — not the `review`
    or `review-N` step the result returned, which would re-run the verifier
    on the same frozen tests and block again — with the `answers` line saying
-   the criteria now carry the cases. The state step's prompt changes, and
+   the criteria now carry the cases. The design step's prompt changes, and
    every step after it runs live again on a branch cut fresh from the
    feature branch. The other tasks in that wave re-run live too. One that
-   had passed: its state, red-tests, plan and build steps each see their
+   had passed: its design, red-tests, plan and build steps each see their
    work already on the branch, return it and change nothing, and its
    reviews run again on the finished branch, diffing in the merge-base form
    so the criteria commit on the feature branch is not charged to it. One
@@ -253,10 +256,11 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    **The owner does not have to describe features one by one.** The stories
    are listed in order in `docs/product/<release>.md`, each approved before it
    is fired. "Run story 01", "run the next one that isn't live" — fire
-   `pipeline` on that story. Where a requirement has no story yet, `/feature`
-   §1 writes one first and the owner reads it. The pipeline's own
-   current-state step decides what is already true (it gets a guarding test,
-   no build) and what is not (it gets built). A few at a time; each run costs
+   `pipeline` on that story and its TRD. Where a requirement has no story
+   yet, `/feature` §1 writes one first and the owner reads it, then `trd`
+   writes the design and the owner reads that. The red-test step rules what
+   is already true (it gets a guarding test, no build) and what is not (it
+   gets built). A few at a time; each run costs
    real money and the first ones find the pipeline's own defects.
 3. **`write-code`** — the single bounded change that does not need the
    pipeline, built against the gauntlet. The gauntlet is the definition of

@@ -6,9 +6,11 @@ reviews judge the change against them. A behaviour a reviewer finds that has no
 row here is a gap in this file first, and the row is added before the code is.
 
 Written from the scenarios the task carries (on the story, named by
-criteria.md's Rules line), state.md and the code as it stands. The first two
-columns are in the customer's terms; the last is in the code's. The story is
-the whitelist: a row with no scenario behind it is not a row.
+criteria.md's Rules line), the TRD's Solution and Observed, and the code as
+it stands. The first two columns are in the customer's terms; the last is in
+the code's. The story is the whitelist: a row with no scenario behind it is
+not a row; a row that names something the TRD's Solution or Observed does
+not is a row the design review strikes.
 
 | # | Given (the case) | Then (what is true, observably) | Where in the code |
 |---|---|---|---|

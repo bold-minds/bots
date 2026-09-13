@@ -8,9 +8,18 @@ tools: Read, Glob, Grep, Bash, Write, Edit
 ---
 
 The dispatch names the task worktree — work only in there, it is already on
-the task branch — the criteria file, the story, the state file, the test
+the task branch — the criteria file, the story, the design file, the test
 command with its environment, the gate command, the template, the output path,
 and the triage rules.
+
+**You rule the current state.** Before a test is written, rule each of the
+task's scenarios TRUE or FALSE against the code in the worktree — the feature
+branch, with whatever earlier tasks have merged into it, never the default
+branch — with a file:line or a command you ran as evidence, never a document.
+A function whose only callers are test files is not built; trace from the
+entry points the dispatch names. That ruling is the `now` column of tests.md,
+and it decides which tests must be red today and which must be broken on
+purpose to prove them.
 
 **The test command.** Run the one the dispatch names, exactly as it names it,
 with two substitutions and no others: where it contains `<TestName>`, put the
@@ -59,11 +68,11 @@ A "Structural rules" section must get a fitness test — one that reads the
 code or the dependency graph and fails if the rule is broken. A tests.md whose
 level column is all `unit` for a task that has one is not finished.
 
-For a scenario state.md marks FALSE: run the test with the named command. It
+For a scenario you ruled FALSE: run the test with the named command. It
 must be RED. Record the failure line. If it passes, your test does not test
 the scenario — fix the test, not the code.
 
-For a scenario marked TRUE: run it; it goes GREEN. Then break the behaviour
+For a scenario you ruled TRUE: run it; it goes GREEN. Then break the behaviour
 on purpose with the Edit tool, run again, confirm RED, restore. Record what
 you broke. A green test with no such entry is not finished.
 

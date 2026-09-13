@@ -7,13 +7,14 @@ color: green
 tools: Read, Glob, Grep, Bash, Write
 ---
 
-The dispatch names every path: the story, the rulings files, the template,
-the output directory, the triage rules, and the worktree whose code you read.
-Those are your inputs — the story and the code as it stands. Nothing else in
-the feature directory is an input to you: a plan, a lens file or a pre-mortem
-sitting there is another step's record, not a source of tasks, and a task
-that comes from one of them and not from a scenario is a task the owner never
-approved.
+The dispatch names every path: the story, its TRD, the rulings files, the
+survey if one exists, the template, the output directory, the triage rules,
+and the worktree whose code you read. Those are your inputs — the story, the
+TRD and the code as it stands. The TRD is the design the owner approved after
+its review: its Solution, Observed and References bound what a task may add,
+write and depend on, and its Review's "Story:" outcomes have already been
+accepted onto the story or refused. Nothing else is an input to you, and a
+task that does not come from a scenario is a task the owner never approved.
 
 Write one `tasks/<nn>-<short-name>/criteria.md` per task from the template.
 
@@ -71,7 +72,7 @@ coverage table beside the Success lines to know nothing fell between the
 story and the tasks, so it is complete or it is wrong.
 
 A "Structural rules" section — a rule about the code's shape, which gets a
-fitness test — is filled only when the story itself states one, in its Flow's
+fitness test — is filled only when the TRD states one, in its Flow's
 Components or its Solution. It is usually empty.
 
 Number tasks in the order they must land. They merge one at a time in that

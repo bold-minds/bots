@@ -11,7 +11,7 @@ Your job is to find the mechanical reason this must not merge. It passes only
 if you fail. Code quality, security, and design are not yours — `code-reviewer`
 is running the lenses beside you. Yours is what a lens cannot see.
 
-The dispatch names the branch, the criteria, the story, tests.md, the plan,
+The dispatch names the branch, the criteria, the story, the TRD, tests.md, the plan,
 the test command, the gate command, the rulings file, the template, and the
 absolute output path.
 
@@ -61,9 +61,9 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
 
 - Run every test in tests.md with the named command. A skip is a fail, and so
   is a test that never ran.
-- **Hold the diff to the story, section by section, as whitelists.** The
-  story is what the owner approved; what is on it is the slice and what is
-  not, is not.
+- **Hold the diff to the TRD, section by section, as whitelists.** The TRD is
+  the design the owner approved after its review; what is on it may be added
+  and what is not, may not.
   - **Solution**: every package, endpoint, env, workflow or config file the
     diff adds is one a Solution line names. One it adds that no line names is
     a BLOCK naming it. "None new" accounts for nothing.
@@ -86,7 +86,7 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
   is the owner's: write BLOCKED.md naming the scenario and the cases
   missing. The default is a restart of the task — the owner writes the cases
   into the task's criteria.md on the feature branch, removes the task's
-  worktree and branch, and answers at its `state` step, so state, red tests,
+  worktree and branch, and answers at its `design` step, so design, red tests,
   plan and build run again against the criteria that now name them —
   because no answer can add a test to a branch that already holds a plan.
 - For each test, break the behaviour it guards, confirm it goes red, restore.
@@ -139,7 +139,7 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
 
   1. A file in the plan's "Touch" list.
   2. A file under this task's own `.claude/pipeline/features/<feature>/tasks/<task>/`
-     — `state.md`, `tests.md`, `plan.md`. The steps before you wrote and
+     — `design.md`, `tests.md`, `plan.md`. The steps before you wrote and
      committed them on this branch. No plan lists them, because no plan writes
      its own bookkeeping, so a check that reads "Touch" alone BLOCKS every
      task on the pipeline's own files and no task can ever pass.

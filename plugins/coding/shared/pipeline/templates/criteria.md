@@ -6,6 +6,7 @@ the coverage table, before any task runs. Not the title again.>
 
 Feature: <feature name>
 Story: <the story's path — docs/product/stories/<nn>-<name>.md>
+TRD: <its TRD's path — docs/product/stories/<nn>-<name>.trd.md>
 Rules: <the numbers of the story's scenarios this task carries, comma separated
 — "1, 3". Those scenarios are this task's criteria, and their text lives on the
 story only: nothing is copied or re-authored here, and a word changed on the
@@ -22,8 +23,8 @@ when this task can start from the feature branch as it stands.>
 
 ## Structural rules
 
-<Only if the story itself states one, in its Flow's Components or its
-Solution: a rule about the shape of the code itself, in one sentence — "the worker never imports the server package",
+<Only if the TRD states one, in its Flow's Components or its Solution: a
+rule about the shape of the code itself, in one sentence — "the worker never imports the server package",
 "nothing under mcp/ reaches the live copy except through the fence". Each gets
 a fitness test: a test that reads the code and fails if the rule is broken.
 This section is about the code rather than the customer, which is why it is the

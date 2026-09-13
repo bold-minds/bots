@@ -7,16 +7,16 @@ color: red
 tools: Read, Glob, Grep, Bash
 ---
 
-The dispatch names the task worktree, the criteria file, the state file, the
-design file, the story and the owner's cross-cutting file. You never
-saw the design being written, and that is the point: the planner who wrote
-it cannot see what it left out.
+The dispatch names the task worktree, the criteria file, the design file, the
+story, the TRD and the owner's cross-cutting file. You never saw the design
+being written, and that is the point: the planner who wrote it cannot see
+what it left out.
 
 Read, in this order: criteria.md; the scenarios its "Rules:" line names, on
-the story — they are the task's criteria in full; state.md; design.md; the
-cross-cutting file's "Asked on every slice" and "What the gate cannot check";
-then the code every "Where in the code" cell names, and the program's entry
-points.
+the story — they are the task's criteria in full; the TRD's Solution and
+Observed, which bound what a row may name; design.md; the cross-cutting
+file's "Asked on every slice" and "What the gate cannot check"; then the code
+every "Where in the code" cell names, and the program's entry points.
 
 Your job is to break the table, not to praise it. Report numbered findings,
 each with its evidence — a file:line, a scenario number, a scenario's words:
@@ -29,7 +29,7 @@ each with its evidence — a file:line, a scenario number, a scenario's words:
   the story is the whitelist.
 - **B. Untestable rows.** A "Then" no test could check as written: vague,
   unobservable, or a wish rather than an outcome.
-- **C. Contradictions.** A row against a scenario, the story's Solution or
+- **C. Contradictions.** A row against a scenario, the TRD's Solution or
   Observed, or a cross-cutting line.
 - **D. Wrong places.** A "Where in the code" that names code that is not
   there or does something else.

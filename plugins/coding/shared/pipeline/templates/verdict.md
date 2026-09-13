@@ -3,7 +3,7 @@
 # BLOCK: <one plain sentence>
 
 - Tests prove their scenarios: <each test, what was mutated, went red: yes/no; each scenario's text on the story verbatim: yes/no>
-- Held to the story: Solution <only what it lists was added: yes / no — what else>; Observed <only what it lists is written: yes / no — what else>; References <no vendor outside it: yes / no — which>
+- Held to the TRD: Solution <only what it lists was added: yes / no — what else>; Observed <only what it lists is written: yes / no — what else>; References <no vendor outside it: yes / no — which>
 - Rulings respected: <each entry in the rulings file this could touch — checked, fine / violated at …>
 - Gate: green / red at <step>
 - Touched only what plan.md said: yes / no — <what else>; test files and tests.md after the plan commit: untouched / touched by <commits>; commits before it: tests and task files only / <what else>
