@@ -9,23 +9,26 @@ Decided: 2026-09-13 (Claire)
 
 ## Options
 GitHub — Actions, chosen.
-- included with the repo's host; 2,000 minutes a month on a private repo at no cost
-- a run of about 8 minutes; roughly 250 runs a month inside the free tier
-- environments, secrets and a branch policy for prod in the same place as the code
+- Pro: included with the repo's host; 2,000 minutes a month on a private repo at no cost
+- Pro: a run of about 8 minutes; roughly 250 runs a month inside the free tier
+- Pro: environments, secrets and a branch policy for prod in the same place as the code
+- Con: the slowest runners of the options; fine at this volume
 
 Nobody — deploys by hand over SSH, the state before this.
-- no procedure written down; the only record was a build log
-- an agent session would need prod SSH, which the harness denies
+- Con: no procedure written down; the only record was a build log
+- Con: an agent session would need prod SSH, which the harness denies
 
 DigitalOcean — deploy-on-push from the registry, rejected.
-- cannot order test before prod
-- cannot gate prod on test's health check
+- Pro: no workflow file at all
+- Con: cannot order test before prod
+- Con: cannot gate prod on test's health check
 
 Blacksmith or Depot — faster hosted runners, rejected.
-- a second vendor and a bill, for speed an 8-minute run does not need
+- Pro: faster builds
+- Con: a second vendor and a bill, for speed an 8-minute run does not need
 
 CircleCI or Buildkite — a separate CI, rejected.
-- a second vendor for what the repo's host already includes
+- Con: a second vendor for what the repo's host already includes
 
 ## Why
 - The deploy procedure had to be written down anyway; a workflow is a runbook that cannot go stale.

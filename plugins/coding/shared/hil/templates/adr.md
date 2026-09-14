@@ -7,10 +7,12 @@ Decided: <YYYY-MM-DD> (<who>)
 
 ## Options
 <Platform> — <product>, <chosen / rejected / the state before this / not evaluated>.
-- <one fact about it, per bullet: what it does, what it costs, what it gives up>
+- Pro: <one fact in its favour>
+- Con: <one fact against it>
 
 <Next platform> — <product>, <verdict>.
-- <…>
+- Pro: <…>
+- Con: <…>
 
 ## Why
 - <one reason, per bullet>

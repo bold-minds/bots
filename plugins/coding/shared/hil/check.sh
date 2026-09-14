@@ -283,6 +283,7 @@ check_adr() {
     if grep -qE '^- ' <<<"$line"; then
       [ "$seen" -eq 1 ] || say "Options: a bullet with no platform line above it: ${line}"
       [ "$(wc -w <<<"$line")" -le 30 ] || say "Options: a bullet over 30 words: ${line}"
+      grep -qE '^- (Pro|Con): ' <<<"$line" || say "Options: a bullet that is not 'Pro: …' or 'Con: …': ${line}"
     else
       seen=1; groups=$((groups+1))
       grep -qE '^[^-].* — .*, (chosen|rejected|the state before this|not evaluated)\.$' <<<"$line" \
