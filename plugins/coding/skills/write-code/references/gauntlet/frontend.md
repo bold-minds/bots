@@ -19,17 +19,13 @@ Run from the package root, in this order.
 
 Gate 8 applies whenever the change has observable behavior, and its feature files are written at step 1 before implementation. `playwright-bdd` reuses the Playwright harness from gate 7 rather than standing up a second runner. See `gauntlet/bdd.md`.
 
-### Coverage targets
+### Coverage
 
-**Defaults, adjustable by the user, not by a task in progress** (a project records its own in `scope.md` — see `gauntlet/standards.md`):
-
-- **90%+** pure logic — stores, utils, validators, formatters, derived-state helpers
-- **80%+** components carrying behavior — forms, stateful widgets, anything with `$effect` or event handling
-- **70%+** glue — loaders, adapters, API clients
-
-Excluded: route shells with no logic, generated types, `*.config.*`, static content components.
-
-Report per-directory percentages against target, not one repo-wide number.
+One number, from the owner's test rule (11 Sept 2026): **80% or more**,
+measured by the repo's gate, every test black box against the component's
+or module's public surface. Excluded: route shells with no logic, generated
+types, `*.config.*`, static content components. Report the percentage the
+gate reports.
 
 ### Notes on specific gates
 

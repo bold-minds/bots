@@ -18,17 +18,14 @@ Run from the module root, in this order. Order matters — a build failure makes
 
 Gate 7 applies whenever the change has observable behavior, and its feature files are written at step 1 before implementation. See `gauntlet/bdd.md`.
 
-### Coverage targets
+### Coverage
 
-From `go/standards.md` — these are the existing numbers, not new ones:
-
-- **90%+** critical logic
-- **80%+** handlers
-- **70%+** infrastructure
-
-Report the actual percentage per package against its target. A single repo-wide average hides the package that dropped to 40%. Like every threshold in this file, these are defaults a project may override in its `scope.md` — see `gauntlet/standards.md`.
-
-Generated files, `main.go` wiring, and vendored code are excluded from targets. Nothing else is.
+One number, from the owner's test rule (11 Sept 2026): **80% or more** of the
+module, measured by the repo's gate, with every test black box in an
+external test package. Report the percentage the gate reports; a per-package
+breakdown is welcome when the gate gives one, but the threshold is the
+module's. Generated files, `main.go` wiring, and vendored code are excluded.
+Nothing else is.
 
 ### Notes on specific gates
 

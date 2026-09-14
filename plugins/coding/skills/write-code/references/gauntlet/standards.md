@@ -29,15 +29,21 @@ If a gate fails, fix the code and re-run. Do not adjust the threshold to make it
 
 **Tier 2 — needs per-project setup.** Mutation testing and fuzzing. Slow, and requires installing a tool and committing a config. Run when adding or changing logic that a coverage number alone can't vouch for: parsers, decoders, money math, permission checks, state machines. Not on every task.
 
-## Thresholds — defaults, overridable per project
+## One gate: the repo's
 
-Every number in the language gate files is a default. A project may record its own in `builds/<project>/scope.md`, under a `## Gate thresholds` heading, one line per gate — the gate's name as those files name it, then the number. Where a project records one, that is its threshold and the default stops applying to it.
+The gate is the command the repo's `.claude/pipeline/config.md` names on its
+`gate:` line — the same one the rules plugin runs before a session may stop.
+The tables in the language files describe what a repo's gate should hold:
+build, vet, format, lint, typecheck, tests, coverage at the owner's number,
+mutation where the repo has it. They are the checklist for writing a gate,
+not a second gate run beside it. A repo whose gate lacks an arm the table
+names has a gap to close in its gate script, and the task that finds the gap
+names it; nothing in this plugin runs a check the repo's gate does not.
 
-`/software` reads `scope.md` at the start of every session, so inside the room the project's numbers are already in context — use them. Invoked with no `scope.md` in reach, run the defaults and say that is what you ran.
+Thresholds live in the gate script and nowhere else. A task in progress never
+moves one to make a red gate green; a threshold changes in its own commit,
+deliberately, with the owner's word.
 
-This is the only override path, and it does not soften the rule above. A task in progress still never moves a threshold to make a gate go green. The difference is *when* and *where*: a project override is written into `scope.md` deliberately, before the work, and binds every task after it. A number changed while a red gate is on the screen is a threshold bent to fit the code that already exists, which is the one thing a threshold exists to prevent.
-
-Report which you cleared against — the target column carries the project's number when there is one, the default otherwise.
 
 ## Reporting
 

@@ -7,8 +7,15 @@ color: red
 tools: Read, Glob, Grep, Bash, Write, Edit
 ---
 
-The dispatch names the plan, tests.md, criteria, the test command, the gate
-command, and the task worktree.
+The dispatch names the plan, tests.md, criteria, the standards, the test
+command, the gate command, and the task worktree.
+
+**Read the standards before you write a line**: the plugin's craft standard,
+the domain standard (Go or frontend) for what the task touches, the test
+doctrine in `gauntlet/bdd.md`, and every file under the repo's
+`docs/standards/` — that last one is the pattern the code is built in, and
+each of its rules has a fitness test the reviewer runs. Code that passes the
+tests and breaks the pattern is a BLOCK, not a pass.
 
 Do not create a worktree. One already exists at the path the dispatch names,
 on branch `pipeline/<feature>--<task>` — beside the feature branch, not under

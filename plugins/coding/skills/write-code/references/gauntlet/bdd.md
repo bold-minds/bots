@@ -55,15 +55,19 @@ Verify strict behavior once per project rather than assuming it: write a scenari
 
 Report the scenario count and the pass/fail/undefined breakdown, not just an exit code.
 
-## Layering
+## The one test rule (Claire, 11 Sept 2026)
 
-BDD sits above unit tests; it does not replace them.
+There is one layer, not two. Every test is a scenario: black box, written in
+an external test package against the module's public surface, never inside
+the package; one scenario or one branch per test, table-driven where rows
+share a shape; coverage 80% or more, measured by the repo's gate; and the
+fewest tests that achieve those three. A test that adds no scenario is bloat
+and a reviewer blocks it. A test that reaches inside a package is blocked on
+that alone.
 
-- **Scenarios** cover the behavior the user asked for. Few, readable, stable across refactors.
-- **Unit tests** cover the branches, edge cases, and error paths behind that behavior. Many, fast, coupled to structure.
-- **Coverage targets and mutation scores apply to the unit layer.** A feature file does not count toward the 90/80/70 targets.
-
-A repo with green scenarios and no unit tests has proven the happy path and nothing else.
+A feature file's scenarios are the story's scenarios, verbatim; the step
+definitions are the test code. A branch the story does not name is a row in
+a task's design and a subtest, not a second test suite.
 
 ## Anti-patterns
 
