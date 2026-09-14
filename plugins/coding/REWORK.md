@@ -82,6 +82,8 @@ Standalone, optional: `survey` (requirements + main + attic → one row per id);
 
 Each item one commit on `rework/story-pipeline`, its done-when checked before the next.
 
+**Landed 13 Sept:** C1 49026c6 · C2 0a1ebe17 (Stenzil) · C3 0c14aff · C5 5cf33f1 · C10 5896ee0 · C6 988ded2 · C7 7cafd26 · C8 afcbae3 · C4 93fa2cc · C9 39bc1f8 · C11+C13 30bbc9b · C12 bcd43f8. Rulings taken along the way, each its own commit: no Review section on the TRD (0869f6a); the TRD's group-and-bullets shape (36a9a13); ADRs written at Design (6ccc8b4), checked (e10e973), dated the day written with Options by platform, Pro/Con, no reopens (535d353, 934cb7f, 8f86d82). Not yet proven live: C8's merge, C9's PASS, C11's opening — each needs the first real run.
+
 ### C1. Five reads, five templates, one checker
 
 Files: `skills/feature/{template,story,check.sh,examples.md}` → move the template and checker to `shared/hil/`: `shared/hil/templates/{story,trd,coverage,pr,card}.md`, `shared/hil/check.sh <type> <file> [--approved]`, `shared/hil/README.md` (the rule in ruling 3, and the cap per type). `story.md` (the rules) stays in `skills/feature/`, loses the four technical sections, gains "the TRD" pointer. `check.sh` gains: `trd` (five headings in order; Review non-empty after review; every References item names an ADR or "pending"; no vendor outside Observed/References), `coverage` (one row per scenario number on the story, plus Journey; a task named on every row), `pr` (tests block at top, verdict block, nothing else above the diff), `card` (two dated sentences, ≤ 40 words). Repo root via `git rev-parse --show-toplevel` from the file's directory (was B13). Caps: story ≤ 60 lines, TRD ≤ 80, coverage ≤ 20 rows, PR body ≤ 40 lines, card 2 sentences.
