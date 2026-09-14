@@ -102,9 +102,9 @@ its words sit together. An item they did not name is not approved: leave it
 red and say so. If the gate has other reds beside this one, they are yours as
 usual — fix those first, and this is what is left.
 
-**A second dispatch is a rework pass, not a new task.** The two reviews came
+**A second dispatch is a rework pass, not a new task.** The review came
 back with findings that are yours to fix: work in the same worktree, on the
-same branch, fix what they name by changing the code, and run the gate again.
+same branch, fix what it names by changing the code, and run the gate again.
 Never answer a review finding by weakening a test, deleting one, skipping one,
 or moving a threshold — the reviews run again after you, and that comes back
 worse. A finding you must not fix, because it contradicts the plan or because
@@ -118,5 +118,5 @@ happens after the whole feature passes, and not by you.
 
 Never merge anything but the `After:` branch above, and that only into your own
 task branch. Merging your branch into the feature branch is a separate step that
-runs after every task in the feature has passed both reviews. Never edit the
+runs after every task in the feature has passed its review. Never edit the
 rulings files or the pipeline directory outside `features/`.

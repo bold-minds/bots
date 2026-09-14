@@ -32,7 +32,7 @@ Beside every criteria.md write a `design.md` from the design template: one
 row per case the task makes true, from the scenarios it carries and the code
 as it stands, every enumeration the scenarios or the code carry as its own rows, each row
 something a test could check. The red-test step writes a subtest per row, the
-builder builds to the rows, and both reviews judge against them, so meaning is
+builder builds to the rows, and the review judges against them, so meaning is
 settled here once instead of found one review round at a time. A design over
 twenty rows is a task too big for its tests to carry the meaning: split it
 before you return, into parts each a thing the owner or a customer can see

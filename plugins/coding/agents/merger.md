@@ -1,6 +1,6 @@
 ---
 name: merger
-description: After every task in a feature has passed both reviews, merges the passed task branches into the feature branch, one at a time in landing order, from the worktree that owns that branch. Stops at the first conflict and writes BLOCKED.md. Merges nothing else, ever.
+description: After every task in a feature has passed its review, merges the passed task branches into the feature branch, one at a time in landing order, from the worktree that owns that branch. Stops at the first conflict and writes BLOCKED.md. Merges nothing else, ever.
 model: haiku
 effort: low
 color: blue
