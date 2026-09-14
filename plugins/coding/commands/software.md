@@ -129,7 +129,7 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    **What it does.** It runs on its own from an approved story and its
    approved TRD: a breakdown into small tasks with the coverage table, then
    for each task a design and its adversarial review, tests that fail first,
-   a short plan, the build, and two separate reviews. Then it merges the tasks
+   a short plan, the build, and one review. Then it merges the tasks
    together, one at a time, and checks the whole feature. It comes back with
    one branch to merge, or one question in plain language. The design and its
    review — the seven lenses and the pre-mortem — happened before, on the TRD,
@@ -164,21 +164,18 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
 
    - **An owner block** — a step asked the owner something. `blockedPath` names
      the file. Relay its three lines verbatim.
-   - **A rework halt** — the two reviews ran out of rework passes without
-     either of them asking the owner anything. `blockedPath` is `null` because
-     **no step wrote a `BLOCKED.md`**; the whole record is
-     `blocks[].codeReview` and `blocks[].verify`, the last two review texts.
-     Relay what those two say the builder could not settle, in the owner's
+   - **A rework halt** — the review ran out of rework passes without asking
+     the owner anything. `blockedPath` is `null` because **no step wrote a
+     `BLOCKED.md`**; the whole record is `blocks[].verify`, the last review
+     text. Relay what it says the builder could not settle, in the owner's
      terms, and ask the one question that decides it. Never send them looking
      for a file that was never written.
 
    A rework halt's `answerStep` is the **builder's** last rework step
-   (`rework-2`), not a review step. Both reviews may be blocking, and a review
-   step carries the ruling to only one of them — the other would re-run
-   unchanged, block again, and the resume would 2-cycle forever. The builder is
-   the one place that fixes both halves; both reviews sit after it and re-run
-   live on what it did. Pass the `answerStep` back exactly as the result gave
-   it and this happens on its own.
+   (`rework-2`), not the review step: the builder is the one place that acts
+   on a ruling, and the review sits after it and re-runs live on what it did.
+   Pass the `answerStep` back exactly as the result gave it and this happens
+   on its own.
 
    Either way, relay the question and pass their one-line answer back on the
    next run as an argument — `answers: { "<feature>": "<their line>" }`, or

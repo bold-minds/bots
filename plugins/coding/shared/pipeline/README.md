@@ -60,7 +60,7 @@ the owner read it) — both in the shapes `shared/hil/` checks:
 | 6 | red tests | `redtest` | opus | rules each scenario TRUE or FALSE against the code; the feature file with the scenarios verbatim, the step definitions, `tasks/<t>/tests.md`, committed on the task branch |
 | 7 | plan | `planner` | opus | `tasks/<t>/plan.md`, committed |
 | 8 | build | `builder` | opus | the task branch `pipeline/<f>--<t>`, gate green |
-| 9 | review | `code-reviewer` (fix-code's nine lenses) ∥ `verifier` (mutations, gate, rulings, touched files, the TRD's three whitelists) | opus ×2 | `tasks/<t>/verdict.md`; PASS needs both; a BLOCK that is rework goes back to `builder` and both reviews run again, twice at most; **neither merges** |
+| 9 | review | `verifier` — mutations, gate, rulings, touched files, the TRD's three whitelists, and fix-code's lens list on the diff | opus | `tasks/<t>/verdict.md`; a BLOCK that is rework goes back to `builder` and the review runs again, twice at most; **never merges** |
 | 10 | merge | `merger` | haiku | merges every passed task branch into `pipeline/<f>`, one at a time, in landing order |
 | 11 | feature | `featureverify` | sonnet | `features/<f>/verdict.md` — the story's Journey walked end to end, every fitness test, every task's tests together, the gate, the files held to the TRD's Solution; on PASS, the one push if config permits |
 | 12 | clean | `cleaner` | haiku | after the merge: deletes the feature directory, the worktrees and the branches; one index line. The story and TRD stay where they live |
@@ -83,13 +83,12 @@ wave 1, tasks whose `After:` is in wave 1 are wave 2, and so on; each wave is
 the same parallel `pipeline` as before, and only the boundary between waves is
 a barrier, so nothing inside a wave waits for anything. The builder of a task
 with an `After:` merges the named branch into its own as its first act and says
-so in its commit message — by then that branch has passed both reviews, because
-a wave does not start until the wave before it has finished — and both reviews
-at step 9 are diffed against the named branch's tip instead of the feature
+so in its commit message — by then that branch has passed its review, because
+a wave does not start until the wave before it has finished — and the review
+at step 9 is diffed against the named branch's tip instead of the feature
 branch, or every file the named task changed would read as this task's: the
-verifier's touched-files check would BLOCK it for work already reviewed, and
-the code review would hand its builder a rework pass over code it did not
-write. The gate is the one thing that does not move — `GATE_BASE` stays the
+touched-files check would BLOCK it for work already reviewed, and the lenses
+would hand its builder a rework pass over code it did not write. The gate is the one thing that does not move — `GATE_BASE` stays the
 feature branch — because a delta gate asks only whether anything got worse
 since that base, and the named task already ran the same gate green against
 that same base, so its files carry no worse verdict here; a review asks a
@@ -122,7 +121,7 @@ The seven lenses and the pre-mortem at step 2 review the *TRD*, before the
 owner approves it and before code exists. `fix-code`'s nine lenses at step 9
 review the *code*. Different stage, different questions.
 
-Planner, redtest, breakdown and the code review sit on the strongest model on
+Planner, redtest, breakdown and the verifier sit on the strongest model on
 purpose: the planner is the only gate that interrupts the owner, redtest is the
 only guard against a test that proves nothing, and breakdown holds the one-way
 doors — it maps every scenario to a task, writes the coverage table the owner
@@ -212,39 +211,36 @@ dispatch. So: that one step re-runs, it deletes the file, and everything before
 it stays cached. Send the key without the step and nothing re-runs at all; the
 cached BLOCK comes straight back.
 
-**A review BLOCK usually does not halt.** Most of what the two reviews at step
-10 return is rework — test files over the size cap, lint findings the change
+**A review BLOCK usually does not halt.** Most of what the review at step 9
+returns is rework — test files over the size cap, lint findings the change
 added, a mutation that survived — and that is the builder's work, not the
-owner's. So when either review comes back BLOCK, both review texts go back to
-`builder` as "fix these, then re-run the gate", in the same task worktree on
-the same branch, and both reviews then run again on the branch as it stands.
-Twice at most (`REWORK_MAX`); after that the run halts to the owner carrying
-the last two review texts in the block record — `blocks[].codeReview` and
-`blocks[].verify` — which are the whole account of it, because a rework block
-writes no `BLOCKED.md`. `blocks[].blockedPath` is `null` there, and that null
-is how the two halts are told apart: a path means there is a file to read, and
-its absence beside a path means the agent died.
+owner's. So when the review comes back BLOCK, its text goes back to `builder`
+as "fix these, then re-run the gate", in the same task worktree on the same
+branch, and the review then runs again on the branch as it stands. Twice at
+most (`REWORK_MAX`); after that the run halts to the owner carrying the last
+review text in the block record — `blocks[].verify` — which is the whole
+account of it, because a rework block writes no `BLOCKED.md`.
+`blocks[].blockedPath` is `null` there, and that null is how the two halts
+are told apart: a path means there is a file to read, and its absence beside
+a path means the agent died.
 
-**That halt's `answerStep` is the builder's last rework step**, `rework-2`, not
-either review's. Both reviews can be blocking at once, and a review step
-carries the owner's ruling to one of them only: the other re-runs unchanged on
-the resume, blocks again on what it blocked on before, and the run 2-cycles
-forever. The builder is the single place that can fix both halves, so the
-ruling goes to its last dispatch — and because a changed prompt re-runs that
-call and everything after it, both reviews then run again, live, on the branch
-as the builder has just left it. The exception is a block
-only the owner can settle: the reviewer puts `BLOCKED:` on its **first** line,
-`triage.md`'s shape, and that one skips the loop and halts at once — no build
-pass answers a question about a promise to a customer. A dead agent halts too;
-there is nothing to hand back. Each round's dispatches carry their own step
-names — `code-review-1`, `review-1`, `rework-1` — so an answer keyed to one
-round re-runs that round alone and every call before it stays cached.
+**That halt's `answerStep` is the builder's last rework step**, `rework-2`,
+not the review's: the builder is the one place that can act on a ruling, and
+because a changed prompt re-runs that call and everything after it, the
+review then runs again, live, on the branch as the builder has just left it.
+The exception is a block only the owner can settle: the reviewer puts
+`BLOCKED:` on its **first** line, `triage.md`'s shape, and that one skips the
+loop and halts at once — no build pass answers a question about a promise to
+a customer. A dead agent halts too; there is nothing to hand back. Each
+round's dispatches carry their own step names — `review-1`, `rework-1` — so
+an answer keyed to one round re-runs that round alone and every call before
+it stays cached.
 
 **A halt whose `blockedPath` is set, with no `BLOCKED.md` and no `verdict.md`
 at those paths, means the agent died.** The runner says so, and names the paths
 where those files would have been. A halt whose `blockedPath` is `null` is the
 rework halt above — nothing died, nothing wrote a file, and the record is the
-two review texts.
+review text.
 
 ## Rules every agent follows
 

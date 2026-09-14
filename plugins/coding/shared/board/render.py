@@ -49,6 +49,7 @@ def main(path):
         elif re.match(r"^\d{2} ", l):
             die(f"a card line that is not '<nn> <stop> <state> <YYYY-MM-DD> — <two sentences>': {l}")
     if not cards: die("no card lines")
+    cards.sort(key=lambda c: c[0])  # the board is in story order, whatever order the lines were written in
     stories = p.parent / "stories"
     def story_title(nn):
         for f in sorted(stories.glob(f"{nn}-*.md")):
