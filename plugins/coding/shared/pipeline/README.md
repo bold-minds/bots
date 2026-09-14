@@ -134,8 +134,10 @@ green or not, the other merges a named list in a named order.
 `.claude/pipeline/config.md` in the repo, plain `key: value` lines:
 
 ```
-decisions: <absolute path to the rulings file>
-requirements: <absolute path to what must be true>
+release: <the release file, docs/product/<release>.md — the board's written form; pm reads it first>
+requirements: <the requirements file, one id per requirement>
+decisions: <the ADR directory, docs/adr>
+attic: <optional — the attic survey reads, with include/ and defer/ under it>
 gate: <the command that must be green before anything ships>
 test: <the command that runs one named test, with any env it needs. Write the
        test's name in it as the literal <TestName>, and if this repo has more
@@ -151,8 +153,11 @@ test_phone: <the phone qa texts from for the texting scenarios; without it they 
 push: not confirmed
 ```
 
-`/software` reads it and hands every value to the runner as arguments. No
-agent knows a path of its own.
+`pm` (or `/software`) reads it and hands every value to the skills as
+arguments; a relative path is resolved against the repo root before it is
+passed, so one file is right in every worktree. No agent knows a path of its
+own. The board's artifact URL is the release file's `Board:` line, not a
+config key.
 
 `gate:` stays the plain command. The pipeline prepends `GATE_BASE=<ref>` to it
 in the dispatch; nothing about it is written into the repo's own command. A
