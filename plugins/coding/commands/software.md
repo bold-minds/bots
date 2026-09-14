@@ -218,16 +218,16 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    did, costing one dispatch per step.
 
    **When it passes** it returns the feature branch and, if the config's
-   `push:` line permits, the remote ref — one push per feature. The owner
-   merges to the default branch.
+   `push:` line permits, the remote ref — one push per feature. Then the
+   `pr` skill (`${CLAUDE_PLUGIN_ROOT}/skills/pr/SKILL.md`): it opens the PR
+   with the tests in the owner's words at the top and the verdict as the
+   body, waits for CI — the absolute-mode run on the whole repo, the first
+   that judges it — merges on green (ruled 13 Sept 10:54), runs `live:`,
+   writes the card and republishes the board. The owner's PR read is a skim.
+   A red check is the backlog's, not this feature's; nothing merges, and the
+   merge waits for the story that owns the red.
 
-   **Before that merge, the owner runs the gate in absolute mode — no
-   `GATE_BASE` — on the feature branch.** Everything inside the pipeline ran in
-   delta mode, so this is the first run that judges the whole repo, and it is
-   the owner's by design. A red here is not this task's and not this feature's:
-   it is the backlog's, and the merge waits for the feature that owns it.
-
-   After they merge, dispatch `coding:cleaner` with five things: the **feature
+   After the merge, `pr` dispatches `coding:cleaner` with five things: the **feature
    name** `<name>`, the feature directory
    `<root>/.claude/pipeline/features/<name>`, the pipeline directory
    `<root>/.claude/pipeline`, the **worktree directory** `<root>/..` — the one
@@ -247,8 +247,9 @@ An addition that survives all four goes in `scope.md`. One that doesn't goes in 
    `pipeline/<name>--<task>` — which is why it runs only after the merge: the
    work is on the default branch by then, and nothing else in the pipeline ever
    deletes a branch, so without this the same feature name is fatal on its
-   second run at the first `worktree add -b`. After they deploy, run the
-   config's `live:` command.
+   second run at the first `worktree add -b`. The merge is the deploy (a
+   merge to main deploys, story 04); `pr` runs the config's `live:` command
+   after it, and `qa` takes the story from there.
 
    Report a run in three lines: done / ready to merge / waiting on you. Add a
    fourth line — the run's `dispatches` count by model — only when they ask
