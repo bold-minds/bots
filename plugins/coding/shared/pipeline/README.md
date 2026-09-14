@@ -291,3 +291,177 @@ first live run's lenses cited code freely and were the better for it.)
   `.claude/` is excluded in that repo, narrow the exclusion.
 - Start the session inside the repo. Agent discovery walks up from the
   session's directory to the git root; from outside, nothing is found.
+
+## Driving a run
+
+What the room that fires `pipeline` — `pm`, or `/software` — does around it. Moved here from `commands/software.md` on 13 Sept 2026 (REWORK C12); the room file stays short and this is the runbook.
+
+**Set up.** Create the feature branch and a worktree on it, once, before the
+first run — every feature-level file is written and committed in that
+worktree, and each task cuts its own worktree from that branch:
+
+```
+git -C <root> worktree add <root>/../wt-<name> -b pipeline/<name> <default branch>
+```
+
+if `pipeline/<name>` does not already exist. The story is the feature's
+spec: `/feature` §1 writes it at `<root>/docs/product/stories/<nn>-<name>.md`,
+runs `shared/hil/check.sh story`, shows the owner the whole story and waits
+for their edit or go. Then the Design stop: the `trd` skill
+(`${CLAUDE_PLUGIN_ROOT}/skills/trd/SKILL.md`) writes the TRD beside it,
+has the seven lenses and the pre-mortem review it, and shows the owner;
+they accept or refuse each proposed scenario and say go. Nothing copies
+either file: every step of the run reads them at those paths, passed as
+`story` and `trd`, and a word the owner changes there changes the tests.
+
+Fire the pipeline when three things are true: the story is approved (it
+is listed in `docs/product/<release>.md` with its approval), its TRD is
+approved (committed, carrying its `Reviewed:` line), and they said go —
+or said earlier not to ask. Otherwise show three lines (the feature, its
+Shows line, its scenario count) and wait for one word.
+
+When the run stops at the task list, show the owner the coverage table
+(`tasks/coverage.md`, one row per scenario on the story and the task that
+carries it) with the Success lines, never the Success lines alone. Claire,
+8 Sept: "I'm not going to approve any slice without seeing the mapping of
+tasks to requirements/rules."
+
+**What it does.** It runs on its own from an approved story and its
+approved TRD: a breakdown into small tasks with the coverage table, then
+for each task a design and its adversarial review, tests that fail first,
+a short plan, the build, and one review. Then it merges the tasks
+together, one at a time, and checks the whole feature. It comes back with
+one branch to merge, or one question in plain language. The design and its
+review — the seven lenses and the pre-mortem — happened before, on the TRD,
+at the Design stop.
+
+**Pass, as a JSON object:** `feature`; `root` (`git rev-parse
+--show-toplevel`); `plugin` (`${CLAUDE_PLUGIN_ROOT}`); `featureTree` (the
+worktree path above); `story` (the approved story's absolute path); `trd`
+(its approved TRD's absolute path); `survey` when
+`docs/product/survey.md` exists; `defaultBranch`; and from
+`<root>/.claude/pipeline/config.md`: `decisions`, `requirements`, `gate`,
+`test`, `entry`, `stub`, and `rules` when the line is there (the owner's
+cross-cutting file, whose "Asked on every slice" list every feature
+answers). A relative path in `config.md` is resolved against `root` before
+it is passed — every agent runs in its own worktree, and a relative path
+handed through would resolve somewhere else in each. Keep the `runId` and
+`scriptPath` from every result.
+
+**It stops twice on purpose.** After the breakdown it comes back with the
+task list: show the owner `tasks/coverage.md` with each task's `criteria.md`
+**`Success:` line** beside its rows, in their words, in one message — that
+is their second read, and it is the only time they see the tasks.
+Then, on their word, a new run with the same args plus `startAt: "tasks"`:
+it skips the front half and builds the task list already committed on the
+feature branch. (A resume with `resumeFromRunId` and `confirmTasks: false`
+also works inside the session that ran the front half; it cannot cross
+sessions.) If they said earlier not to be asked, pass `confirmTasks: false`
+from the start.
+
+**On a block** it comes back with the question. Where the question is is
+what `blocks[].blockedPath` tells you, and there are two kinds:
+
+- **An owner block** — a step asked the owner something. `blockedPath` names
+  the file. Relay its three lines verbatim.
+- **A rework halt** — the review ran out of rework passes without asking
+  the owner anything. `blockedPath` is `null` because **no step wrote a
+  `BLOCKED.md`**; the whole record is `blocks[].verify`, the last review
+  text. Relay what it says the builder could not settle, in the owner's
+  terms, and ask the one question that decides it. Never send them looking
+  for a file that was never written.
+
+A rework halt's `answerStep` is the **builder's** last rework step
+(`rework-2`), not the review step: the builder is the one place that acts
+on a ruling, and the review sits after it and re-runs live on what it did.
+Pass the `answerStep` back exactly as the result gave it and this happens
+on its own.
+
+Either way, relay the question and pass their one-line answer back on the
+next run as an argument — `answers: { "<feature>": "<their line>" }`, or
+`answers: { "<feature>/<task>": "<their line>" }` for a task-level block —
+**plus `answerStep`, copied from the `answerStep` the result returned beside
+that key**, alongside the same args and the same run id. Both, every time:
+the key alone reaches every step at that level and re-runs the lot, and the
+runner ignores an answer whose step is missing, so the cached block comes
+straight back. With the step, exactly one prompt changes, that step re-runs
+with the ruling in front of it — deleting its `BLOCKED.md` if there was one
+— and everything before it stays cached. Never write the
+answer into `BLOCKED.md`: a finished step is cached by its prompt, so an
+answer that is not in the prompt never re-runs the step that asked. Record
+the ruling as one dated line in the story's Changelog — the story is the
+record of every change after approval. Never start a fresh run — that
+re-runs every step that had finished.
+
+One halt is a restart, not an answer: a case redtest left out of a task's
+tests. No step after the plan commit may touch a test, so no answer can
+add one, and a ruling on the `answers` line reaches only the step it names
+— redtest would re-run reading the same criteria and could leave the same
+case out. With the owner's word, three things by hand. Write the missing
+cases into that task's `criteria.md` in the feature worktree and commit it
+on `pipeline/<feature>`; the fresh task branch is cut from there and every
+step reads that file. Remove the task's worktree and branch —
+`git -C <feature worktree> worktree remove --force ../wt-<feature>-<task>`,
+then `git -C <feature worktree> branch -D pipeline/<feature>--<task>`.
+Then resume with `answerStep: "design"` for that task — not the `review`
+or `review-N` step the result returned, which would re-run the verifier
+on the same frozen tests and block again — with the `answers` line saying
+the criteria now carry the cases. The design step's prompt changes, and
+every step after it runs live again on a branch cut fresh from the
+feature branch. The other tasks in that wave re-run live too. One that
+had passed: its design, red-tests, plan and build steps each see their
+work already on the branch, return it and change nothing, and its
+reviews run again on the finished branch, diffing in the merge-base form
+so the criteria commit on the feature branch is not charged to it. One
+that was itself halted: every step finds its BLOCKED.md still there with
+no ruling naming it, returns the first line, and it halts again as it
+did, costing one dispatch per step.
+
+**When it passes** it returns the feature branch and, if the config's
+`push:` line permits, the remote ref — one push per feature. Then the
+`pr` skill (`${CLAUDE_PLUGIN_ROOT}/skills/pr/SKILL.md`): it opens the PR
+with the tests in the owner's words at the top and the verdict as the
+body, waits for CI — the absolute-mode run on the whole repo, the first
+that judges it — merges on green (ruled 13 Sept 10:54), runs `live:`,
+writes the card and republishes the board. The owner's PR read is a skim.
+A red check is the backlog's, not this feature's; nothing merges, and the
+merge waits for the story that owns the red.
+
+After the merge, `pr` dispatches `coding:cleaner` with five things: the **feature
+name** `<name>`, the feature directory
+`<root>/.claude/pipeline/features/<name>`, the pipeline directory
+`<root>/.claude/pipeline`, the **worktree directory** `<root>/..` — the one
+the worktrees sit in — and **every** worktree path to remove:
+`<root>/../wt-<name>`, every `<root>/../wt-<name>-<task>`, and every
+`<root>/../vf-<name>-<task>`, the detached worktree each task's verifier
+cuts. Name the `vf-` ones explicitly: nothing else removes them, `git
+worktree prune` leaves a directory that still exists, and the next run's
+`worktree add` on that path is fatal. The name and the directory are what
+the cleaner's own sweep is made of — it then sweeps
+`<root>/../vf-<name>-*` and `<root>/../wt-<name>-*`, anchored on the name
+and never `*<name>*`, for any tree a run left under a path nobody passed it,
+and prints what the sweep found — including that it found nothing, which is
+the only thing that says the sweep ran. The whole feature directory goes —
+the story was never in it and stays at `docs/product/stories/`. **Then it
+deletes the branches** — `pipeline/<name>` and every
+`pipeline/<name>--<task>` — which is why it runs only after the merge: the
+work is on the default branch by then, and nothing else in the pipeline ever
+deletes a branch, so without this the same feature name is fatal on its
+second run at the first `worktree add -b`. The merge is the deploy (a
+merge to main deploys, story 04); `pr` runs the config's `live:` command
+after it, and `qa` takes the story from there.
+
+Report a run in three lines: done / ready to merge / waiting on you. Add a
+fourth line — the run's `dispatches` count by model — only when they ask
+what it cost. The whole of it:
+`${CLAUDE_PLUGIN_ROOT}/shared/pipeline/README.md`.
+
+**The owner does not have to describe features one by one.** The stories
+are listed in order in `docs/product/<release>.md`, each approved before it
+is fired. "Run story 01", "run the next one that isn't live" — fire
+`pipeline` on that story and its TRD. Where a requirement has no story
+yet, `/feature` §1 writes one first and the owner reads it, then `trd`
+writes the design and the owner reads that. The red-test step rules what
+is already true (it gets a guarding test, no build) and what is not (it
+gets built). A few at a time; each run costs
+real money and the first ones find the pipeline's own defects.
