@@ -30,7 +30,7 @@ say() { echo "$page: $*"; bad=1; }
 
 # Caps, in lines (card: words after the dash). The owner reads these; a file
 # over its cap is a file that was not cut.
-CAP_STORY=60; CAP_TRD=100; CAP_COVERAGE_ROWS=20; CAP_PR=40; CAP_CARD_WORDS=40; CAP_ADR=30
+CAP_STORY=60; CAP_TRD=100; CAP_COVERAGE_ROWS=20; CAP_PR=40; CAP_CARD_WORDS=40; CAP_ADR=40
 # The TRD's cap counts every line, but what the owner reads is the group
 # lines — ten a section at most — so the bullets under them can be many and
 # short, which is the point.
@@ -267,7 +267,7 @@ check_adr() {
   grep -qE '^## Reopens' "$page" && say "a 'Reopens if' section: an ADR is the decision, its options and why; reopening is the owner's, not a clause"
   headings_are Decision Options Why
   local sec line
-  for sec in Decision Options Why; do
+  for sec in Decision Why; do
     [ "$(section "$sec" | grep -cE '^- ' || true)" -gt 0 ] || say "$sec has no bullet"
     while IFS= read -r line; do
       [ -z "${line//[[:space:]]/}" ] && continue
@@ -275,6 +275,22 @@ check_adr() {
       [ "$(wc -w <<<"$line")" -le 30 ] || say "$sec: a bullet over 30 words: ${line}"
     done <<<"$(section "$sec")"
   done
+  # Options are grouped by platform and product: a group line "<Platform> —
+  # <product>, <verdict>." then that option's facts, one per bullet.
+  local seen=0 groups=0
+  while IFS= read -r line; do
+    [ -z "${line//[[:space:]]/}" ] && continue
+    if grep -qE '^- ' <<<"$line"; then
+      [ "$seen" -eq 1 ] || say "Options: a bullet with no platform line above it: ${line}"
+      [ "$(wc -w <<<"$line")" -le 30 ] || say "Options: a bullet over 30 words: ${line}"
+    else
+      seen=1; groups=$((groups+1))
+      grep -qE '^[^-].* — .*, (chosen|rejected|the state before this|not evaluated)\.$' <<<"$line" \
+        || say "Options: a platform line is '<Platform> — <product>, <chosen|rejected|the state before this|not evaluated>.': ${line}"
+    fi
+  done <<<"$(section Options)"
+  [ "$groups" -ge 2 ] || say "Options: fewer than two platforms; a decision names what it beat"
+  grep -qE ', chosen\.$' <<<"$(section Options)" || say "Options: no platform marked chosen"
   local l; l="$(lines)"
   [ "$l" -le "$CAP_ADR" ] || say "$l lines; an ADR's cap is $CAP_ADR"
 }

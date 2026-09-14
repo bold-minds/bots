@@ -6,7 +6,11 @@ Decided: <YYYY-MM-DD> (<who>)
 - <one fact of what was decided, per bullet>
 
 ## Options
-- <an alternative that was on the table, and why not, one bullet each; "not evaluated: <why>" when it was not weighed — never an invented comparison>
+<Platform> — <product>, <chosen / rejected / the state before this / not evaluated>.
+- <one fact about it, per bullet: what it does, what it costs, what it gives up>
+
+<Next platform> — <product>, <verdict>.
+- <…>
 
 ## Why
 - <one reason, per bullet>
