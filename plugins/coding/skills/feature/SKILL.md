@@ -15,7 +15,7 @@ A feature is one story, one PR, one board card. The owner also calls it a slice;
 
 **Two modes, the story as the input to both** (Claire, 13 Sept):
 - `/feature <name>` — §1 below: write the story, check it, show it, wait for go, write the card. Moves Requirements → Story.
-- `/feature <name> --qa` — QA against the story, from a fresh context, reading nothing the builder wrote: run the Journey and every scenario against production as a black box; write the verdict and the card's two sentences. Pass moves Code Review → Launched; a fail names the scenario and the story goes back to `/software`. *The agent that runs this mode arrives with the rework.*
+- `/feature <name> --qa` — the `qa` skill (`${CLAUDE_PLUGIN_ROOT}/skills/qa/SKILL.md`) on the story and the prod address with `--launched`: a fresh context reading nothing the builder wrote walks the Journey and every scenario against production as a black box; on PASS it writes the Changelog line and the card. Pass moves Test → Launched; a fail names the scenario and the story goes back to Building.
 
 The run itself — Tasks, Building, Code Review — is the `pipeline` skill (`${CLAUDE_PLUGIN_ROOT}/skills/pipeline/SKILL.md`), fired by `/software` on the owner's go. This skill never fires it.
 

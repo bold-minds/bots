@@ -145,6 +145,9 @@ test: <the command that runs one named test, with any env it needs. Write the
 entry: <the program's entry points, comma-separated>
 stub: <where the local end-to-end environment lives, if any>
 live: <a command that asks production whether it is healthy, if any>
+test_address: <the test environment's public address; qa walks the story there at the Test stop>
+prod_address: <production's public address; qa walks the story there at the Launched stop>
+test_phone: <the phone qa texts from for the texting scenarios; without it they are blocked, never skipped>
 push: not confirmed
 ```
 
