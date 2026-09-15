@@ -62,7 +62,8 @@ the owner read it) — both in the shapes `shared/hil/` checks:
 | 8 | build | `builder` | opus | the task branch `pipeline/<f>--<t>`, gate green |
 | 9 | review | `verifier` — mutations, gate, rulings, touched files, the TRD's three whitelists, and fix-code's lens list on the diff | opus | `tasks/<t>/verdict.md`; a BLOCK that is rework goes back to `builder` and the review runs again, twice at most; **never merges** |
 | 10 | merge | `merger` | haiku | merges every passed task branch into `pipeline/<f>`, one at a time, in landing order |
-| 11 | feature | `featureverify` | sonnet | `features/<f>/verdict.md` — the story's Journey walked end to end, every fitness test, every task's tests together, the gate, the files held to the TRD's Solution; on PASS, the one push if config permits |
+| 10b | merge check | `builder` | opus | the gate on the merged branch; a red that is only the tasks' tests not building together (a helper two tasks both declared) is a merge rework — test files only, no assertion touched, committed as `merge rework:` — at most twice; any other red is BLOCKED |
+| 11 | feature | `featureverify` | sonnet | `features/<f>/verdict.md` — the story's Journey walked end to end (through the stub where it names an address; by the gate and the tests where it is those), every fitness test, every task's tests together, the gate, the files held to the TRD's Solution; on PASS, the one push if config permits |
 | 12 | clean | `cleaner` | haiku | after the merge: deletes the feature directory, the worktrees and the branches; one index line. The story and TRD stay where they live |
 | 13 | prove | the caller runs config's `live:` command | — | pass/fail |
 
