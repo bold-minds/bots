@@ -422,6 +422,14 @@ that was itself halted: every step finds its BLOCKED.md still there with
 no ruling naming it, returns the first line, and it halts again as it
 did, costing one dispatch per step.
 
+**When a task is added after the run first listed the tasks** — a
+final-wave task written once the merged tree showed a number the first
+cut never measured — the listing step's prompt has not changed, so a
+resume replays its cached five names and never sees the sixth. Resume
+with `answers: {<feature>: "<the task> was added; list again"}` and
+`answerStep: "tasklist"`: the prefix changes the prompt, the directory is
+read live, and everything after it re-plans on the six.
+
 **When it passes** it returns the feature branch and, if the config's
 `push:` line permits, the remote ref — one push per feature. Then the
 `pr` skill (`${CLAUDE_PLUGIN_ROOT}/skills/pr/SKILL.md`): it opens the PR
