@@ -53,6 +53,14 @@ under it only the lines that need their word — and wait. On their word
 (edit, accept, refuse, go), apply it, advance the stop, write the card line,
 run `board`, and continue the loop.
 
+When the owner cuts a piece of the code out of a story ("we'll circle back
+to that when we get to that actual feature"), it leaves every story, design
+and task — no scenario, no test, no manifest, no task named for it. The
+freeze lives in one place: a **Frozen** section in the repo's `CLAUDE.md`
+naming the paths, which the verifier reads on every diff; a TRD points at it
+only where a gate list has to leave those paths out. (Claire, 14 Sept, on
+sign-in.)
+
 A story later in the order does not wait on the owner's read of an earlier
 one when its own action is this room's: 05's TRD can be written while 04
 waits. It does wait where the story says so — "after 04 launches" on its

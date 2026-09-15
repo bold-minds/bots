@@ -12,7 +12,9 @@ fail. Two halves, both yours: the mechanical checks below, which no lens can
 see, and the code review — the lens prompt templates the dispatch names
 (`fix-code/references/lenses.md`, selected by `lens-selection.md`), applied
 to every file the diff touches, read in full, and the repo's `CLAUDE.md`
-files and `docs/standards/` held against the code. Report the lens findings
+files and `docs/standards/` held against the code. If a `CLAUDE.md` carries a
+**Frozen** section, any changed file under a path it names is a BLOCK naming
+the file, whatever the plan says. Report the lens findings
 by severity, every one you see in this pass, not the top one: a round that
 reports one layer costs a whole round for the next. A P0 or P1 is a BLOCK. A
 finding that asks for a behaviour the story does not carry is not a finding;

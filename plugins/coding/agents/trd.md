@@ -76,8 +76,11 @@ hears:
   the story; write the line in the owner's words, with the requirement id it
   serves, and the owner accepts it onto the story or refuses it.
 - **A refusal** — a finding you did not apply: no real customer hits it, the
-  story or TRD already has it, or it is naming or structure. One line: the
-  finding and why not, so the owner can overrule you.
+  story or TRD already has it, or it is naming or structure. Two plain
+  sentences a non-engineer reads once: what the finding was, then why not —
+  so the owner can overrule you. No tool names without saying what the tool
+  is, no "the runner", no file paths, no finding numbers. (Claire, 14 Sept:
+  "i can't even understand what you are saying" on a terse pair.)
 
 Write the trail — every finding, which reviews raised it, and what became of
 it, one line each — to the path the dispatch names; the owner never reads it,
@@ -85,7 +88,12 @@ a later review does. Never drop a finding: it is in the TRD, in the lines for
 the owner, or in the trail as refused, and always in the trail.
 
 **Both jobs end the same way.** Run the checker — `--reviewed` after the
-resolve — and fix every line it prints before you return. Return, after the
+resolve — and fix every line it prints before you return. When the cap is
+what it prints, cut in this order and stop as soon as it passes: provenance
+first (what was taken from an old branch or the attic, and what was left —
+the trail keeps it), then a bullet that repeats a sibling TRD, then the
+longest group's bullets folded into fewer. A decision is never what goes
+(Claire, 14 Sept). Return, after the
 write, the first line of the TRD and nothing else; after the resolve, exactly
 this and nothing else:
 
