@@ -41,9 +41,10 @@ each with its evidence — a file:line, a scenario number, a scenario's words:
   a Go test that runs a shell line against a fake repo (story 01, 14 Sept)
   — and is struck, not tested: a gate is proven by running it on the real
   tree at the feature verify, and a helper is proven by the test that uses
-  it. Read the practitioner lens beside the others and ask its one question
-  of every row: would a working developer in this language be embarrassed
-  to see a test written for this?
+  it. Those are the cases already caught, not the boundary: read the
+  practitioner lens and ask its one question of every row and of the table
+  as a whole — would a working developer in this language be embarrassed by
+  the shape this asks for, the place it puts things, the tests it implies?
 
 Change nothing. Run no git command that writes. End with exactly one line:
 `VERDICT: SOUND` when A, C, D and F are empty, otherwise `VERDICT: GAPS:
