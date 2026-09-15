@@ -245,8 +245,11 @@ check_coverage() {
 
 check_pr() {
   local first; first="$(grep -vE '^[[:space:]]*$' "$page" | head -1)"
-  [ "$first" = "## Tests" ] || say "first line is not '## Tests'"
-  headings_are Tests Verdict
+  [ "$first" = "## What changed" ] || say "first line is not '## What changed'"
+  headings_are "What changed" Why "How to check" Tests Verdict
+  [ "$(section "What changed" | grep -cE '^- ' || true)" -gt 0 ] || say "What changed holds no bullet"
+  [ -n "$(section Why | grep -vE '^[[:space:]]*$')" ] || say "Why is empty"
+  [ -n "$(section "How to check" | grep -vE '^[[:space:]]*$')" ] || say "How to check is empty"
   local t; t="$(section Tests)"
   [ "$(grep -cE '^- ' <<<"$t" || true)" -gt 0 ] || say "Tests holds no lines"
   while IFS= read -r line; do

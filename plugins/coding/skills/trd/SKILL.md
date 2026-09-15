@@ -47,20 +47,23 @@ Let `P` be `${CLAUDE_PLUGIN_ROOT}`, `HIL` be `${P}/shared/hil`, `root` be
    the three lines of the question to the owner; their one-line answer goes
    back into a fresh dispatch as a ruling.
 
-2. **Review** — seven lenses in parallel, one `coding:lens` dispatch each:
-   `architecture`, `sre`, `security`, `qa`, `staff` on opus; `performance`,
-   `database` on sonnet. Each gets: its name; `TRD`; the story; the checklist
+2. **Review** — eight lenses in parallel, one `coding:lens` dispatch each:
+   `architecture`, `sre`, `security`, `qa`, `staff`, `practitioner` on opus;
+   `performance`, `database` on sonnet. The practitioner reads the TRD as a
+   working developer who has read none of the repo's documents: a thing in
+   a place their language would not put it, or a test of tooling rather
+   than behaviour, is a finding whatever the story or standard says. Each gets: its name; `TRD`; the story; the checklist
    `${P}/shared/pipeline/lenses/<lens>.md`; `<root>/.claude/pipeline/lenses/<lens>.md`
    if it exists; the return format `${P}/shared/pipeline/templates/lens.md`;
    the triage rules; and, when config has a `rules` line, that file's "Asked
    on every slice" list, each of whose lines a TRD that leaves it unanswered
    turns into a finding. Each returns its findings as text and writes
    nothing. Then one `coding:premortem` dispatch with `TRD`, the story, the
-   seven lens texts verbatim, the return format
+   eight lens texts verbatim, the return format
    `${P}/shared/pipeline/templates/premortem.md` and the triage rules; it
    returns its table as text.
 
-3. **Resolve** — dispatch `coding:trd` with `TRD`, the story, the eight review
+3. **Resolve** — dispatch `coding:trd` with `TRD`, the story, the nine review
    texts verbatim, the template, the checker, the triage rules, the trail
    path `<root>/.claude/pipeline/reviews/<nn>-<name>-<YYYY-MM-DD>.md`, and
    the word **resolve**. It folds every finding into the TRD's sections so
@@ -90,5 +93,5 @@ a story the owner has not approved.
 
 ## Cost
 
-One write, eight reviews, one resolve: ten dispatches, eight of them opus.
+One write, nine reviews, one resolve: eleven dispatches, nine of them opus.
 Say so when asked what it cost; count a resume's re-dispatches too.

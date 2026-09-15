@@ -1,3 +1,15 @@
+## What changed
+- A text with a web address in it now gets "Got it" back and one build is recorded; a text without one gets the ask-for-an-address reply.
+- A fourth preview in a day is refused before any build starts.
+- "Still working on it" goes out once, at five minutes, if the build is not done.
+- 61 lines of production code across pkg/features/texts and pkg/preview; nothing else moved.
+
+## Why
+Story 06: a texted web address comes back as a link to a page of its own.
+
+## How to check
+`scripts/gate.sh` from the repo root: green, engine 82%. Text an address to the test number and get "Got it" within 30 seconds.
+
 ## Tests
 - Journey: a web address gets "Got it" and one build is recorded — PASS on https://stenzil-brand.stenzil.dev
 - 1 [A1] "hi" gets the ask-for-an-address text, nothing else — PASS

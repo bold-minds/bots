@@ -101,7 +101,7 @@ sed 's/ — PASS$//' "$ex/pr.md" > "$tmp/p1.md"
 expect_fail "pr test line without PASS/RED" "without '— PASS'" pr "$tmp/p1.md"
 # pr: prose above the Tests heading
 { echo "Here is what I did today."; cat "$ex/pr.md"; } > "$tmp/p2.md"
-expect_fail "pr with prose first" "first line is not '## Tests'" pr "$tmp/p2.md"
+expect_fail "pr with prose first" "first line is not '## What changed'" pr "$tmp/p2.md"
 # pr: verdict missing
 sed 's/^# PASS$/PASS/' "$ex/pr.md" > "$tmp/p3.md"
 expect_fail "pr verdict not a verdict line" "does not open with" pr "$tmp/p3.md"

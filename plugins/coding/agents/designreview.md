@@ -35,9 +35,18 @@ each with its evidence — a file:line, a scenario number, a scenario's words:
   there or does something else.
 - **E. Size.** Whether the row count is honest: would a split change what
   a test can carry, or is one task right.
+- **F. Tooling rows.** A row whose "Then" is about a script, a gate, a
+  threshold, a helper, a fixture or another test rather than a behaviour a
+  customer or the owner could see. Such a row produces a test of tooling —
+  a Go test that runs a shell line against a fake repo (story 01, 14 Sept)
+  — and is struck, not tested: a gate is proven by running it on the real
+  tree at the feature verify, and a helper is proven by the test that uses
+  it. Read the practitioner lens beside the others and ask its one question
+  of every row: would a working developer in this language be embarrassed
+  to see a test written for this?
 
 Change nothing. Run no git command that writes. End with exactly one line:
-`VERDICT: SOUND` when A, C and D are empty, otherwise `VERDICT: GAPS: <the
-count of A+C+D findings>`. B and E findings are advice to the reviser and do
-not by themselves make a GAPS verdict. Return only the findings and the
+`VERDICT: SOUND` when A, C, D and F are empty, otherwise `VERDICT: GAPS:
+<the count of A+C+D+F findings>`. B and E findings are advice to the reviser
+and do not by themselves make a GAPS verdict. Return only the findings and the
 verdict.

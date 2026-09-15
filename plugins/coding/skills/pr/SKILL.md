@@ -22,7 +22,18 @@ with the failing check named, nothing merged.
 
 Let `HIL` be `${CLAUDE_PLUGIN_ROOT}/shared/hil`.
 
-1. **The body.** Write `<scratchpad>/pr.md` from `${HIL}/templates/pr.md`:
+1. **The body.** Write `<scratchpad>/pr.md` from `${HIL}/templates/pr.md`.
+   The owner reads it to know what was done (Claire, 14 Sept: a body of
+   scenario lines and a verdict "is pretty terrible for understanding
+   anything that was done"):
+   - `## What changed` — from `git diff <default>...<branch> --stat` and the
+     files themselves: one bullet per thing a colleague would want to know
+     is different, in plain words, a file or package named in each; the last
+     bullet the production code it took, with a line count. Test files and
+     goldens are one bullet, not one each.
+   - `## Why` — the story's title and its one sentence.
+   - `## How to check` — the one command (the repo's gate) and what a
+     colleague should see.
    - `## Tests` — one line per scenario on the story, in story order, in the
      owner's words: `- <n> [<id>] <the scenario's Then, trimmed> — PASS`, the
      result taken from the task's `tests.md` row for that scenario; the

@@ -56,6 +56,7 @@ export const meta = {
     { title: 'Tasks', detail: 'in waves — every task with no After: first, then the ones that come After those; each task in its own worktree: design → design review → red tests → plan → build → review' },
     { title: 'Merge', detail: 'one agent merges the passed task branches into the feature branch, in landing order, one at a time' },
     { title: 'Merge check', detail: 'the gate on the merged branch; a red that is only the tasks\' tests not building together goes to a builder for a merge rework, at most twice' },
+    { title: 'Practitioner', detail: 'a working developer in the language reads the merged diff with no document in hand and refuses what would embarrass them; a refusal is a builder rework on the feature branch, twice at most' },
     { title: 'Feature', detail: 'the whole feature branch: journey, fitness, every test together, the gate; then one push' },
   ],
 }
@@ -176,7 +177,7 @@ const count = (m) => { tally[m] = (tally[m] || 0) + 1 }
 // an agent at BLOCKED.md in either case sends it looking for something that was
 // never written, and telling it to delete that file is an instruction it cannot
 // carry out.
-const stepHasNoBlockFile = (step) => /^rework(?:-\d+)?$/.test(String(step || '')) || step === 'after' || step === 'tasklist' || step === 'rounds' || step === 'design' || step === 'designreview'
+const stepHasNoBlockFile = (step) => /^rework(?:-\d+)?$/.test(String(step || '')) || step === 'after' || step === 'tasklist' || step === 'rounds' || step === 'design' || step === 'designreview' || step === 'practitioner'
 // answerStep "*" reaches every step of that task: a run started in a fresh
 // session has no cache, so every step re-runs and each one meets the same
 // BLOCKED.md; gated on one step, the steps before it halt on the file.
@@ -611,6 +612,36 @@ if (finalWave.length) {
   const secondRound = await mergeRound(finalWave.map(t => resultOf.get(t).branch), 2)
   if (secondRound) return secondRound
 }
+
+// The one question every review before this one failed to ask on story 01
+// (14 Sept): would a working developer in this language be embarrassed to
+// have their name on this diff? Every other review holds the code to the
+// TRD, the standards and CLAUDE.md — documents the same pipeline wrote — so
+// a gate inside a markdown file, a Go test of a shell script against a fake
+// repo, thirteen test files for eight scenarios and 250-line helpers all
+// passed. This reviewer reads none of those documents. It reads the diff
+// as a colleague's PR, with the practitioner lens alone, and a refusal is a
+// builder's rework on the feature branch, twice at most, before the push.
+phase('Practitioner')
+const PRACTITIONER = `${PLUGIN}/shared/pipeline/lenses/practitioner.md`
+let practOk = false
+for (let pass = 1; pass <= 3 && !practOk; pass++) {
+  count('opus')
+  const pr = await agent(
+    `${ANSWER(f, 'practitioner')}Pass ${pass}. You are a working developer in this repo's language reviewing a colleague's pull request. Read ${PRACTITIONER} and hold the diff to it — and to nothing else: do not open the TRD, the story, CLAUDE.md, docs/standards or any file under .claude/pipeline; a thing those documents asked for is still a finding if a working developer would not do it. In ${FT}, the feature branch ${FB}: git diff ${BASE}...${FB} --stat, then read every changed file in full, test files and fixtures included. Count lines of test and fixture against lines of production code. Return "# APPROVE" if you would put your name on it as it stands. Otherwise return "# REFUSE" followed by what you would refuse, one line each, most embarrassing first, each with its one-line rewrite — a file to delete, a file to fold into another, a helper to cut to ten lines, a command to move into a script, a test of tooling to drop. Change nothing; you are read-only.`,
+    { agentType: 'coding:lens', phase: 'Practitioner', label: `practitioner ${pass}` })
+  if (bad(pr)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(pr || 'BLOCKED: the practitioner review died before reading the diff', 'practitioner') }
+  practOk = /^# APPROVE/m.test(String(pr))
+  log(`practitioner ${pass}: ${practOk ? 'approve' : 'refuse'}`)
+  if (practOk) break
+  if (pass === 3) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(`BLOCKED: a working developer would still refuse this diff after two reworks; their last refusal: ${String(pr).slice(0, 400)}`, 'practitioner') }
+  count('opus')
+  const rw = await agent(
+    `A working developer reviewed the feature branch ${FB} in ${FT} and refused it; their refusals and the rewrite for each are below, verbatim. Apply every rewrite in ${FT}: delete what they said to delete, fold what they said to fold, cut what they said to cut, move what they said to move. Rules that do not bend: no production file changes beyond a move the refusal names; no golden rewritten; no assertion weakened — a test that goes may only be one whose behaviour another remaining test asserts or that tests tooling; every remaining test file an external package; CLAUDE.md's frozen paths untouched. Then run the gate absolutely — GATE_BASE unset — with: ${A.gate} — and it must be green with every held total still held; a total that drops below the threshold means you cut a test that was carrying it: put back the smallest test that restores it. Commit in ${FT} with a subject beginning "tests under the owner's rule:" naming what went. Return "done" and nothing else.\n\n${pr}`,
+    { agentType: 'coding:builder', phase: 'Practitioner', label: `practitioner rework ${pass}` })
+  if (bad(rw)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(rw || 'BLOCKED: the practitioner rework died', 'practitioner') }
+}
+
 
 phase('Feature')
 count('sonnet')
