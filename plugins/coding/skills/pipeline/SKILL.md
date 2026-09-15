@@ -572,7 +572,7 @@ if (halted.length) {
 // goes to a builder for a merge rework — test files and helpers only, no
 // assertion weakened, no production code — at most two passes.
 // Merge and merge check are one round; a feature with a final wave runs two.
-const mergeRound = async (order) => {
+const mergeRound = async (order, round) => {
   phase('Merge')
   count('haiku')
   const mg = await agent(
@@ -584,8 +584,8 @@ const mergeRound = async (order) => {
   for (let pass = 1; pass <= 2 && !mergeGreen; pass++) {
     count('opus')
     const mc = await agent(
-      `${ANSWER(f, 'mergecheck')}Feature worktree ${FT}, on branch ${FB}, every task branch merged into it. Run the gate there, in delta mode against ${BASE}: ${GATE(BASE)}. If it is green, return "# GREEN" and change nothing. If it is red because the merged tests do not build together — a helper declared in two task's files, a signature one task's helper changed and another task's test still calls, a name one file uses that another file was meant to define — reconcile it: keep one declaration, make every caller agree with it, change no test's assertions, no row of any design.md, no production file, nothing outside test files and testdata; read every test file the errors name in full first. Then run the gate again; on green, commit in ${FT} with a message beginning "merge rework:" naming the helpers reconciled, and return "# GREEN". If it is red for any other reason — a production file, a test that fails rather than fails to build, a golden that moved — do not fix it: write ${dir}/BLOCKED.md — first line "BLOCKED: <one plain sentence naming which two tasks disagree and about what>", then your best default in one sentence, then what changes if the owner says otherwise — and return that first line. Never push, never merge, never touch a task branch. ${BLOCK_RULE(dir)}`,
-      { agentType: 'coding:builder', phase: 'Merge check', label: `merge check ${pass}` })
+      `${ANSWER(f, 'mergecheck')}Merge round ${round}, check pass ${pass}. Feature worktree ${FT}, on branch ${FB}, every task branch merged into it. Run the gate there, in delta mode against ${BASE}: ${GATE(BASE)}. If it is green, return "# GREEN" and change nothing. If it is red because the merged tests do not build together — a helper declared in two task's files, a signature one task's helper changed and another task's test still calls, a name one file uses that another file was meant to define — reconcile it: keep one declaration, make every caller agree with it, change no test's assertions, no row of any design.md, no production file, nothing outside test files and testdata; read every test file the errors name in full first. Then run the gate again; on green, commit in ${FT} with a message beginning "merge rework:" naming the helpers reconciled, and return "# GREEN". If it is red for any other reason — a production file, a test that fails rather than fails to build, a golden that moved — do not fix it: write ${dir}/BLOCKED.md — first line "BLOCKED: <one plain sentence naming which two tasks disagree and about what>", then your best default in one sentence, then what changes if the owner says otherwise — and return that first line. Never push, never merge, never touch a task branch. ${BLOCK_RULE(dir)}`,
+      { agentType: 'coding:builder', phase: 'Merge check', label: `merge round ${round}, check ${pass}` })
     if (bad(mc)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(mc || 'BLOCKED: the merge check died before running the gate', 'mergecheck') }
     mergeGreen = /^# GREEN/m.test(String(mc))
     log(`merge check ${pass}: ${mergeGreen ? 'green' : 'red'}`)
@@ -593,7 +593,7 @@ const mergeRound = async (order) => {
   if (!mergeGreen) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK('BLOCKED: the merged branch is still red after two merge reworks; the tasks\' tests do not build together and a builder could not reconcile them without changing a test', 'mergecheck') }
   return null
 }
-const firstRound = await mergeRound(passed.map(p => p.branch))
+const firstRound = await mergeRound(passed.map(p => p.branch), 1)
 if (firstRound) return firstRound
 
 // The final wave: every task that said "After: all", cut from the feature
@@ -606,7 +606,7 @@ if (finalWave.length) {
   passed = all.filter(t => resultOf.has(t)).map(t => resultOf.get(t))
   halted = all.filter(t => !resultOf.has(t))
   if (halted.some(t => finalWave.includes(t))) return { feature: f, branch: FB, tasks, waves, passed, halted, blocks: blocksOf(halted), pushed: null, dispatches: tally }
-  const secondRound = await mergeRound(finalWave.map(t => resultOf.get(t).branch))
+  const secondRound = await mergeRound(finalWave.map(t => resultOf.get(t).branch), 2)
   if (secondRound) return secondRound
 }
 
