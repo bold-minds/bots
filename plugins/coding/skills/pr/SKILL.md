@@ -1,6 +1,6 @@
 ---
 name: pr
-description: The Code Review stop. Input a pushed feature branch with its verdict, and the story: opens the PR with the tests in the owner's words at the top and the verifier's verdict as the body, waits for CI, merges on green, runs the live check, writes the card, republishes the board. The owner's read is a skim; the merge is this skill's (ruled 13 Sept 10:54, "you will be merging"). Use when a pipeline run has passed and pushed.
+description: The Code Review stop. Input a pushed feature branch with its verdict, and the story: opens one PR per wave of the story — Why (the story and a checklist of its PRs), What (one plain bullet per change, no paths), How to check — waits for CI, merges on green, runs the live check, writes the card, republishes the board. The owner reads each PR in minutes; the merge is this skill's on green CI (ruled 13 Sept 10:54), the owner's when there is none. Use when a pipeline run has passed and pushed.
 argument-hint: <feature> — the pipeline result's branch and verdict path
 allowed-tools: Bash, Read, Write, Artifact
 ---
@@ -23,26 +23,26 @@ with the failing check named, nothing merged.
 Let `HIL` be `${CLAUDE_PLUGIN_ROOT}/shared/hil`.
 
 1. **The body.** Write `<scratchpad>/pr.md` from `${HIL}/templates/pr.md`.
-   The owner reads it to know what was done (Claire, 14 Sept: a body of
-   scenario lines and a verdict "is pretty terrible for understanding
-   anything that was done"):
-   - `## What changed` — from `git diff <default>...<branch> --stat` and the
-     files themselves: one bullet per thing a colleague would want to know
-     is different, in plain words, a file or package named in each; the last
-     bullet the production code it took, with a line count. Test files and
-     goldens are one bullet, not one each.
-   - `## Why` — the story's title and its one sentence.
-   - `## How to check` — the one command (the repo's gate) and what a
-     colleague should see.
-   - `## Tests` — one line per scenario on the story, in story order, in the
-     owner's words: `- <n> [<id>] <the scenario's Then, trimmed> — PASS`, the
-     result taken from the task's `tests.md` row for that scenario; the
-     Journey line first, `— PASS on <the test address>`, from
-     `verdict.md`'s "Feature only" rows. Every scenario on the story has a
-     line; one missing is a stop, not a PR.
-   - `## Verdict` — `verdict.md`'s first line, then its bullets, verbatim.
-   `bash ${HIL}/check.sh pr <scratchpad>/pr.md`; a line printed is a defect
-   in what the run produced, and the PR is not opened until it prints none.
+   The owner reads it to review quickly (Claire, 15 Sept: "I can't review
+   quickly the way its written"), so it is three sections and nothing else:
+   - `## Why` — the story's one sentence, then a checklist of the PRs the
+     story is split into, `- [x] PR n: <what it does>`, each a short plain
+     title a non-engineer reads once ("fixing the crash when a page asks for
+     a view that doesn't exist", never "the seams the tests need"); merged
+     PRs and this one ticked, the rest not.
+   - `## What` — one bullet per change, saying what it contributes and why,
+     never how: no file names, no function names, no line counts, no paths;
+     a library or Go type only when it is the point ("so unit tests can use
+     Go's httptest library"). Each bullet is a full plain sentence with its
+     reason: "Upgrading Go from 1.19 to 1.26 to match the version the Docker
+     image already builds with". As many bullets as there are changes; no
+     cap. A last bullet says what did not change when that is the point.
+   - `## How to check` — what a colleague runs and what they should see, in
+     one or two sentences.
+   The scenarios and the verdict are not on the body: the board card and
+   the verdict file carry them. `bash ${HIL}/check.sh pr <scratchpad>/pr.md`;
+   a line printed is a defect in what the run produced, and the PR is not
+   opened until it prints none.
 2. **Open it.** `gh pr create --base <default branch> --head pipeline/<feature>
    --title "<the story's title, its first line without the #>" --body-file
    <scratchpad>/pr.md`. Keep the PR URL. Card line on the release file:
@@ -78,5 +78,10 @@ the card line as written. Then the story is at Test, which is `qa`'s.
 
 - Merge on a red check, or re-run a check to make it green.
 - Edit the PR body by hand after the checker passed it, or add prose above
-  the tests.
-- Open a second PR for the same branch; one PR per story.
+  Why.
+- Put a file path, a function name or a line count in a What bullet.
+- Open one PR for a story of more than one wave: a story arrives as one PR
+  per wave, each cut from the feature branch by the wave's files, each a
+  few hundred lines, opened when the one before has merged (Claire, 15
+  Sept: "multiple PRs per story, if needed, to keep the size of the pr
+  review manageable").

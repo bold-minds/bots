@@ -244,22 +244,27 @@ check_coverage() {
 }
 
 check_pr() {
+  # Why: the story and a checklist of the PRs it is split into, this one
+  # ticked. What: one bullet per change, what it contributes, no paths.
+  # How to check: what a colleague runs. (Claire, 15 Sept: "I can't review
+  # quickly the way its written"; no cap on bullets.)
   local first; first="$(grep -vE '^[[:space:]]*$' "$page" | head -1)"
-  [ "$first" = "## What changed" ] || say "first line is not '## What changed'"
-  headings_are "What changed" Why "How to check" Tests Verdict
-  [ "$(section "What changed" | grep -cE '^- ' || true)" -gt 0 ] || say "What changed holds no bullet"
-  [ -n "$(section Why | grep -vE '^[[:space:]]*$')" ] || say "Why is empty"
-  [ -n "$(section "How to check" | grep -vE '^[[:space:]]*$')" ] || say "How to check is empty"
-  local t; t="$(section Tests)"
-  [ "$(grep -cE '^- ' <<<"$t" || true)" -gt 0 ] || say "Tests holds no lines"
+  [ "$first" = "## Why" ] || say "first line is not '## Why'"
+  headings_are Why What "How to check"
+  local w; w="$(section Why)"
+  [ -n "$(grep -vE '^[[:space:]]*$|^- \[' <<<"$w")" ] || say "Why has no story line above the checklist"
+  [ "$(grep -cE '^- \[[ x]\] PR [0-9]+: .+' <<<"$w" || true)" -gt 0 ] || say "Why has no '- [x] PR n: <what it does>' checklist line"
+  [ "$(grep -cE '^- \[x\] PR [0-9]+: ' <<<"$w" || true)" -gt 0 ] || say "no PR in the checklist is ticked; this one is"
   while IFS= read -r line; do
-    grep -qE ' — (PASS|RED)( .*)?$' <<<"$line" || say "test line without '— PASS' or '— RED': ${line}"
+    grep -qE '^- \[[ x]\] PR [0-9]+: .+' <<<"$line" || say "Why: a bullet that is not a '- [ ] PR n: …' line: ${line}"
+  done < <(grep -E '^- ' <<<"$w")
+  local t; t="$(section What)"
+  [ "$(grep -cE '^- ' <<<"$t" || true)" -gt 0 ] || say "What holds no bullet"
+  while IFS= read -r line; do
+    grep -qE '(^|[^a-zA-Z])[a-zA-Z0-9_./-]+/[a-zA-Z0-9_.-]+\.(go|js|ts|svelte|md|json|yaml|yml|sh|mod|sum)([^a-zA-Z0-9]|$)' <<<"$line" && say "What: a file path in a bullet; say what it contributes, not where: ${line}"
+    grep -qE '[0-9]+ lines' <<<"$line" && say "What: a line count in a bullet: ${line}"
   done < <(grep -E '^- ' <<<"$t")
-  grep -qE '^- Journey' <<<"$t" || say "Tests has no Journey line"
-  local v; v="$(section Verdict | grep -vE '^[[:space:]]*$' | head -1)"
-  grep -qE '^# (PASS|BLOCK: .+)$' <<<"$v" || say "Verdict does not open with '# PASS' or '# BLOCK: <sentence>'"
-  local l; l="$(lines)"
-  [ "$l" -le "$CAP_PR" ] || say "$l lines; the PR body's cap is $CAP_PR"
+  [ -n "$(section "How to check" | grep -vE '^[[:space:]]*$')" ] || say "How to check is empty"
 }
 
 check_adr() {

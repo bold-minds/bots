@@ -96,15 +96,18 @@ expect_fail "coverage row without a task" "row with no task" coverage "$tmp/c2.m
 grep -v '^| Journey' "$ex/coverage.md" > "$tmp/c3.md"
 expect_fail "coverage without Journey" "no Journey row" coverage "$tmp/c3.md"
 
-# pr: a test line with no result
-sed 's/ — PASS$//' "$ex/pr.md" > "$tmp/p1.md"
-expect_fail "pr test line without PASS/RED" "without '— PASS'" pr "$tmp/p1.md"
-# pr: prose above the Tests heading
+# pr: a file path in a What bullet
+sed 's/^- Recording exactly one build/- Recording in pkg\/preview\/build.go exactly one build/' "$ex/pr.md" > "$tmp/p1.md"
+expect_fail "pr What bullet with a path" "a file path in a bullet" pr "$tmp/p1.md"
+# pr: prose above the Why heading
 { echo "Here is what I did today."; cat "$ex/pr.md"; } > "$tmp/p2.md"
-expect_fail "pr with prose first" "first line is not '## What changed'" pr "$tmp/p2.md"
-# pr: verdict missing
-sed 's/^# PASS$/PASS/' "$ex/pr.md" > "$tmp/p3.md"
-expect_fail "pr verdict not a verdict line" "does not open with" pr "$tmp/p3.md"
+expect_fail "pr with prose first" "first line is not '## Why'" pr "$tmp/p2.md"
+# pr: no PR ticked in the checklist
+sed 's/^- \[x\] PR 1/- [ ] PR 1/' "$ex/pr.md" > "$tmp/p3.md"
+expect_fail "pr with no ticked PR" "no PR in the checklist is ticked" pr "$tmp/p3.md"
+# pr: a line count in a What bullet
+sed 's/^- No change to how/- 61 lines of production code; no change to how/' "$ex/pr.md" > "$tmp/p4.md"
+expect_fail "pr What bullet with a line count" "a line count" pr "$tmp/p4.md"
 
 # card: three sentences
 sed 's/Next is 03, the preview link itself\./Next is 03. The preview link itself./' "$ex/card.md" > "$tmp/k1.md"
