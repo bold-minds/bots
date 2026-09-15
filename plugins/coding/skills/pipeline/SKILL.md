@@ -572,6 +572,7 @@ if (halted.length) {
 // goes to a builder for a merge rework — test files and helpers only, no
 // assertion weakened, no production code — at most two passes.
 // Merge and merge check are one round; a feature with a final wave runs two.
+const merged = []
 const mergeRound = async (order, round) => {
   phase('Merge')
   count('haiku')
@@ -579,6 +580,7 @@ const mergeRound = async (order, round) => {
     `${ANSWER(f, 'merge')}Feature worktree ${FT}, on branch ${FB}. First, if a merge is in progress in ${FT} — a previous run stopped on a conflict and left it that way — run git -C ${FT} merge --abort before anything else. Nothing can be committed in that tree until you do, so every step after you dies if you skip it; check with git -C ${FT} status --porcelain=v1 -b. Then merge these task branches into ${FB}, in this order, one at a time — never two at once: ${order.join(', ')}. That is the landing order: the wave each task ran in first, then its number inside that wave. A task that came After another already merged that task's branch into its own before it built, so it sits behind that task in this list and the two share history. For each, run: git -C ${FT} merge --no-ff <branch>. On the first conflict, stop there: run git -C ${FT} merge --abort so the tree is usable again, then write ${dir}/BLOCKED.md — first line "BLOCKED: <one plain sentence, in business terms, asking which behaviour should win where the two changes disagree>", then in one sentence what you would do by default, then what changes if the owner rules otherwise. Return that first line as your whole result. Otherwise return the branches you merged, one per line, and nothing else.`,
     { agentType: 'coding:merger', phase: 'Merge' })
   if (bad(mg)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(mg || 'BLOCKED: the merge agent died before merging every task branch', 'merge') }
+  merged.push(String(mg))
   phase('Merge check')
   let mergeGreen = false
   for (let pass = 1; pass <= 2 && !mergeGreen; pass++) {
@@ -631,7 +633,7 @@ const fvPass = !bad(fv) && new RegExp(`^${MD}PASS\\b`).test(firstLine(fv))
 const pushed = fvPass ? ((fv.match(/^pushed:\s*(\S+)/m) || [null, null])[1]) : null
 log(`dispatches this run asked for — opus ${tally.opus}, sonnet ${tally.sonnet}, haiku ${tally.haiku}; a resumed run counts cached calls again`)
 return {
-  feature: f, branch: FB, passed, halted, merged: mg,
+  feature: f, branch: FB, passed, halted, merged: merged.join('\n'),
   feature_verdict: fv || 'BLOCKED: the feature-verify agent died before writing its verdict',
   feature_verdict_path: `${dir}/verdict.md`, blockedPath: `${dir}/BLOCKED.md`, answerKey: f, answerStep: 'feature',
   pushed, dispatches: tally,
