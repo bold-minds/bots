@@ -82,7 +82,11 @@ one name at most, because a task that needs two others is two tasks — and the
 run reads those lines before it starts anything. Tasks with no `After:` are
 wave 1, tasks whose `After:` is in wave 1 are wave 2, and so on; each wave is
 the same parallel `pipeline` as before, and only the boundary between waves is
-a barrier, so nothing inside a wave waits for anything. The builder of a task
+a barrier, so nothing inside a wave waits for anything. One task may say
+`After: all` — a threshold or a total that only holds over every other task's
+work; it runs in a final wave after step 10 and 10b have merged and checked
+the others, cut from the feature branch that holds them, and is then merged
+and checked in a second round before step 11. The builder of a task
 with an `After:` merges the named branch into its own as its first act and says
 so in its commit message — by then that branch has passed its review, because
 a wave does not start until the wave before it has finished — and the review

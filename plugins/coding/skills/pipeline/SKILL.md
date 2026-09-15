@@ -208,7 +208,7 @@ if (A.startAt === 'tasks') {
 phase('Break down')
 count('opus')
 const bdText = await agent(
-  `${ANSWER(f, 'breakdown')}Read the story ${SPEC}, its TRD ${TRD} — the approved design: Flow, Solution, Observed, References, one cohesive draft with its review already folded in — ${A.requirements}${RULES ? `, ${RULES}` : ''}, ${A.decisions}${SURVEY}, and the code as it stands in ${FT} — a worktree on ${FB} — traced from ${ENTRY}: those are your only inputs, and nothing else in the feature directory is. The story's numbered Scenarios are the rules, and they are the whole of what gets built: a case not on the story is not a task, not a criterion, not a row. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, each with its Success line filled in: at most five tasks, every one a thing the owner or a customer can see working when it is done, none that exists only to serve another task (a harness, a library, a recording, a stand-in, a test environment is part of the task that first needs it, never a task), the Success line one plain sentence of at most twenty words${RULES ? `, and the "Asked on every slice" list in ${RULES} answered inside the tasks it touches, never as a task` : ''}. A task's "Rules:" line names the scenario numbers it carries and criteria.md adds no Given/When/Then of its own — the scenarios' text stays on the story, and every step after you reads it there. Beside every criteria.md write ${dir}/tasks/<that task>/design.md from ${TPL('design')}: one row per case the task makes true, from the scenarios it carries and the code as it stands, every enumeration the scenarios or the code carry as its own rows, each row something a test could check. A design over twenty rows is a task too big for its tests to carry the meaning: split it before you return, into parts each a thing the owner or a customer can see working when it is done, each with its own criteria.md and design.md, with an "After:" line where one part builds on another. The five-task cap counts customer-visible outcomes, not branches, so a split never breaches it. No task carries the Journey: the feature verify walks the story's Journey directly once every task has merged. A task that cannot start until another task's work exists — the package, the file, the table it builds on is created by that one, and a worktree cut from ${FB} does not have it — carries one "After: <that task's directory name>" line, at most one name and always a lower-numbered task; most tasks carry none. Every scenario must land in a task: each numbered scenario on the story${RULES ? `, and every numbered line of the "Asked on every slice" list in ${RULES} (X<n>),` : ''} is named on the "Rules:" line of the task that satisfies it; write ${dir}/tasks/coverage.md from ${HTPL('coverage')}, one row per scenario keyed by its number and requirement id, plus the Journey row, and a scenario with no task is a BLOCKED, not a row — nothing on the story is deferred, and "plan only" and "note" are not places. The owner reads that table: run bash ${CHECK} coverage ${dir}/tasks/coverage.md --story ${SPEC} and fix every line it prints before you commit; a table the checker rejects is not shown to anyone. Then, in ${FT}, git add the feature directory — the new task files and coverage.md — and commit it. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
+  `${ANSWER(f, 'breakdown')}Read the story ${SPEC}, its TRD ${TRD} — the approved design: Flow, Solution, Observed, References, one cohesive draft with its review already folded in — ${A.requirements}${RULES ? `, ${RULES}` : ''}, ${A.decisions}${SURVEY}, and the code as it stands in ${FT} — a worktree on ${FB} — traced from ${ENTRY}: those are your only inputs, and nothing else in the feature directory is. The story's numbered Scenarios are the rules, and they are the whole of what gets built: a case not on the story is not a task, not a criterion, not a row. Write one ${dir}/tasks/<nn>-<short-name>/criteria.md per task from ${TPL('criteria')}, in landing order, each with its Success line filled in: at most five tasks, every one a thing the owner or a customer can see working when it is done, none that exists only to serve another task (a harness, a library, a recording, a stand-in, a test environment is part of the task that first needs it, never a task), the Success line one plain sentence of at most twenty words${RULES ? `, and the "Asked on every slice" list in ${RULES} answered inside the tasks it touches, never as a task` : ''}. A task's "Rules:" line names the scenario numbers it carries and criteria.md adds no Given/When/Then of its own — the scenarios' text stays on the story, and every step after you reads it there. Beside every criteria.md write ${dir}/tasks/<that task>/design.md from ${TPL('design')}: one row per case the task makes true, from the scenarios it carries and the code as it stands, every enumeration the scenarios or the code carry as its own rows, each row something a test could check. A design over twenty rows is a task too big for its tests to carry the meaning: split it before you return, into parts each a thing the owner or a customer can see working when it is done, each with its own criteria.md and design.md, with an "After:" line where one part builds on another. The five-task cap counts customer-visible outcomes, not branches, so a split never breaches it. No task carries the Journey: the feature verify walks the story's Journey directly once every task has merged. A task that cannot start until another task's work exists — the package, the file, the table it builds on is created by that one, and a worktree cut from ${FB} does not have it — carries one "After: <that task's directory name>" line, at most one name and always a lower-numbered task; most tasks carry none. A scenario that can only be made true over every other task's work together — a coverage total, a threshold, a count over the whole feature — goes in one task that carries "After: all": it runs alone in a final wave after the others have merged, cut from the feature branch that holds them all, and its design rows are what reaches the number on the real tree, not a fixture (behaviour-tested, 14 Sept: the gate's 80 was designed against a fixture and the merged tree measured 68). At most one task says all. Every scenario must land in a task: each numbered scenario on the story${RULES ? `, and every numbered line of the "Asked on every slice" list in ${RULES} (X<n>),` : ''} is named on the "Rules:" line of the task that satisfies it; write ${dir}/tasks/coverage.md from ${HTPL('coverage')}, one row per scenario keyed by its number and requirement id, plus the Journey row, and a scenario with no task is a BLOCKED, not a row — nothing on the story is deferred, and "plan only" and "note" are not places. The owner reads that table: run bash ${CHECK} coverage ${dir}/tasks/coverage.md --story ${SPEC} and fix every line it prints before you commit; a table the checker rejects is not shown to anyone. Then, in ${FT}, git add the feature directory — the new task files and coverage.md — and commit it. Return ONLY the task directory names, one per line, nothing else. ${BLOCK_RULE(dir)}`,
   { agentType: 'coding:breakdown', phase: 'Break down' })
 if (bad(bdText)) return { halted: 'Break down', ...FEATURE_BLOCK(bdText || 'BLOCKED: the breakdown agent died before writing any task', 'breakdown') }
 tasks = bdText.split('\n').map(s => s.trim()).filter(s => /^[0-9]{2}-[a-z0-9-]+$/.test(s))
@@ -235,6 +235,11 @@ if (bad(afterText)) return { halted: 'Break down', ...FEATURE_BLOCK(afterText ||
 // missing answer, or a cycle. Any of them halts the run before a task starts:
 // a wave order built on a broken graph runs tasks in an order nothing checked.
 const dep = {}, graphBad = []
+// A task with "After: all" needs every other task's work under it — a coverage
+// total, a threshold, a whole-feature check. It runs in a final wave AFTER the
+// merge, cut from the feature branch that holds every other task, so dep[t]
+// stays null for it (nothing to merge in, the feature branch is its base).
+const final = new Set()
 const afterLines = String(afterText).split('\n').map(s => s.trim()).filter(Boolean)
 for (const t of tasks) {
   // "^<name>\s" and not a bare prefix: 01-config must not read 01-config-list's
@@ -244,6 +249,7 @@ for (const t of tasks) {
   const a = line ? ((line.match(/\safter:\s*([^\s.]+)/i) || [])[1] || '') : ''
   if (!a) graphBad.push({ task: t, why: `BLOCKED: no "After:" answer came back for ${t}, so the pipeline cannot tell whether it may start in the first wave. Read ${dir}/tasks/${t}/criteria.md and say whether it carries an After: line and what it names.` })
   else if (/^none$/i.test(a)) dep[t] = null
+  else if (/^all$/i.test(a)) { if (tasks.length < 2) graphBad.push({ task: t, why: `BLOCKED: ${t}'s After: line says all, but it is the only task.` }); else { dep[t] = null; final.add(t) } }
   else if (a === t) graphBad.push({ task: t, why: `BLOCKED: ${t}'s After: line names ${t} itself, so nothing can ever start it.` })
   else if (!tasks.includes(a)) graphBad.push({ task: t, why: `BLOCKED: ${t}'s After: line names ${a}, which is not one of this feature's tasks (${tasks.join(', ')}).` })
   else dep[t] = a
@@ -252,7 +258,8 @@ for (const t of tasks) {
 // landed in a wave already built. A task left over when no further wave can be
 // built is in a cycle, or waiting on one.
 const waves = []
-let unplaced = tasks.filter(t => !graphBad.some(b => b.task === t))
+let unplaced = tasks.filter(t => !graphBad.some(b => b.task === t) && !final.has(t))
+const finalWave = tasks.filter(t => final.has(t))
 const placed = new Set()
 while (unplaced.length) {
   const w = unplaced.filter(t => !dep[t] || placed.has(dep[t]))
@@ -278,7 +285,7 @@ if (graphBad.length) {
     dispatches: tally,
   }
 }
-log(`waves: ${waves.map((w, i) => `${i + 1} — ${w.join(', ')}`).join(' | ')}`)
+log(`waves: ${waves.map((w, i) => `${i + 1} — ${w.join(', ')}`).join(' | ')}${finalWave.length ? ` | final, after the merge — ${finalWave.join(', ')}` : ''}`)
 
 if (CONFIRM && A.startAt !== 'tasks') {
   log('stopping for the owner to read the task list — a new run with startAt: "tasks" builds them')
@@ -532,8 +539,8 @@ for (const w of waves) {
 // waves.flat() is, because each wave was filtered out of a list already in
 // task order. That is the order the merger is given.
 const ordered = waves.flat()
-const passed = ordered.filter(t => resultOf.has(t)).map(t => resultOf.get(t))
-const halted = ordered.filter(t => !resultOf.has(t))
+let passed = ordered.filter(t => resultOf.has(t)).map(t => resultOf.get(t))
+let halted = ordered.filter(t => !resultOf.has(t))
 // Name the files that hold the reason, the reason itself, and both halves of
 // the key the owner's answer comes back under — the answer only re-runs the
 // step when answerStep is passed back with it. blockedPath is null for a
@@ -548,20 +555,13 @@ const halted = ordered.filter(t => !resultOf.has(t))
 const blocks = halted.map(t => waitingOn.has(t)
   ? { task: t, step: null, reason: `waiting on ${waitingOn.get(t)}`, blockedPath: null, verdictPath: null, answerKey: null, answerStep: null, waitingOn: waitingOn.get(t) }
   : { task: t, step: haltStep[t] || null, reason: haltWhy[t] || null, blockedPath: haltNoFile[t] ? null : `${T(t)}/BLOCKED.md`, verdictPath: `${T(t)}/verdict.md`, answerKey: `${f}/${t}`, answerStep: haltStep[t] || null, ...(lastReview[t] || {}) })
+const blocksOf = (h) => h.map(t => ({ task: t, step: haltStep[t] || null, reason: haltWhy[t] || null, blockedPath: haltNoFile[t] ? null : `${T(t)}/BLOCKED.md`, verdictPath: `${T(t)}/verdict.md`, answerKey: `${f}/${t}`, answerStep: haltStep[t] || null, ...(lastReview[t] || {}) }))
 log(`dispatches this run asked for — opus ${tally.opus}, sonnet ${tally.sonnet}, haiku ${tally.haiku}; a resumed run counts cached calls again`)
 if (halted.length) {
   const waited = halted.filter(t => waitingOn.has(t))
   log(`halted: ${halted.join(', ')} — where blocks[].blockedPath is set, read that BLOCKED.md or the verdict.md beside it, and neither file means the agent died; where it is null the halt is a rework halt, which writes no BLOCKED.md — read blocks[].codeReview and blocks[].verify, which are the whole record of it${waited.length ? `. ${waited.join(', ')} never ran at all: each comes After a task that halted, and clearing that task is what starts it` : ''}`)
   return { feature: f, branch: FB, waves, passed, halted, blocks, dispatches: tally }
 }
-
-phase('Merge')
-count('haiku')
-const order = passed.map(p => p.branch)
-const mg = await agent(
-  `${ANSWER(f, 'merge')}Feature worktree ${FT}, on branch ${FB}. First, if a merge is in progress in ${FT} — a previous run stopped on a conflict and left it that way — run git -C ${FT} merge --abort before anything else. Nothing can be committed in that tree until you do, so every step after you dies if you skip it; check with git -C ${FT} status --porcelain=v1 -b. Then merge these task branches into ${FB}, in this order, one at a time — never two at once: ${order.join(', ')}. That is the landing order: the wave each task ran in first, then its number inside that wave. A task that came After another already merged that task's branch into its own before it built, so it sits behind that task in this list and the two share history. For each, run: git -C ${FT} merge --no-ff <branch>. On the first conflict, stop there: run git -C ${FT} merge --abort so the tree is usable again, then write ${dir}/BLOCKED.md — first line "BLOCKED: <one plain sentence, in business terms, asking which behaviour should win where the two changes disagree>", then in one sentence what you would do by default, then what changes if the owner rules otherwise. Return that first line as your whole result. Otherwise return the branches you merged, one per line, and nothing else.`,
-  { agentType: 'coding:merger', phase: 'Merge' })
-if (bad(mg)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(mg || 'BLOCKED: the merge agent died before merging every task branch', 'merge') }
 
 // Every task passed its review alone, on its own branch. Merged, they can
 // still fail to build: two tasks in one wave each wrote a test helper with
@@ -571,18 +571,44 @@ if (bad(mg)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(m
 // gate runs once on the merged branch before the feature verify, and a red
 // goes to a builder for a merge rework — test files and helpers only, no
 // assertion weakened, no production code — at most two passes.
-phase('Merge check')
-let mergeGreen = false
-for (let pass = 1; pass <= 2 && !mergeGreen; pass++) {
-  count('opus')
-  const mc = await agent(
-    `${ANSWER(f, 'mergecheck')}Feature worktree ${FT}, on branch ${FB}, every task branch merged into it. Run the gate there, in delta mode against ${BASE}: ${GATE(BASE)}. If it is green, return "# GREEN" and change nothing. If it is red because the merged tests do not build together — a helper declared in two task's files, a signature one task's helper changed and another task's test still calls, a name one file uses that another file was meant to define — reconcile it: keep one declaration, make every caller agree with it, change no test's assertions, no row of any design.md, no production file, nothing outside test files and testdata; read every test file the errors name in full first. Then run the gate again; on green, commit in ${FT} with a message beginning "merge rework:" naming the helpers reconciled, and return "# GREEN". If it is red for any other reason — a production file, a test that fails rather than fails to build, a golden that moved — do not fix it: write ${dir}/BLOCKED.md — first line "BLOCKED: <one plain sentence naming which two tasks disagree and about what>", then your best default in one sentence, then what changes if the owner says otherwise — and return that first line. Never push, never merge, never touch a task branch. ${BLOCK_RULE(dir)}`,
-    { agentType: 'coding:builder', phase: 'Merge check', label: `merge check ${pass}` })
-  if (bad(mc)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(mc || 'BLOCKED: the merge check died before running the gate', 'mergecheck') }
-  mergeGreen = /^# GREEN/m.test(String(mc))
-  log(`merge check ${pass}: ${mergeGreen ? 'green' : 'red'}`)
+// Merge and merge check are one round; a feature with a final wave runs two.
+const mergeRound = async (order) => {
+  phase('Merge')
+  count('haiku')
+  const mg = await agent(
+    `${ANSWER(f, 'merge')}Feature worktree ${FT}, on branch ${FB}. First, if a merge is in progress in ${FT} — a previous run stopped on a conflict and left it that way — run git -C ${FT} merge --abort before anything else. Nothing can be committed in that tree until you do, so every step after you dies if you skip it; check with git -C ${FT} status --porcelain=v1 -b. Then merge these task branches into ${FB}, in this order, one at a time — never two at once: ${order.join(', ')}. That is the landing order: the wave each task ran in first, then its number inside that wave. A task that came After another already merged that task's branch into its own before it built, so it sits behind that task in this list and the two share history. For each, run: git -C ${FT} merge --no-ff <branch>. On the first conflict, stop there: run git -C ${FT} merge --abort so the tree is usable again, then write ${dir}/BLOCKED.md — first line "BLOCKED: <one plain sentence, in business terms, asking which behaviour should win where the two changes disagree>", then in one sentence what you would do by default, then what changes if the owner rules otherwise. Return that first line as your whole result. Otherwise return the branches you merged, one per line, and nothing else.`,
+    { agentType: 'coding:merger', phase: 'Merge' })
+  if (bad(mg)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(mg || 'BLOCKED: the merge agent died before merging every task branch', 'merge') }
+  phase('Merge check')
+  let mergeGreen = false
+  for (let pass = 1; pass <= 2 && !mergeGreen; pass++) {
+    count('opus')
+    const mc = await agent(
+      `${ANSWER(f, 'mergecheck')}Feature worktree ${FT}, on branch ${FB}, every task branch merged into it. Run the gate there, in delta mode against ${BASE}: ${GATE(BASE)}. If it is green, return "# GREEN" and change nothing. If it is red because the merged tests do not build together — a helper declared in two task's files, a signature one task's helper changed and another task's test still calls, a name one file uses that another file was meant to define — reconcile it: keep one declaration, make every caller agree with it, change no test's assertions, no row of any design.md, no production file, nothing outside test files and testdata; read every test file the errors name in full first. Then run the gate again; on green, commit in ${FT} with a message beginning "merge rework:" naming the helpers reconciled, and return "# GREEN". If it is red for any other reason — a production file, a test that fails rather than fails to build, a golden that moved — do not fix it: write ${dir}/BLOCKED.md — first line "BLOCKED: <one plain sentence naming which two tasks disagree and about what>", then your best default in one sentence, then what changes if the owner says otherwise — and return that first line. Never push, never merge, never touch a task branch. ${BLOCK_RULE(dir)}`,
+      { agentType: 'coding:builder', phase: 'Merge check', label: `merge check ${pass}` })
+    if (bad(mc)) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK(mc || 'BLOCKED: the merge check died before running the gate', 'mergecheck') }
+    mergeGreen = /^# GREEN/m.test(String(mc))
+    log(`merge check ${pass}: ${mergeGreen ? 'green' : 'red'}`)
+  }
+  if (!mergeGreen) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK('BLOCKED: the merged branch is still red after two merge reworks; the tasks\' tests do not build together and a builder could not reconcile them without changing a test', 'mergecheck') }
+  return null
 }
-if (!mergeGreen) return { feature: f, branch: FB, passed, halted, ...FEATURE_BLOCK('BLOCKED: the merged branch is still red after two merge reworks; the tasks\' tests do not build together and a builder could not reconcile them without changing a test', 'mergecheck') }
+const firstRound = await mergeRound(passed.map(p => p.branch))
+if (firstRound) return firstRound
+
+// The final wave: every task that said "After: all", cut from the feature
+// branch now that it holds every other task, then merged and checked again.
+if (finalWave.length) {
+  phase('Tasks')
+  const rs = await pipeline(finalWave, ...STAGES)
+  finalWave.forEach((t, i) => { if (rs[i]) resultOf.set(t, rs[i]) })
+  const all = [...ordered, ...finalWave]
+  passed = all.filter(t => resultOf.has(t)).map(t => resultOf.get(t))
+  halted = all.filter(t => !resultOf.has(t))
+  if (halted.some(t => finalWave.includes(t))) return { feature: f, branch: FB, tasks, waves, passed, halted, blocks: blocksOf(halted), pushed: null, dispatches: tally }
+  const secondRound = await mergeRound(finalWave.map(t => resultOf.get(t).branch))
+  if (secondRound) return secondRound
+}
 
 phase('Feature')
 count('sonnet')

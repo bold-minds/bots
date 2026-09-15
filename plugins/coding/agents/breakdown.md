@@ -89,7 +89,14 @@ the code" — those are ordinary tasks. Most tasks have no `After:` line, and
 leaving it out is the normal case.
 
 At most one name. **A task that needs two others is two tasks** — split it, and
-let each half name the one it truly needs. Number the tasks so the named one
+let each half name the one it truly needs. The one exception is `After: all`:
+a scenario that can only be made true over every other task's work together —
+a coverage total, a threshold, a count over the whole feature — goes in one
+task that says `After: all`. It runs alone in a final wave after the others
+have merged, cut from the feature branch that holds them all, and its design
+rows are what reaches the number on the real tree, never a fixture (the gate's
+80 on behaviour-tested, 14 Sept, was designed against a fixture and the merged
+tree measured 68). At most one task says `all`. Number the tasks so the named one
 sorts first: `After:` always names a lower number. Landing order is then the
 wave a task ran in, and its number inside that wave — so a task always lands
 behind the one it comes `After`, which is the whole point of the number.
