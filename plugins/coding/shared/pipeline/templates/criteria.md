@@ -20,6 +20,14 @@ branch does not have it. The pipeline runs that task in an earlier wave and
 this task's builder merges its branch first. A task that needs two others is
 two tasks: split it rather than name two. Leave the line out — most tasks do —
 when this task can start from the feature branch as it stands.>
+Files: <the test files this task writes into, repo-root-relative, comma
+separated — the module's one shared harness file and the one table-driven
+file for this behaviour group, e.g. "apps/website/server/engine_test.go,
+apps/website/server/engine_scenarios_test.go". Every task in a module names
+the same harness; tasks in one behaviour group name the same table file and
+add rows to it. Red tests go in these files and no other: one file per task or
+per scenario is what this line prevents (story 01, 14 Sept: thirteen files for
+eight scenarios).>
 
 ## Structural rules
 
