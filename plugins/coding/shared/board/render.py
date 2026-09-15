@@ -33,10 +33,12 @@ def main(path):
     launch = next((l.split(":", 1)[1].strip() for l in text if l.startswith("Launch:")), None) or die("no 'Launch: <YYYY-MM-DD>' line")
     board = next((l.split(":", 1)[1].strip() for l in text if l.startswith("Board:")), "")
     nxt = next((l.split(":", 1)[1].strip() for l in text if l.startswith("Next:")), "")
-    cards, before, section = [], [], None
+    cards, before, section, before_title = [], [], None, "Before any story builds"
     for l in text:
         if l.startswith("## "):
-            section = l[3:].strip(); continue
+            section = l[3:].strip()
+            if section.lower().startswith("before"): before_title = section
+            continue
         if section and section.lower().startswith("before") and l.startswith("- "):
             before.append(l[2:].strip()); continue
         m = CARD.match(l)
@@ -84,7 +86,7 @@ def main(path):
         out.append(f'<li class="story next"><div class="num">{m.group(1)}</div><p class="name">{e(m.group(2))}</p><div class="track">{track}</div><p class="stand"><b>Next to write.</b></p></li>')
     out.append("</ol>")
     if before:
-        out.append('<section class="box before"><h2>Before any story builds</h2><ul>' + "".join(f"<li>{e(b)}</li>" for b in before) + "</ul></section>")
+        out.append(f'<section class="box before"><h2>{e(before_title)}</h2><ul>' + "".join(f"<li>{e(b)}</li>" for b in before) + "</ul></section>")
     out.append('<section class="box claire"><h2>Waiting on the owner</h2><ul>' + ("".join(f"<li>{e(w)}</li>" for w in waiting) or "<li>Nothing.</li>") + "</ul></section>")
     out.append(f'<footer>{e(p.name)} is the written form of this board; rendered {today.isoformat()} by shared/board/render.py</footer>')
     out.append("</main>")
