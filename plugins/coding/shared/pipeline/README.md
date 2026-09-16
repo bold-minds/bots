@@ -426,10 +426,13 @@ did, costing one dispatch per step.
 **When a task is added after the run first listed the tasks** — a
 final-wave task written once the merged tree showed a number the first
 cut never measured — the listing step's prompt has not changed, so a
-resume replays its cached five names and never sees the sixth. Resume
-with `answers: {<feature>: "<the task> was added; list again"}` and
-`answerStep: "tasklist"`: the prefix changes the prompt, the directory is
-read live, and everything after it re-plans on the six.
+resume replays its cached five names and never sees the sixth. Pass
+`tasksVersion: "<the feature branch's commit after the change>"` on every
+resume from then on: it is written into the listing prompt, so the
+directory is read live once per version and stays cached under it, and an
+`answers` line for some other step does not undo it (an `answers` line on
+the `tasklist` step works once and is lost the moment the next resume
+answers a different step — 02, 15 Sept).
 
 **When it passes** it returns the feature branch and, if the config's
 `push:` line permits, the remote ref — one push per feature. Then the

@@ -203,7 +203,7 @@ let tasks
 if (A.startAt === 'tasks') {
   count('haiku')
   const listed = await agent(
-    `${ANSWER(f, 'tasklist')}List the directory names under ${dir}/tasks, one bare name per line, nothing else: no bullets, no backticks, no trailing slash. Ignore files such as coverage.md. If the directory does not exist, return the single word NONE.`,
+    `${ANSWER(f, 'tasklist')}${A.tasksVersion ? `Task list as of ${A.tasksVersion}. ` : ''}List the directory names under ${dir}/tasks, one bare name per line, nothing else: no bullets, no backticks, no trailing slash. Ignore files such as coverage.md. If the directory does not exist, return the single word NONE.`,
     { agentType: 'coding:breakdown', phase: 'Break down', label: 'tasks: already cut', model: 'haiku' })
   if (bad(listed)) return { halted: 'Break down', ...FEATURE_BLOCK(listed || 'BLOCKED: the agent listing the task directories died before returning them', 'tasklist'), blockedPath: null }
   // Landing order is the number in the name; a directory listing promises no
