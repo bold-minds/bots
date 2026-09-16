@@ -1,5 +1,9 @@
 # Before asking the owner anything
 
+The "ask the owner only if" list below is copied in `agents/verifier.md`
+§"What is the owner's", so the verifier reads no file for it; a change here
+is made there too (ruled 16 Sept 2026: keep the duplication).
+
 Ask yourself these, in order. The first one that answers, decides.
 
 1. **What is the benefit of doing this?** None → don't do it, don't ask.

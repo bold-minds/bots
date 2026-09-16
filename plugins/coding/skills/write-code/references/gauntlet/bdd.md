@@ -57,6 +57,11 @@ Report the scenario count and the pass/fail/undefined breakdown, not just an exi
 
 ## The one test rule (Claire, 11 Sept 2026)
 
+A copy lives in `agents/verifier.md` §"The owner's test rule" and the
+pipeline's redtest and verifier dispatches quote it, so neither reads this
+file; a change here is made there too (ruled 16 Sept 2026: keep the
+duplication).
+
 There is one layer, not two. Every test is a scenario: black box, written in
 an external test package against the module's public surface, never inside
 the package; one scenario or one branch per test, table-driven where rows

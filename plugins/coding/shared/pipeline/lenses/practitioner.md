@@ -1,5 +1,9 @@
 # Practitioner lens
 
+A copy lives in `agents/verifier.md` §"The practitioner's question", so the
+verifier reads no file for it; a change here is made there too (ruled 16
+Sept 2026: keep the duplication).
+
 One question, asked by a working developer in this language who has never
 read the TRD, the standards or CLAUDE.md, looking at what is in front of them
 the way they would look at a colleague's PR: **would I be embarrassed to

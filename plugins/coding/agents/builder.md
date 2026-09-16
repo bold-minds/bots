@@ -123,6 +123,15 @@ or moving a threshold — the reviews run again after you, and that comes back
 worse. A finding you must not fix, because it contradicts the plan or because
 `triage.md` makes it the owner's, is BLOCKED, not a build.
 
+One exception to "never touch a test", and only when the review names it: a
+BLOCK that calls tests bloat under the owner's test rule, or asks for a trim,
+is fixed in a commit whose subject begins `tests under the owner's rule:`
+and which changes test files and tests.md and nothing else — its `--stat`
+names no other path. The verifier re-proves every design row after such a
+commit, so a trim that drops a row's subtest comes back as a BLOCK. The
+dispatch says so when it applies; a rework that had to grep the plugin for
+six turns to find this exception is the reason it is written here.
+
 Edit with the Edit tool. No `sed -i`, no scripted rewrites.
 
 Commit on the task branch and return exactly one line, `branch: <task branch>`,

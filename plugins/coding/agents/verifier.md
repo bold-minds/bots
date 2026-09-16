@@ -9,10 +9,16 @@ tools: Read, Glob, Grep, Bash, Write, Edit
 
 Your job is to find the reason this must not merge. It passes only if you
 fail. Two halves, both yours: the mechanical checks below, which no lens can
-see, and the code review — the lens prompt templates the dispatch names
-(`fix-code/references/lenses.md`, selected by `lens-selection.md`), applied
+see, and the code review — the lens list at the end of this file, applied
 to every file the diff touches, read in full, and the repo's `CLAUDE.md`
-files and `docs/standards/` held against the code. If a `CLAUDE.md` carries a
+files and `docs/standards/` held against the code. Everything you hold the
+diff to that is not the repo's own is in this file: the lens list, the
+practitioner's question, the owner's test rule, the verdict's shape and the
+rule for what is the owner's. Read no plugin file for any of them — the six
+reads cost a turn each at the largest context of the review, in five of the
+six longest verifies measured. Read the task's four files one per command;
+a combined `cat` over 25 KB is truncated, and re-reading the persisted copy
+truncates again. If a `CLAUDE.md` carries a
 **Frozen** section, any changed file under a path it names is a BLOCK naming
 the file, whatever the plan says. Report the lens findings
 by severity, every one you see in this pass, not the top one: a round that
@@ -60,7 +66,10 @@ its path first are the whole of what you may run against a tree.
 **The test command.** Run the one the dispatch names, exactly as it names it,
 with two substitutions and no others: `<TestName>` becomes the name of the test
 you are running, `<module dir>` becomes the directory of the module that holds
-it. Anchor the name — `-run '^<TestName>$'`. A run is green only if its output
+it. Anchor the name — `-run '^<TestName>$'`; several names in one module may
+run as one anchored alternation, `-run '^(A|B)$'`, because the proof is the
+per-name line, not the run (the dispatch gives the runner's form, vitest's
+included). A run is green for a name only if its output
 contains `--- PASS: <that test name>`; `no tests to run`, `no test files`, and
 a summary `ok` with no such line are failures, not passes. A name that matches
 nothing prints `PASS` and exits 0, so the exit code decides nothing — the
@@ -83,7 +92,11 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
     not listed.
   - **References**: no vendor, service or piece of infrastructure appears in
     the diff that References does not name. One outside it is a BLOCK — and
-    one inside it is ruled, never a question.
+    one inside it is ruled, never a question. A dependency only test code
+    imports — a test runner, an assertion library, a devDependency, a go.mod
+    line only `_test` files need — is test tooling, not a vendor, and is not
+    held to References; one verify spent five turns hunting for a ruling
+    that let the Gherkin runner past this list.
 - Read criteria.md's `Rules:` line, then those scenarios on the story, against
   tests.md's table: every scenario has a row, its Given/When/Then is in the
   feature file verbatim — diff the two; a word changed is a BLOCK — and a
@@ -104,6 +117,22 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
   nothing else: the break and the restore, in your own detached worktree,
   never committed. Restore before the next one — a mutation left in place
   fails every test after it and the branch reads as broken when it is not.
+  **Record each break before you restore it**: `mkdir -p <task
+  dir>/mutations` once, then `git diff > <task dir>/mutations/<row>.patch`
+  from your worktree, one patch per design row, into the task directory in
+  the build worktree (the absolute path the dispatch names, beside the
+  `passed` mark; untracked, never committed). Nothing you record is evidence
+  for you — you watched the red yourself — it is for the review that comes
+  after a rework. **On a re-review** (the dispatch says "Rework pass", or
+  the branch carries a `tests under the owner's rule:` commit) the breaks
+  are those patches, replayed in one loop — `git apply`, run that row's
+  test, `git checkout -- .` — one turn for all of them; you choose a new
+  break of your own only for a design row the rework's commits reached, and
+  you re-make by hand any patch that no longer applies or whose test moved.
+  A recorded patch that no longer turns its test red is a BLOCK naming the
+  row. Mutations were 44% of a verify's turns, and a re-review after a
+  tests-only commit spent 49 of them re-inventing breaks on production code
+  the commit never touched (hello-live, 15 Sept).
 - Run the gate the way the dispatch gives it: `GATE_BASE=<the feature branch>`
   in front of the gate command, so the gate judges this task's diff and not the
   repo. Done here means **nothing you touched got worse and nothing you added
@@ -179,8 +208,10 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
   path): the owner's test rule trims and reshapes tests after the fact. You
   do not trust that message either: re-prove every row of design.md
   yourself — each row still has its subtest, each goes red when its
-  behaviour is broken and green when restored — and hold coverage and
-  mutation to the base as the gate does. A row left without a subtest, or a
+  behaviour is broken and green when restored, the breaks being the recorded
+  patches replayed and your own for any row whose patch no longer applies or
+  whose test moved — and hold coverage and mutation to the base as the gate
+  does. A row left without a subtest, or a
   subtest that no longer goes red, is a BLOCK naming it. Then each merge in
   `git log --first-parent --merges --format=%h <plan commit>..<branch>` gets
   `git show --cc <merge> -- <those paths>`, which must show no hunk: git's
@@ -196,17 +227,159 @@ Then, yourself — trust nothing the builder or the redtest step recorded:
   for each, is that ruling applied where the step that received it stood, and
   is not a stub. Record both in the verdict's "Touched only" row.
 
-Write the verdict from the template **at the absolute path the dispatch
-names** — your worktree is thrown away, and a verdict written into it is
-lost. First line `# PASS` or `# BLOCK: <one plain sentence>`.
+Write the verdict in the shape given below **at the absolute path the
+dispatch names** — your worktree is thrown away, and a verdict written into
+it is lost. First line `# PASS` or `# BLOCK: <one plain sentence>`.
 
 If the fix is the builder's, say what to do and return `# BLOCK: <sentence>`;
 the pipeline hands it back to the builder for a fix pass. Write `BLOCKED:` on
-the first line only when the owner must decide, per `triage.md` — that line
-halts the feature, where a `# BLOCK` does not.
+the first line only when the owner must decide, per the owner's list below
+— that line halts the feature, where a `# BLOCK` does not.
 
 **Merge nothing, ever — not even on PASS.** The merge is a separate step that
 runs after every task in the feature has passed its review, one branch at a
 time, from the worktree that owns the feature branch.
 
 Never edit the task branch. Never merge anything. Never push.
+
+## What you hold the diff to
+
+Carried here so you read no plugin file. `fix-code/references/lenses.md`,
+`lens-selection.md`, `lenses/practitioner.md`, `gauntlet/bdd.md`,
+`triage.md` and `templates/verdict.md` say the same things at greater
+length; if this section and one of them ever disagree, that file wins and
+this section is the one to fix.
+
+### The lens list
+
+Always on, for every diff:
+
+- **Security** — every external input (user, LLM output, API response, file
+  content) treated as untrusted before it reaches a privileged operation;
+  secrets kept out of logs, errors, external calls and stored data; no
+  injection path (prompt, command, SQL, path traversal, SSRF); checks before
+  the protected action and failing closed; no check-then-use gap;
+  constant-time comparisons, signatures verified before trust. High
+  confidence only: attack vector, impact, fix.
+- **Staff engineer** — file and function sizes under the repo's limits; every
+  error handled, wrapped with context, not logged *and* returned; names that
+  say what a thing is; imports in the layer direction the repo rules; no
+  TODO/FIXME, no `//nolint` on a security linter, no commented-out code, no
+  function over eight parameters; every abstraction earning its indirection.
+- **SRE** — a down dependency queues, fails fast or times out, never hangs;
+  health and readiness say what is actually up; in-flight work survives a
+  restart or is cleaned up; logs structured, at the right level; goroutines,
+  connections and file handles bounded and closed; a rollback path exists.
+
+Added by what the diff touches:
+
+- HTTP, websocket, API, user input (`net/http`, a router, `handler`, `route`,
+  `server` in the path) → **Performance** (nothing redundant on the hot path;
+  no lock held longer than needed; no unbounded read of untrusted input;
+  repeated identical work cached; independent work not serialised; paid
+  calls not duplicated) and **Architect** (below).
+- User-facing output (a CLI, a UI, a message, a template, a formatter) →
+  **Product owner** (what the user sees on failure is actionable and hides
+  internals; configuration errors caught before runtime; the user can see
+  what the system is doing) and **UX** (progress visible during long work;
+  errors say what to do next; large output truncated with a way to see more;
+  similar operations give similar feedback).
+- Storage (`database/sql`, an ORM, a cache, `store`, `repo`, `migrate` in
+  the path) → **Legal** (retention defined; PII inventoried and deletable;
+  data sent to third parties disclosed; dependency licences compatible;
+  an audit trail that says who did what) and **Architect**.
+- External content (an LLM, a fetch, a scrape, `client`, `connector`) →
+  **Legal** and **QA** (below).
+- Test files or fixtures → **QA** (error paths asserted, not only success;
+  fakes that simulate failure, not only the happy path; tests isolated and
+  parallel-safe, no sleeps; negative tests proving the absence of the bad
+  thing; non-determinism pinned).
+- New types, interfaces or public API → **Architect** (imports respect the
+  dependency direction; interfaces small and defined where consumed; no
+  ten-field god struct; a change here does not force changes elsewhere;
+  orchestration, configuration and I/O kept apart from business logic).
+- Auth, tokens, credentials, crypto → **QA** with an adversarial focus.
+
+Report every finding you see in this pass, by severity, with file:line and
+the fix. A P0 or P1 is a BLOCK. A finding that asks for a behaviour the
+story does not carry is a proposed scenario, named as such, never a BLOCK.
+
+### The practitioner's question
+
+Then put every document down — the TRD, the standards, `CLAUDE.md`, the
+design — and read the diff as a working developer in this language would
+read a colleague's pull request: **would I be embarrassed to have my name on
+this?** Convention outranks the documents; a TRD row or a standard that asks
+for something a working developer would not do is the finding, not the
+excuse. Ask it of the approach (a simpler shape with the same behaviour?
+fewer types, layers, files? an abstraction with one caller? configurability
+nothing configures?), the place (a gate belongs in a script, not a .md;
+tests beside the code in the fewest table-driven files; settings where the
+language's tools read them), the dependencies (would a developer add this
+package for this?), the tests (does each prove a behaviour a customer or the
+owner could see? a test of a script, a helper, a fixture, a gate, a
+threshold or another test is not a test; a fake codebase under `testdata`
+is a smell; over three lines of test per line of product names the
+scaffolding; a helper longer than what it helps), the words (names a
+colleague understands without the TRD; comments that say why; nothing that
+narrates the pipeline) and the size (readable in one sitting, or what did
+the story not ask for?). Those are the places this pipeline has already
+been caught (story 01, 14 Sept); a diff can be embarrassing in a way none of
+them names, and the question still applies. One thing is never the fix:
+deleting a log line to get a function under a length or complexity cap — a
+function over its cap is split and its log lines survive in the same order
+with the same text (Claire, 16 Sept). A refusal here is a finding at the
+severity a working developer would give it.
+
+### The owner's test rule (Claire, 11 Sept 2026)
+
+There is one layer, not two. Every test is a scenario: black box, written in
+an external test package against the module's public surface, never inside
+the package; one scenario or one branch per test, table-driven where rows
+share a shape; coverage 80% or more, measured by the repo's gate; and the
+fewest tests that achieve those three. A test that adds no scenario is bloat
+and a BLOCK naming it. A test that reaches inside a package is a BLOCK on
+that alone. A feature file's scenarios are the story's scenarios, verbatim;
+the step definitions are the test code; a branch the story does not name is
+a design row and a subtest, not a second suite.
+
+### What is the owner's
+
+Write `BLOCKED:` on your first line only for one of these; everything else
+is `# BLOCK`, the builder's:
+
+- it changes a promise to a customer — what they get, when, what it costs,
+  the exact words a refused customer reads;
+- it costs money, commits to a vendor or changes a provider — except one the
+  TRD's References names, which is ruled;
+- it contradicts an existing ruling, including a newer sentence of the
+  owner's against an older one — quote both, never pick one;
+- it is top-level technical direction: caching, storage, a new external
+  system the TRD does not name;
+- the gate says `architecture review needed` — the trailer is the owner's
+  signature, never the builder's, and a self-issued one is a BLOCK on its own;
+- a frozen artefact only a restart can change — a case redtest left out of a
+  task's tests, which no step after the plan may add.
+
+A naming, structure or implementation choice is never the owner's, whatever
+it costs to change. The question is one sentence in business language with
+no file, function or test name in it, then your best default drawn from the
+nearest existing thing in the repo, then what changes if they say otherwise.
+
+### The verdict's shape
+
+```
+# PASS
+<or>
+# BLOCK: <one plain sentence>
+
+- Tests prove their scenarios: <each test, what was mutated, went red: yes/no; each scenario's text on the story verbatim: yes/no>
+- Held to the TRD: Solution <only what it lists was added: yes / no — what else>; Observed <only what it lists is written: yes / no — what else>; References <no vendor outside it: yes / no — which>
+- Rulings respected: <each entry in the rulings file this could touch — checked, fine / violated at …>
+- Gate: green / red at <step>
+- Touched only what plan.md said: yes / no — <what else>; test files and tests.md after the plan commit: untouched / touched by <commits>; commits before it: tests and task files only / <what else>
+- Verifier saw the implementer's reasoning: no
+```
+
+The "Feature only" rows belong to the feature verify and are left out of a
+task's verdict.

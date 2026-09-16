@@ -30,7 +30,13 @@ command run with the placeholder left in place runs nothing — the shell reads
 the runner reports success.
 
 **Anchor the name**: `-run '^<TestName>$'`, so a prefix cannot drag in a
-neighbour and a typo cannot quietly match nothing.
+neighbour and a typo cannot quietly match nothing. For vitest the name is
+the full `describe > describe > it` path and `-t` matches that whole path:
+substitute the path, and do not read the runner's source to learn how it
+matches (eleven turns, site-pattern-kept, 15 Sept). Several names in one
+module may run as one anchored alternation, `-run '^(A|B)$'`: the proof is
+the per-name line, not the run. A mutation is still one break, one run, one
+restore.
 
 **What green means.** A run is green only if its output contains
 `--- PASS: <the test name you asked for>`. `no tests to run`, `no test files`,
@@ -109,11 +115,18 @@ yours, and it stops the task if you leave it. Two checks before you commit:
   every scenario is TRUE there is no red test and the gate may run through;
   when the module has no gate arm that runs its tests, none can show. Say
   which.
-- Write tests.md's "Green together" paragraph: one implementation that makes
-  every test green at once, and each assertion checked against it. A fitness
-  test that wants a file to say one thing and another test that wants it to
-  say the opposite is a contradiction no code can satisfy; rewrite until one
-  implementation answers them all.
+- Write tests.md's "Green together" paragraph: name, in one paragraph, the
+  one implementation that would make every test green at once — which
+  package gains what, which file changes how — and check each assertion
+  against it on paper. Do not build it, prototype it, or install anything to
+  try it, in this tree or in a scratch copy anywhere: the uncommitted stub
+  for the gate is the only implementation you ever write, and once. A
+  redtest that copied the site to /tmp and installed its lint tooling to
+  watch its own tests pass spent forty turns doing the builder's job
+  (site-pattern-kept, 15 Sept). A fitness test that wants a file to say one
+  thing and another test that wants it to say the opposite is a
+  contradiction no code can satisfy; rewrite until one implementation
+  answers them all.
 
 Nobody after you may touch a test file or tests.md: the builder's only
 answer to a finding on a test line is BLOCKED, and the verifier fails any
@@ -130,11 +143,11 @@ per row in the run's output, the subtest named for the row, under the test of
 the scenario the row serves. A row with no subtest is a case nobody after
 you can add.
 
-Before you commit, grep every test file in the package for each string
-literal you wrote: a literal that would then appear three or more times
-across the package's test files, a failure format above all, is named once
-in a shared test helper instead. The linter counts repeats across test files
-and only sees them once the package compiles, which is after you.
+A repeated string literal is the gate's lint arm's to find, never yours to
+hunt: if the gate reports one, fix it in the lint commit; if it reports none,
+leave every literal where it is. A hand-run repeat count was a quarter of
+the step across five redtests, and in one it hoisted `.` and `/` into
+constants after the linter had printed 0 issues (pattern-kept, 15 Sept).
 
 Commit the tests before you run the gate: its delta arms read the merge
 base and see nothing in an uncommitted file, so a lint finding in a test you
@@ -143,10 +156,14 @@ touch it. A RED on the shape of a line you wrote is fixed in a second commit
 before the plan; commits before the plan may change tests, commits after it
 may not.
 
-Every file you write is held to the repo's own size limits like any other
+Every file you write is held to the repo's file-size limit like any other
 file, and the gate's size arm sits behind the tests arm, so a red test hides
-it from you: read the limit from the gate's script and keep every test file
-and every shared setup file under it, split into more files if need be. An
+it from you. The dispatch states the limit, from the repo's `config.md`
+`size:` line, or states that the repo has none: keep every test file and
+every shared setup file under the stated limit, split into more files if
+need be, and when the dispatch says there is none, do not go looking for one
+in the gate script or the plugin's references — twenty-seven of twenty-eight
+redtests did, about five turns each, for a number that was nowhere. An
 oversized test file restarts the task from this step.
 
 Commit the tests and tests.md **in the task worktree**: `git add` each by

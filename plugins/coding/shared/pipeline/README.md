@@ -63,7 +63,7 @@ the owner read it) — both in the shapes `shared/hil/` checks:
 | 9 | review | `verifier` — mutations, gate, rulings, touched files, the TRD's three whitelists, and fix-code's lens list on the diff | opus | `tasks/<t>/verdict.md`; a BLOCK that is rework goes back to `builder` and the review runs again, twice at most; **never merges** |
 | 10 | merge | `merger` | haiku | merges every passed task branch into `pipeline/<f>`, one at a time, in landing order |
 | 10b | merge check | `builder` | opus | the gate on the merged branch; a red that is only the tasks' tests not building together (a helper two tasks both declared) is a merge rework — test files only, no assertion touched, committed as `merge rework:` — at most twice; any other red is BLOCKED |
-| 10c | practitioner | `lens` with `lenses/practitioner.md` alone | opus | a working developer in the language reads the merged diff with no TRD, standard or CLAUDE.md in hand: "would I be embarrassed to have my name on this?" — a gate in a .md, a test of a script, a fake repo under testdata, one test file per task, a 200-line helper. `# REFUSE` with one-line rewrites goes to a `builder` rework on the feature branch, twice at most; the third refusal is BLOCKED |
+| 10c | practitioner | `lens` with `lenses/practitioner.md` alone | opus | a working developer in the language reads the merged diff with no TRD, standard or CLAUDE.md in hand: "would I be embarrassed to have my name on this?" — a gate in a .md, a test of a script, a fake repo under testdata, one test file per task, a 200-line helper. `# REFUSE` with one-line rewrites goes to a `builder` rework on the feature branch, twice at most across runs; the third refusal is BLOCKED. The rework records what moved under a `## Rework` heading in each affected `tests.md`, one line per change, and leaves the table as written; the feature verify runs the names that heading gives |
 | 11 | feature | `featureverify` | sonnet | `features/<f>/verdict.md` — the story's Journey walked end to end (through the stub where it names an address; by the gate and the tests where it is those), every fitness test, every task's tests together, the gate, the files held to the TRD's Solution; on PASS, the one push if config permits |
 | 12 | clean | `cleaner` | haiku | after the merge: deletes the feature directory, the worktrees and the branches; one index line. The story and TRD stay where they live |
 | 13 | prove | the caller runs config's `live:` command | — | pass/fail |
@@ -150,6 +150,9 @@ test: <the command that runs one named test, with any env it needs. Write the
        than one module write the directory as the literal <module dir> — every
        step that runs it is told to substitute both and change nothing else.
        Anchor the name so a prefix cannot match a neighbour.>
+size: <optional — the file-size limit in lines the gate's size arm holds
+       every file to. Passed to redtest as the number to stay under; when the
+       line is absent, redtest is told the repo has none and looks nowhere>
 entry: <the program's entry points, comma-separated>
 stub: <where the local end-to-end environment lives, if any>
 live: <a command that asks production whether it is healthy, if any>
@@ -225,6 +228,18 @@ dispatch. So: that one step re-runs, it deletes the file, and everything before
 it stays cached. Send the key without the step and nothing re-runs at all; the
 cached BLOCK comes straight back.
 
+When more than one ruling is pending, `answerStep` is an object keyed like
+`answers` — `{ "<feature>/<task>": "review-1", "<feature>": "merge" }` — one
+step per key. **`"*"` is for a task key in a fresh session only**, where no
+cache exists and every step of that task re-runs anyway; it never reaches a
+feature-level key. On 15 Sept a feature-level `"*"` put the owner's
+merge-conflict ruling into the first prompt of the run — the haiku agent
+that lists the task directories — which then merged four task branches,
+resolved conflicts with `checkout --theirs`, rewrote three test files and
+committed them on the feature branch, where no verifier reads test history.
+A feature-level ruling names its step, as every feature-level halt returns
+it, or reaches nothing.
+
 **A review BLOCK usually does not halt.** Most of what the review at step 9
 returns is rework — test files over the size cap, lint findings the change
 added, a mutation that survived — and that is the builder's work, not the
@@ -238,17 +253,35 @@ account of it, because a rework block writes no `BLOCKED.md`.
 are told apart: a path means there is a file to read, and its absence beside
 a path means the agent died.
 
-**That halt's `answerStep` is the builder's last rework step**, `rework-2`,
-not the review's: the builder is the one place that can act on a ruling, and
-because a changed prompt re-runs that call and everything after it, the
-review then runs again, live, on the branch as the builder has just left it.
-The exception is a block only the owner can settle: the reviewer puts
+**That halt's `answerStep` is `rounds`**: when the rework passes run out
+with neither side asking the owner anything, one agent reads every round and
+writes `rounds.md` — why so many, and the one change that reduces them
+without dropping a check — and the task halts until the operator applies
+it; each "## Change applied" heading buys three more rounds. (A rework
+builder that itself blocks halts at its own step, `rework-1` or `rework-2`,
+and the ruling goes there; the review then runs again, live, on the branch
+as the builder leaves it.) The exception is a block only the owner can settle: the reviewer puts
 `BLOCKED:` on its **first** line, `triage.md`'s shape, and that one skips the
 loop and halts at once — no build pass answers a question about a promise to
 a customer. A dead agent halts too; there is nothing to hand back. Each
 round's dispatches carry their own step names — `review-1`, `rework-1` — so
 an answer keyed to one round re-runs that round alone and every call before
 it stays cached.
+
+**What a resume does not repeat.** A task whose review passed leaves an
+untracked `passed` file in its worktree naming the tip; the design step
+reads it, returns the word `passed`, and every step after hands that word
+on without a dispatch. The feature's tail has the same marks in the feature
+directory — `mergecheck.passed`, `practitioner.passed`, `feature.passed`
+(with the pushed ref on its second line) — each naming the tip it passed,
+so a resume after a halt at `feature`, or a fresh run, does not run the
+gate, the practitioner and the feature verify again on a tip already
+judged. The practitioner's three passes are per feature across runs,
+counted from the "practitioner pass" lines its rework appends to the
+feature's `rounds.md`; an owner's answer to a practitioner block starts the
+count over. The verifier records each break it makes as a patch under the
+task's `mutations/`, untracked; a re-review replays them and chooses new
+breaks only for the rows the rework reached.
 
 **A halt whose `blockedPath` is set, with no `BLOCKED.md` and no `verdict.md`
 at those paths, means the agent died.** The runner says so, and names the paths
@@ -347,9 +380,10 @@ worktree path above); `story` (the approved story's absolute path); `trd`
 (its approved TRD's absolute path); `survey` when
 `docs/product/survey.md` exists; `defaultBranch`; and from
 `<root>/.claude/pipeline/config.md`: `decisions`, `requirements`, `gate`,
-`test`, `entry`, `stub`, and `rules` when the line is there (the owner's
-cross-cutting file, whose "Asked on every slice" list every feature
-answers). A relative path in `config.md` is resolved against `root` before
+`test`, `entry`, `stub`, `size` when the line is there (the file-size limit
+redtest stays under; without it redtest is told there is none), and `rules`
+when the line is there (the owner's cross-cutting file, whose "Asked on
+every slice" list every feature answers). A relative path in `config.md` is resolved against `root` before
 it is passed — every agent runs in its own worktree, and a relative path
 handed through would resolve somewhere else in each. Keep the `runId` and
 `scriptPath` from every result.
@@ -377,11 +411,10 @@ what `blocks[].blockedPath` tells you, and there are two kinds:
   terms, and ask the one question that decides it. Never send them looking
   for a file that was never written.
 
-A rework halt's `answerStep` is the **builder's** last rework step
-(`rework-2`), not the review step: the builder is the one place that acts
-on a ruling, and the review sits after it and re-runs live on what it did.
-Pass the `answerStep` back exactly as the result gave it and this happens
-on its own.
+A rework halt's `answerStep` is `rounds` — the evaluation step that wrote
+`rounds.md` — unless the rework builder itself blocked, when it is that
+builder's step (`rework-1`, `rework-2`). Pass the `answerStep` back exactly
+as the result gave it and the right step re-runs on its own.
 
 Either way, relay the question and pass their one-line answer back on the
 next run as an argument — `answers: { "<feature>": "<their line>" }`, or

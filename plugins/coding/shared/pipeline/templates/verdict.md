@@ -23,3 +23,8 @@ verdict. They are the whole reason that step exists.>
 
 <The verifier re-runs everything itself. It trusts nothing in tests.md or
 plan.md that it did not reproduce.>
+
+<The task half of this shape is copied in `agents/verifier.md` §"The
+verdict's shape", so the verifier reads no file for it; a change here is made
+there too (ruled 16 Sept 2026: keep the duplication). The feature verify still
+reads this file.>

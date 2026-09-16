@@ -38,11 +38,13 @@ name is a BLOCK, and after the plan commit nothing may touch a file it names.>
 
 ## Green together
 
-<One paragraph: one implementation that makes every test above green at once —
-which package gains what, which file changes how — with each assertion checked
-against it. Two tests that cannot both be green against one implementation
-contradict each other; the builder may not change what a test asserts, so a
-contradiction here stops the task. Rewrite until they agree.>
+<One paragraph: the one implementation that would make every test above green
+at once — which package gains what, which file changes how — with each
+assertion checked against it on paper. Named, never built: the builder builds
+it, and the redtest step writes no implementation beyond the gate's stub. Two
+tests that cannot both be green against one implementation contradict each
+other; the builder may not change what a test asserts, so a contradiction here
+stops the task. Rewrite until they agree.>
 
 ## Gate
 
@@ -55,3 +57,13 @@ already provides it; or no RED, because every scenario is TRUE or the gate
 has no arm that runs this module's tests. Say
 that the lint and boundary arms between that line and the tests arm, if any,
 ran green with a stub in place, and that the stub is gone from this commit.>
+
+## Rework
+
+<Absent until a `tests under the owner's rule:` commit moves or removes a
+test after the fact — the practitioner's rework on the feature branch. Then
+one line per change, appended, and the table and Files above left exactly as
+written: `<old test name> → <new name>`; `<old test name> → gone: <the
+remaining test that asserts the same behaviour>`; `<file> → <new file, or
+gone>`; `<rule> → held by <the linter rule and its config file>`. The feature
+verify runs the names this heading gives.>
