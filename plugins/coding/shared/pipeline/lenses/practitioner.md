@@ -30,7 +30,13 @@ Ask it of everything, in this order:
   the table-driven shape allows. A setting lives where the language's tools
   read settings.
 - **The dependencies.** Would a developer add this package for this? Is
-  there a standard-library or already-present way?
+  there a standard-library or already-present way? And the reverse: a rule
+  held by a hand-rolled checker when a standard plugin or a core rule's
+  config would hold it — `eslint-plugin-import`'s zones, a per-file
+  `no-restricted-*` table, a golangci linter — is the finding, and the
+  plugin is the rewrite. The owner wants the plugin over anything
+  hand-rolled unless nothing exists (Claire, 16 Sept 2026); per-file config
+  of standard rules is not hand-rolled.
 - **The tests.** Does every test prove a behaviour a customer or the owner
   could see? A test of a script, a helper, a fixture, a gate, a threshold
   or another test is not a test. A fake codebase built so a test has

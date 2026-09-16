@@ -316,7 +316,10 @@ fewer types, layers, files? an abstraction with one caller? configurability
 nothing configures?), the place (a gate belongs in a script, not a .md;
 tests beside the code in the fewest table-driven files; settings where the
 language's tools read them), the dependencies (would a developer add this
-package for this?), the tests (does each prove a behaviour a customer or the
+package for this? and the reverse: a rule held by a hand-rolled checker when
+a standard plugin or a core rule's config would hold it — the owner wants
+the plugin, and per-file config of standard rules is not hand-rolled;
+Claire, 16 Sept), the tests (does each prove a behaviour a customer or the
 owner could see? a test of a script, a helper, a fixture, a gate, a
 threshold or another test is not a test; a fake codebase under `testdata`
 is a smell; over three lines of test per line of product names the
