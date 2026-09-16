@@ -72,6 +72,12 @@ means the test and the plan disagree about a signature, which is BLOCKED,
 not an edit. The verifier fails every commit after the plan that touches a
 test file or tests.md, whatever its message says.
 
+A function over a length or complexity cap is split; its log lines are never
+the thing removed to meet the cap. They survive the split in the same order
+with the same text (the owner, 16 Sept 2026: "put the logging back, split
+the func, same moving forward"). A plan or a refusal that says otherwise is
+wrong on that point, and you split anyway.
+
 Before you hand-roll a helper the plan does not name, ask triage's prior-art
 question: if a maintained package already does it, that is BLOCKED for the
 owner, not a helper you write or a dependency you add.

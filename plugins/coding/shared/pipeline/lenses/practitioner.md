@@ -39,5 +39,11 @@ Ask it of everything, in this order:
 - **The size.** Would a reviewer read this diff in one sitting? If not,
   what is in it that the story did not ask for?
 
+One thing is never the rewrite: deleting a log line to get a function under
+a length or complexity cap. What the code logs is the owner's (Claire, 16
+Sept 2026, on story 02's PR: "put the logging back, split the func, same
+moving forward"). A function over its cap is split; its log lines survive
+the split in the same order with the same text.
+
 Return what you would refuse to approve, one line each, most embarrassing
 first, and the one-line rewrite for each. Silence means you would approve.
