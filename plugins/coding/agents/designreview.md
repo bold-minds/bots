@@ -45,6 +45,18 @@ each with its evidence — a file:line, a scenario number, a scenario's words:
   practitioner lens and ask its one question of every row and of the table
   as a whole — would a working developer in this language be embarrassed by
   the shape this asks for, the place it puts things, the tests it implies?
+  Two more shapes the verifier had to refuse after the tests were written,
+  which cost a whole build each (03 and 04, 15 Sept), and which are yours
+  to strike here: a row about the harness — that the mount helper empties
+  the document, that the stub answers the right paths, that a missing golden
+  is written, that the pipeline's own test command runs (ten of sixteen rows
+  on 03's first task); and over-specification of a small behaviour — POST
+  and HEAD on a health path, a response another story's golden already
+  freezes, the wording of a build log (eight of sixteen on 04's first task).
+  Count the rows against the product change they describe: a health path
+  and two hostnames is thirty lines of product and earns eight rows, not
+  sixteen. A row is kept only if a customer, the owner or an operator could
+  see it fail; every other row is an F finding, whatever the TRD says.
 
 Change nothing. Run no git command that writes. End with exactly one line:
 `VERDICT: SOUND` when A, C, D and F are empty, otherwise `VERDICT: GAPS:
