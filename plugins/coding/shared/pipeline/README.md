@@ -467,6 +467,22 @@ directory is read live once per version and stays cached under it, and an
 the `tasklist` step works once and is lost the moment the next resume
 answers a different step — 02, 15 Sept).
 
+**When a feature-level step was fixed by hand and a later step needs the
+ruling** — the merge halted, the fix landed on the feature branch outside
+the run, and the ruling belongs at `mergecheck` or `practitioner` — a
+resume that answers the later step replays the earlier one from cache,
+and the cached result is the halt: the merge step's prompt without a
+ruling is the prompt that returned `BLOCKED` in the first run (05, 16
+Sept: three resumes came straight back with the merge's first block).
+Deleting `BLOCKED.md` changes nothing, because the cache never reads the
+disk. The way through is a new `tasksVersion` (the feature branch's tip):
+the listing prompt changes, every step after it runs live, the task steps
+return their passed marks in a probe each, the merge step finds nothing
+left to merge, and the ruling reaches the step it names. Every
+feature-level step should carry a passed mark read by a probe, as
+`mergecheck`, `practitioner` and `feature` do since 16 Sept; the merge
+step does not yet, and this is the workaround until it does.
+
 **When it passes** it returns the feature branch and, if the config's
 `push:` line permits, the remote ref — one push per feature. Then the
 `pr` skill (`${CLAUDE_PLUGIN_ROOT}/skills/pr/SKILL.md`): it opens the PR
