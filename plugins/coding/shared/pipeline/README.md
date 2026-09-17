@@ -481,7 +481,16 @@ return their passed marks in a probe each, the merge step finds nothing
 left to merge, and the ruling reaches the step it names. Every
 feature-level step should carry a passed mark read by a probe, as
 `mergecheck`, `practitioner` and `feature` do since 16 Sept; the merge
-step does not yet, and this is the workaround until it does.
+step does not yet, and this is the workaround until it does. The marks
+have the same weakness one level up: the probe that reads them is itself
+cached by its prompt, so a mark written after the probe ran is invisible
+to the next resume unless some prompt before the probe changed — 05's
+practitioner approved a tip, wrote its mark, and the next resume (which
+answered the `feature` step) replayed the probe's earlier "no mark" and
+ran a fourth pass on the approved tip (16 Sept, 20:34). Until the probes
+carry the tip in their prompt, a resume that must see a fresh mark
+changes an earlier argument — `tasksVersion`, or the `stub` line — so the
+whole chain runs live.
 
 **When it passes** it returns the feature branch and, if the config's
 `push:` line permits, the remote ref — one push per feature. Then the
