@@ -323,7 +323,11 @@ Claire, 16 Sept), the tests (does each prove a behaviour a customer or the
 owner could see? a test of a script, a helper, a fixture, a gate, a
 threshold or another test is not a test; a fake codebase under `testdata`
 is a smell; over three lines of test per line of product names the
-scaffolding; a helper longer than what it helps), the words (names a
+scaffolding — on a task whose production change is under two hundred
+lines the ratio is a note, never a block: the rule is the fewest tests
+that carry the rows, and a fifty-line change with eight table rows is
+over three to one and right (06, 17 Sept); a helper longer than what it
+helps), the words (names a
 colleague understands without the TRD; comments that say why; nothing that
 narrates the pipeline) and the size (readable in one sitting, or what did
 the story not ask for?). Those are the places this pipeline has already
