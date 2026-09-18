@@ -157,6 +157,20 @@ check_trd() {
   grep -qE '^Components:' <<<"$f" || say "Flow has no Components:"
   grep -qE '^[0-9]+\. .* → ' <<<"$f" && say "Flow carries a numbered connection list; the diagram and its + marks are the connections"
 
+  # The size stop (Claire, 17 Sept 2026): a story adds at most one new
+  # participant and two new connections. A new participant is a Components
+  # line whose name ends in +; a new connection is an arrow label carrying +
+  # inside the diagram (a label like "job+*-->" or "<-link+-"). Over the cap
+  # the story is split before any lens reads it; the number itself is the
+  # first thing the owner sees on a TRD.
+  local newparts newconns header
+  header="$(grep -vE '^\s*\||^Legend|^Components|^- |^\s*$|^[+~*] ' <<<"$f" | head -1)"
+  newparts="$(grep -oE '[A-Za-z]+\+' <<<"$header" | wc -l | tr -d ' ')"
+  [ "$(grep -cE '^- [^:]*\+: ' <<<"$f" || true)" -gt "$newparts" ] && newparts="$(grep -cE '^- [^:]*\+: ' <<<"$f")"
+  newconns="$(grep -E '^\s*\|' <<<"$f" | grep -oE '[A-Za-z][A-Za-z ]*\+[*~]*[-<>]' | wc -l | tr -d ' ')"
+  [ "${newparts:-0}" -le 1 ] || say "Flow: $newparts new participants; the cap is one — the size stop: split the story before the review"
+  [ "${newconns:-0}" -le 2 ] || say "Flow: $newconns new connections; the cap is two — the size stop: split the story before the review"
+
   # Solution and Observed: group lines and their bullets. A group line is one
   # plain sentence the owner reads — no bullet, no code, no path, no flag —
   # and every bullet under it is one short fact the verifier holds the code

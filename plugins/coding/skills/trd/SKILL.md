@@ -45,9 +45,19 @@ Let `P` be `${CLAUDE_PLUGIN_ROOT}`, `HIL` be `${P}/shared/hil`, `root` be
    `${P}/shared/pipeline/triage.md`; and the word **write**. It returns the
    TRD's first line. If it returns a line beginning `BLOCKED:`, stop and relay
    the three lines of the question to the owner; their one-line answer goes
-   back into a fresh dispatch as a ruling.
+   back into a fresh dispatch as a ruling. One BLOCKED is the **size stop**:
+   the Flow adds more than one participant or more than two connections
+   (Claire, 17 Sept 2026), and the agent has written nothing below the Flow.
+   Relay the count and the proposed cut — mechanics with a stand-in output,
+   the real behaviour, the negative cases — and wait: no lens reads a story
+   the owner has not sized. The owner may say "go anyway"; then the write
+   continues as a ruling. `check.sh trd` says the same two lines on a TRD
+   that was written over the cap, so a draft that slipped past is caught
+   before the review is dispatched, not after eight lenses have read it.
 
-2. **Review** — eight lenses in parallel, one `coding:lens` dispatch each:
+2. **Review** — first `bash ${HIL}/check.sh trd ${TRD}` (not `--reviewed`):
+   a `Flow:` line is the size stop and the review does not run; relay it as
+   in step 1. Then eight lenses in parallel, one `coding:lens` dispatch each:
    `architecture`, `sre`, `security`, `qa`, `staff`, `practitioner` on opus;
    `performance`, `database` on sonnet. The practitioner reads the TRD as a
    working developer who has read none of the repo's documents: a thing in

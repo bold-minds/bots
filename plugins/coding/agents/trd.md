@@ -24,9 +24,24 @@ code we write, test and keep; say what the design leans on. Then write the
 TRD from the template:
 
 - **Flow**: the ASCII sequence diagram, symbols on the arrow labels, every
-  piece new in this story marked `+`; a Legend; Components saying what each
+  piece new in this story marked `+` — a participant new in this story is
+  `Name+` across the top and in Components, an arrow new in this story
+  carries `+` in its label; a Legend; Components saying what each
   participant is and where it lives, never a bare name. No numbered list —
   the diagram is the connections.
+- **The size stop, before anything else is written.** Draw the Flow first
+  and count: a story may add at most one new participant and two new
+  connections (Claire, 17 Sept 2026: "1 new infra and one or even two new
+  connections along with some small amount of business functionality"). Over
+  either cap, write nothing below the Flow: return `BLOCKED: the Flow adds
+  <n> participants and <m> connections; the cap is one and two` with the
+  three lines the owner reads — the count, and a proposed cut in the owner's
+  shape: (1) the mechanics end to end with a static stand-in output and no
+  negative path, (2) the real behaviour, (3) the negative cases, refusals,
+  resilience and alerts — each a story of its own with its own TRD. The
+  first sample TRD (07, 16 Sept: two participants, eleven connections, eight
+  lenses and a pre-mortem spent on it) was re-cut by the owner a day later;
+  this stop is what would have caught it at the Flow.
 - **Solution**: how the surface changes, in **groups**. A group is one plain
   sentence the owner reads — no bullet, no code, no path, no flag, at most
   25 words, ending in a full stop — followed by its facts, one per bullet,
