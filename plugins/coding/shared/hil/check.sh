@@ -308,21 +308,26 @@ check_adr() {
   done
   # Options are grouped by platform and product: a group line "<Platform> —
   # <product>, <verdict>." then that option's facts, one per bullet.
-  local seen=0 groups=0
+  # The chosen option carries a Health bullet: is the library or vendor
+  # maintained, and checked when (Claire, 19 Sept 2026, on River).
+  local seen=0 groups=0 chosen=0 health=0
   while IFS= read -r line; do
     [ -z "${line//[[:space:]]/}" ] && continue
     if grep -qE '^- ' <<<"$line"; then
       [ "$seen" -eq 1 ] || say "Options: a bullet with no platform line above it: ${line}"
       [ "$(wc -w <<<"$line")" -le 30 ] || say "Options: a bullet over 30 words: ${line}"
-      grep -qE '^- (Pro|Con): ' <<<"$line" || say "Options: a bullet that is not 'Pro: …' or 'Con: …': ${line}"
+      grep -qE '^- (Pro|Con|Health): ' <<<"$line" || say "Options: a bullet that is not 'Pro: …', 'Con: …' or 'Health: …': ${line}"
+      grep -qE '^- Health: ' <<<"$line" && { [ "$chosen" -eq 1 ] || say "Options: a Health bullet on an option not chosen: ${line}"; health=1; }
     else
-      seen=1; groups=$((groups+1))
+      seen=1; groups=$((groups+1)); chosen=0
+      grep -qE ', chosen\.$' <<<"$line" && chosen=1
       grep -qE '^[^-].* — .*, (chosen|rejected|the state before this|not evaluated)\.$' <<<"$line" \
         || say "Options: a platform line is '<Platform> — <product>, <chosen|rejected|the state before this|not evaluated>.': ${line}"
     fi
   done <<<"$(section Options)"
   [ "$groups" -ge 2 ] || say "Options: fewer than two platforms; a decision names what it beat"
   grep -qE ', chosen\.$' <<<"$(section Options)" || say "Options: no platform marked chosen"
+  [ "$health" -eq 1 ] || say "Options: the chosen option has no 'Health: …' bullet (maintained? checked when?)"
   local l; l="$(lines)"
   [ "$l" -le "$CAP_ADR" ] || say "$l lines; an ADR's cap is $CAP_ADR"
 }

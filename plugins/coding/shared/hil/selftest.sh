@@ -137,6 +137,9 @@ sed 's/^GitHub — Actions, chosen\.$/GitHub — Actions, rejected./' "$ex/0001-
 expect_fail "adr with no option marked chosen" "no platform marked chosen" adr "$tmp/adr/0001-u.md"
 sed 's/^- Pro: faster builds$/- faster builds/' "$ex/0001-ci-on-github-actions.md" > "$tmp/adr/0001-t.md"
 expect_fail "adr option bullet without Pro: or Con:" "not 'Pro:" adr "$tmp/adr/0001-t.md"
+# adr: the chosen option carries a Health bullet (Claire, 19 Sept, on River)
+grep -v '^- Health: ' "$ex/0001-ci-on-github-actions.md" > "$tmp/adr/0001-s.md"
+expect_fail "adr chosen option without Health" "no 'Health:" adr "$tmp/adr/0001-s.md"
 sed 's/^# ADR 0001 — /# /' "$ex/0001-ci-on-github-actions.md" > "$tmp/adr/0001-z.md"
 expect_fail "adr with no number in the title" "first line is not" adr "$tmp/adr/0001-z.md"
 # 3. The repo root from inside a linked worktree is the worktree, not nothing.

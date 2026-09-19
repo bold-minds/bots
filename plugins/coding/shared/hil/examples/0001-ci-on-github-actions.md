@@ -13,6 +13,7 @@ GitHub — Actions, chosen.
 - Pro: a run of about 8 minutes; roughly 250 runs a month inside the free tier
 - Pro: environments, secrets and a branch policy for prod in the same place as the code
 - Con: the slowest runners of the options; fine at this volume
+- Health: GitHub's own product, status page public, no end of life announced; checked 2026-09-13
 
 Nobody — deploys by hand over SSH, the state before this.
 - Con: no procedure written down; the only record was a build log

@@ -9,6 +9,11 @@
 - Package name is part of the identifier — `http.Get` not `http.HTTPGet`. Don't stutter.
 - Use blank lines to break up function flow like paragraphs in prose.
 
+## Settings
+- A vendor's name, address or base URL, a file or folder name, one of our own route paths: never a `const` in a package. It is a setting with a default, overridable by an environment variable, read once in main (Claire, 19 Sept 2026: "must be defaults that can be overridden by env vars so it doesn't make sense to have them in the packages as consts").
+- The package takes the value as an argument; main reads the environment through a standard library for it (`github.com/caarlos0/env/v11`: struct tags `env:"QUO_ADDRESS" envDefault:"https://api.openphone.com"`), never a hand-rolled getenv-or-default.
+- A vendor's own API path (`/v1/messages`) is the vendor's contract and stays in its client; header names and content types too.
+
 ## Comments (Dave Cheney)
 - A comment explains exactly one of: WHAT, HOW, or WHY. Never mix.
 - Write the comment BEFORE the code. If you can't describe it, you don't understand it yet.

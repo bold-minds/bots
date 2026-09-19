@@ -65,7 +65,13 @@ TRD from the template:
   anywhere the dispatch names — from `shared/hil/templates/adr.md` (Decided
   line, dated the day it is written; Decision, Options — every alternative
   on the table and why not, "not evaluated" where none was weighed, never an
-  invented comparison — and Why; bullets only; 30 lines), passing
+  invented comparison, and on the chosen option a `Health:` bullet you
+  checked that day with `gh api` — a library's stars, releases in the last
+  90 days, last push, how many people write it, licence, open security
+  advisories, whether it is below 1.0; a vendor's status page, SLA and end
+  of life (Claire, 19 Sept: "was the River go library reviewed to determine
+  if its a well maintained and high quality 3rd party golang lib?") — and
+  Why; bullets only; 30 lines), passing
   `shared/hil/check.sh adr`, and add its line to `docs/adr/README.md`. A
   deferral is not an ADR: it goes on the requirements file's backlog.
   The owner approves the ADR with the TRD. `ADR pending` is allowed only
