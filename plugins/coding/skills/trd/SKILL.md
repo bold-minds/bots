@@ -46,8 +46,11 @@ Let `P` be `${CLAUDE_PLUGIN_ROOT}`, `HIL` be `${P}/shared/hil`, `root` be
    TRD's first line. If it returns a line beginning `BLOCKED:`, stop and relay
    the three lines of the question to the owner; their one-line answer goes
    back into a fresh dispatch as a ruling. One BLOCKED is the **size stop**:
-   the Flow adds more than one participant or more than two connections
-   (Claire, 17 Sept 2026), and the agent has written nothing below the Flow.
+   the Flow adds more than one participant or more than two connections on
+   a story of more than three scenarios — infrastructure and business both
+   large (Claire, 17 and 19 Sept 2026; a mechanics story with a stand-in
+   output and two scenarios may add Postgres and a worker) — and the agent
+   has written nothing below the Flow.
    Relay the count and the proposed cut — mechanics with a stand-in output,
    the real behaviour, the negative cases — and wait: no lens reads a story
    the owner has not sized. The owner may say "go anyway"; then the write

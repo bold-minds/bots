@@ -157,19 +157,25 @@ check_trd() {
   grep -qE '^Components:' <<<"$f" || say "Flow has no Components:"
   grep -qE '^[0-9]+\. .* → ' <<<"$f" && say "Flow carries a numbered connection list; the diagram and its + marks are the connections"
 
-  # The size stop (Claire, 17 Sept 2026): a story adds at most one new
-  # participant and two new connections. A new participant is a Components
-  # line whose name ends in +; a new connection is an arrow label carrying +
-  # inside the diagram (a label like "job+*-->" or "<-link+-"). Over the cap
-  # the story is split before any lens reads it; the number itself is the
-  # first thing the owner sees on a TRD.
-  local newparts newconns header
+  # The size stop (Claire, 17 and 19 Sept 2026): infrastructure and business
+  # trade off. A story may be infra-heavy — more than one new participant or
+  # more than two new connections in the Flow — only when its business scope
+  # is small: three scenarios or fewer on its story. A story with more
+  # scenarios than that adds at most one participant and two connections.
+  # Both large is the stop: the story is split before any lens reads it. A
+  # new participant is a Name+ across the top of the diagram or in Components;
+  # a new connection is an arrow label carrying + ("job+*-->", "<-link+-").
+  local newparts newconns header scen
   header="$(grep -vE '^\s*\||^Legend|^Components|^- |^\s*$|^[+~*] ' <<<"$f" | head -1)"
   newparts="$(grep -oE '[A-Za-z]+\+' <<<"$header" | wc -l | tr -d ' ')"
   [ "$(grep -cE '^- [^:]*\+: ' <<<"$f" || true)" -gt "$newparts" ] && newparts="$(grep -cE '^- [^:]*\+: ' <<<"$f")"
   newconns="$(grep -E '^\s*\|' <<<"$f" | grep -oE '[A-Za-z][A-Za-z ]*\+[*~]*[-<>]' | wc -l | tr -d ' ')"
-  [ "${newparts:-0}" -le 1 ] || say "Flow: $newparts new participants; the cap is one — the size stop: split the story before the review"
-  [ "${newconns:-0}" -le 2 ] || say "Flow: $newconns new connections; the cap is two — the size stop: split the story before the review"
+  scen=0
+  if [ -f "$dir/$st" ]; then scen="$(grep -cE '^[0-9]+\. \[' "$dir/$st" || true)"
+  elif [ -f "$st" ]; then scen="$(grep -cE '^[0-9]+\. \[' "$st" || true)"; fi
+  if [ "${newparts:-0}" -gt 1 ] || [ "${newconns:-0}" -gt 2 ]; then
+    [ "${scen:-0}" -le 3 ] || say "Flow: $newparts new participants and $newconns new connections against $scen scenarios; a story that adds more than one participant or two connections carries three scenarios or fewer — the size stop: split the story before the review"
+  fi
 
   # Solution and Observed: group lines and their bullets. A group line is one
   # plain sentence the owner reads — no bullet, no code, no path, no flag —

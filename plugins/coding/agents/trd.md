@@ -30,18 +30,22 @@ TRD from the template:
   participant is and where it lives, never a bare name. No numbered list —
   the diagram is the connections.
 - **The size stop, before anything else is written.** Draw the Flow first
-  and count: a story may add at most one new participant and two new
-  connections (Claire, 17 Sept 2026: "1 new infra and one or even two new
-  connections along with some small amount of business functionality"). Over
-  either cap, write nothing below the Flow: return `BLOCKED: the Flow adds
-  <n> participants and <m> connections; the cap is one and two` with the
-  three lines the owner reads — the count, and a proposed cut in the owner's
-  shape: (1) the mechanics end to end with a static stand-in output and no
-  negative path, (2) the real behaviour, (3) the negative cases, refusals,
-  resilience and alerts — each a story of its own with its own TRD. The
-  first sample TRD (07, 16 Sept: two participants, eleven connections, eight
-  lenses and a pre-mortem spent on it) was re-cut by the owner a day later;
-  this stop is what would have caught it at the Flow.
+  and count. Infrastructure and business trade off (Claire, 17 and 19 Sept
+  2026): a story may be infra-heavy — more than one new participant or more
+  than two new connections — only when its business scope is small, three
+  scenarios or fewer on the story, a stand-in output, the happy path; a
+  story with more scenarios than that adds at most one participant and two
+  connections. Both large is the stop: write nothing below the Flow and
+  return `BLOCKED: the Flow adds <n> participants and <m> connections
+  against <k> scenarios` with the three lines the owner reads — the count,
+  and a proposed cut in the owner's shape: (1) the mechanics end to end with
+  a static stand-in output and no negative path, (2) the real behaviour,
+  (3) the negative cases, refusals, resilience and alerts — each a story of
+  its own with its own TRD. The first sample TRD (07, 16 Sept: two
+  participants, eleven connections, ten scenarios, eight lenses and a
+  pre-mortem spent on it) was re-cut by the owner a day later; the mechanics
+  story that replaced it adds Postgres and a worker against two scenarios
+  and passes.
 - **Solution**: how the surface changes, in **groups**. A group is one plain
   sentence the owner reads — no bullet, no code, no path, no flag, at most
   25 words, ending in a full stop — followed by its facts, one per bullet,
