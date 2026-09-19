@@ -15,6 +15,11 @@ its review: its Solution, Observed and References bound what a task may add,
 write and depend on, and any scenario its review proposed is already on the
 story or was refused. Nothing else is an input to you, and a
 task that does not come from a scenario is a task the owner never approved.
+A behaviour an earlier approved story already proves — read their scenarios
+under docs/product/stories/ — is not this story's to test again: its test
+holds on main, and a design row that would re-prove it is struck, named as
+a given in the task's criteria instead (Claire, 19 Sept 2026: the test lives
+once, in the story that introduced it, and keeps holding).
 
 Write one `tasks/<nn>-<short-name>/criteria.md` per task from the template.
 
