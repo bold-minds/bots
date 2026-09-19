@@ -97,8 +97,11 @@ grep -v '^| Journey' "$ex/coverage.md" > "$tmp/c3.md"
 expect_fail "coverage without Journey" "no Journey row" coverage "$tmp/c3.md"
 
 # pr: a file path in a What bullet
-sed 's/^- Recording exactly one build/- Recording in pkg\/preview\/build.go exactly one build/' "$ex/pr.md" > "$tmp/p1.md"
+sed 's/^- An address texted twice builds once./- pkg\/preview\/build.go builds a texted address once./' "$ex/pr.md" > "$tmp/p1.md"
 expect_fail "pr What bullet with a path" "a file path in a bullet" pr "$tmp/p1.md"
+# pr: a What bullet over twelve words (Claire, 19 Sept)
+sed 's/^- An address texted twice builds once./- Recording exactly one build per address texted, so two texts of the same address never build twice./' "$ex/pr.md" > "$tmp/p5.md"
+expect_fail "pr What bullet over twelve words" "over 12 words" pr "$tmp/p5.md"
 # pr: prose above the Why heading
 { echo "Here is what I did today."; cat "$ex/pr.md"; } > "$tmp/p2.md"
 expect_fail "pr with prose first" "first line is not '## Why'" pr "$tmp/p2.md"
@@ -106,7 +109,7 @@ expect_fail "pr with prose first" "first line is not '## Why'" pr "$tmp/p2.md"
 sed 's/^- \[x\] PR 1/- [ ] PR 1/' "$ex/pr.md" > "$tmp/p3.md"
 expect_fail "pr with no ticked PR" "no PR in the checklist is ticked" pr "$tmp/p3.md"
 # pr: a line count in a What bullet
-sed 's/^- No change to how/- 61 lines of production code; no change to how/' "$ex/pr.md" > "$tmp/p4.md"
+sed 's/^- A text without an address is answered as before./- 61 lines; a text without an address is answered as before./' "$ex/pr.md" > "$tmp/p4.md"
 expect_fail "pr What bullet with a line count" "a line count" pr "$tmp/p4.md"
 
 # card: three sentences

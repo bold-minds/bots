@@ -283,6 +283,9 @@ check_pr() {
   while IFS= read -r line; do
     grep -qE '(^|[^a-zA-Z])[a-zA-Z0-9_./-]+/[a-zA-Z0-9_.-]+\.(go|js|ts|svelte|md|json|yaml|yml|sh|mod|sum)([^a-zA-Z0-9]|$)' <<<"$line" && say "What: a file path in a bullet; say what it contributes, not where: ${line}"
     grep -qE '[0-9]+ lines' <<<"$line" && say "What: a line count in a bullet: ${line}"
+    # Claire, 19 Sept: "Each bullet is too long … simple, plain and cut to
+    # the bone." One short line each; the reason goes in the story, not here.
+    [ "$(wc -w <<<"$line")" -le 13 ] || say "What: a bullet over 12 words; one short plain line each: ${line}"
   done < <(grep -E '^- ' <<<"$t")
   [ -n "$(section "How to check" | grep -vE '^[[:space:]]*$')" ] || say "How to check is empty"
 }

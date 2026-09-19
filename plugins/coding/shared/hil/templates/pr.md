@@ -6,7 +6,7 @@
 - [ ] PR 3: <…; one line per PR the story is split into, the merged ones ticked, this one ticked, the rest not>
 
 ## What
-- <one bullet per change, saying what it contributes and why, never how: no file names, no function names, no line counts. "Upgrading Go from 1.19 to 1.26 to match the version the Docker image builds with", not "go.mod: go 1.26". A Go type or library may be named when it is the point of the bullet (httptest, godog); a path never.>
+- <one bullet per change, one short plain line, twelve words at most, saying what the change does and never how or why: "A text delivered twice is answered once.", not "The last thousand delivery ids are remembered, so a text delivered twice is answered once." No file names, no function names, no line counts. A Go type or library may be named when it is the point of the bullet (httptest, godog); a path never.>
 - <as many bullets as there are changes; there is no cap on bullets>
 - <the last bullet says what did not change, when that is the point: "No behaviour changes: the app does exactly what it did before.">
 

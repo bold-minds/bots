@@ -30,13 +30,15 @@ Let `HIL` be `${CLAUDE_PLUGIN_ROOT}/shared/hil`.
      title a non-engineer reads once ("fixing the crash when a page asks for
      a view that doesn't exist", never "the seams the tests need"); merged
      PRs and this one ticked, the rest not.
-   - `## What` — one bullet per change, saying what it contributes and why,
-     never how: no file names, no function names, no line counts, no paths;
-     a library or Go type only when it is the point ("so unit tests can use
-     Go's httptest library"). Each bullet is a full plain sentence with its
-     reason: "Upgrading Go from 1.19 to 1.26 to match the version the Docker
-     image already builds with". As many bullets as there are changes; no
-     cap. A last bullet says what did not change when that is the point.
+   - `## What` — one bullet per change, one short plain line each, twelve
+     words at most (Claire, 19 Sept: "Each bullet is too long … simple,
+     plain and cut to the bone"): what the change does, never how or why —
+     "A text delivered twice is answered once.", not "The last thousand
+     delivery ids are remembered, so a text the vendor delivers twice is
+     answered once." No file names, no function names, no line counts, no
+     paths; a library or Go type only when it is the point ("New tests use
+     testify."). As many bullets as there are changes; no cap on bullets. A
+     last bullet says what did not change when that is the point.
    - `## How to check` — what a colleague runs and what they should see, in
      one or two sentences.
    The scenarios and the verdict are not on the body: the board card and
