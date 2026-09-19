@@ -328,7 +328,11 @@ lines the ratio is a note, never a block: the rule is the fewest tests
 that carry the rows, and a fifty-line change with eight table rows is
 over three to one and right (06, 17 Sept); a helper longer than what it
 helps), the words (names a
-colleague understands without the TRD; comments that say why; nothing that
+colleague understands without the TRD; a comment is one short plain
+sentence, fifteen words or fewer, what it does or why — never "as scenario
+2's When says", a file name or a story path in prose, never the line under
+it restated (Claire, 19 Sept: "impossible to understand as-is" — a comment a
+non-engineer cannot read once is a finding); nothing that
 narrates the pipeline) and the size (readable in one sitting, or what did
 the story not ask for?). Those are the places this pipeline has already
 been caught (story 01, 14 Sept); a diff can be embarrassing in a way none of

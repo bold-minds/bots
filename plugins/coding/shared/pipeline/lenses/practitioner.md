@@ -44,8 +44,13 @@ Ask it of everything, in this order:
   product — over three to one, name the heaviest files and what in them is
   scaffolding. Is any helper longer than what it helps?
 - **The words.** Names a colleague would understand without the TRD.
-  Comments that say why, not what; none that narrate the pipeline. A commit
-  message and a PR body that say what changed.
+  Comments that are one short plain sentence — what it does or why it is
+  there, fifteen words or fewer — and never a cross-reference in prose ("as
+  scenario 2's When says", "the harness is texting_test.go", a story path)
+  or a restatement of the line under them; a comment a non-engineer cannot
+  read once is a finding (Claire, 19 Sept: "impossible to understand
+  as-is"). None that narrate the pipeline. A commit message and a PR body
+  that say what changed.
 - **The size.** Would a reviewer read this diff in one sitting? If not,
   what is in it that the story did not ask for?
 

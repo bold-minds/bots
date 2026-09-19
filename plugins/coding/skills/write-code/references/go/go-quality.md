@@ -17,6 +17,9 @@
 - Don't write "implements X interface" on methods — that's what the compiler checks.
 - Annotate TODO comments with the username of the person who can explain or fix it.
 - Extract heavily-commented code blocks into separate functions with descriptive names.
+- One short plain sentence, fifteen words or fewer: what the thing does, or why it is there. A why is a second sentence as short.
+- No cross-reference in prose — no "as scenario 2's When says", no "the harness is texting_test.go", no story path. A scenario test names its scenario once, in one line at the top of the file.
+- Nothing the code already says: a comment restating the line under it is deleted; a table row's comment is the case in plain words, one line. (Claire, 19 Sept: the 05/06 comments were "impossible to understand as-is" and were rewritten.)
 
 ## Style
 - Max 4 function parameters; use options struct beyond that.
