@@ -6,6 +6,8 @@ The release file is the board. Its shape:
     # <title>
     Launch: <YYYY-MM-DD>
     Board: <artifact url>
+    Beta: <nn>–<nn>                                                 optional: the stories in the beta cut; each card
+                                                                    carries a beta or v1 tag top left (Claire, 19 Sept)
 
     <nn> <stop> <state> <YYYY-MM-DD> — <sentence>. <sentence>.     one card line per story
     Next: <nn> — <title of the story not yet written>                optional, one
@@ -33,6 +35,14 @@ def main(path):
     launch = next((l.split(":", 1)[1].strip() for l in text if l.startswith("Launch:")), None) or die("no 'Launch: <YYYY-MM-DD>' line")
     board = next((l.split(":", 1)[1].strip() for l in text if l.startswith("Board:")), "")
     nxt = next((l.split(":", 1)[1].strip() for l in text if l.startswith("Next:")), "")
+    beta_line = next((l.split(":", 1)[1].strip() for l in text if l.startswith("Beta:")), "")
+    beta = set()
+    if beta_line:
+        m = re.match(r"^(\d{2})\s*[–-]\s*(\d{2})$", beta_line) or die("Beta: is '<nn>–<nn>'")
+        beta = {f"{i:02d}" for i in range(int(m.group(1)), int(m.group(2)) + 1)}
+    def tag(nn):
+        if not beta_line: return ""
+        return '<span class="tag beta">beta</span>' if nn in beta else '<span class="tag v1">v1</span>'
     cards, before, section, before_title = [], [], None, "Before any story builds"
     for l in text:
         if l.startswith("## "):
@@ -79,7 +89,7 @@ def main(path):
             track.append(f'<div class="stop {cls}">{e(s)}</div>')
         if state == "waiting-owner": waiting.append(f"{nn}: {s2}")
         d = dt.date.fromisoformat(date).strftime("%-d %b")
-        out.append(f'<li class="story"><div class="num">{nn}</div><p class="name">{e(story_title(nn))}</p><div class="track">{"".join(track)}</div><p class="stand"><b>{e(stop)} {e(state.replace("-", " "))}, {d}.</b> {e(s1)} {e(s2)}</p></li>')
+        out.append(f'<li class="story"><div class="num">{tag(nn)}{nn}</div><p class="name">{e(story_title(nn))}</p><div class="track">{"".join(track)}</div><p class="stand"><b>{e(stop)} {e(state.replace("-", " "))}, {d}.</b> {e(s1)} {e(s2)}</p></li>')
     if nxt:
         m = re.match(r"^(\d{2}) — (.+)$", nxt) or die("Next: is '<nn> — <title>'")
         track = "".join(f'<div class="stop {"done" if i == 0 else ("now" if i == 1 else "")}">{e(s)}</div>' for i, s in enumerate(STOPS))
@@ -107,9 +117,11 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=I
   .legend span::before { content:""; display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:-1px; background:var(--track); }
   .legend .l-done::before { background:var(--done); } .legend .l-now::before { background:var(--now); } .legend .l-wait::before { background:var(--wait); } .legend .l-dep::before { background:var(--dep); }
   ol.stories { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
-  li.story { background:var(--card); border:1px solid var(--rule); border-radius:6px; padding:14px 16px 12px; display:grid; grid-template-columns:30px 1fr; gap:6px 12px; }
+  li.story { background:var(--card); border:1px solid var(--rule); border-radius:6px; padding:14px 16px 12px; display:grid; grid-template-columns:44px 1fr; gap:6px 12px; }
   li.story.next { border-color:var(--now); }
-  .num { font-family:"IBM Plex Mono",Menlo,monospace; color:var(--muted); font-size:13px; padding-top:3px; }
+  .num { font-family:"IBM Plex Mono",Menlo,monospace; color:var(--muted); font-size:13px; padding-top:3px; display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
+  .tag { font-family:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif; font-size:9.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; padding:1px 5px; border-radius:3px; line-height:1.4; }
+  .tag.beta { background:var(--done); color:var(--card); } .tag.v1 { background:var(--track); color:var(--ink); }
   .name { font-weight:600; font-size:16px; margin:0; }
   .track { grid-column:2; display:grid; grid-template-columns:repeat(8,1fr); position:relative; margin-top:4px; }
   .track::before { content:""; position:absolute; left:6.25%; right:6.25%; top:7px; height:2px; background:var(--track); }
