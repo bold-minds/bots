@@ -14,9 +14,15 @@ survey and the attic. It says which of two jobs this is.
 
 **Write.** Read the story: its Journey and Scenarios are what the design
 serves, and it repeats none of them. Read the survey if there is one — a row
-per requirement saying what already exists on main and in the attic — and
-enough of the code on the default branch to know what is there; a design that
-rebuilds something present is the default failure. Before you draw anything,
+per requirement saying what already exists on main and in the attic — and the
+story's mined file if the dispatch names one (`<nn>-<name>.mine.md`: per
+scenario, the archived function that serves it, `path@commit` and lines, its
+verdict — port as-is, port with changes, write fresh — and what it would drag
+in). A "port" row becomes a Solution bullet naming the archived function and
+what changes; read that code, never the whole archive (Claire, 19 Sept:
+mining ahead cuts the time). Read enough of the code on the default branch
+to know what is there; a design that rebuilds something present is the
+default failure. Before you draw anything,
 list the platforms in play — the messaging provider, the edge, the store, the
 payment provider, whatever the code already calls — and what each already does
 for this exact need. A capability we already pay for and merely switch on beats

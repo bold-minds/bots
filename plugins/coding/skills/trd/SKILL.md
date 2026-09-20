@@ -17,8 +17,14 @@ allowed-tools: Agent, Read, Glob, Grep, Bash, Write
 
 Nothing else is required to have run first. Optional inputs, read when they
 exist beside the story: `docs/product/survey.md` (one row per requirement,
-what exists on main and in the attic) and the repo's
-`.claude/pipeline/lenses/<lens>.md` history files. Project specifics come
+what exists on main and in the attic), the story's **mined file**
+`docs/product/stories/<nn>-<name>.mine.md` (the archived code that serves
+each scenario — path@commit and lines, what it does, port as-is / port with
+changes / write fresh, and what it would drag in; Claire, 19 Sept: "code
+mining ahead of time … can cut down the time a lot") and the repo's
+`.claude/pipeline/lenses/<lens>.md` history files. A mined row marked "port"
+is a Solution bullet naming the archived function; the design reads that
+code, not the whole archive. Project specifics come
 from `<root>/.claude/pipeline/config.md`: `decisions`, `entry`, and `rules`
 when the line is there.
 
@@ -41,7 +47,7 @@ Let `P` be `${CLAUDE_PLUGIN_ROOT}`, `HIL` be `${P}/shared/hil`, `root` be
 1. **Write** — story input only. Dispatch `coding:trd` with: the story's
    path; `TRD`; the template `${HIL}/templates/trd.md`; the checker
    `${HIL}/check.sh trd`; `decisions` and `entry` from config; the survey
-   path if the file exists; the triage rules
+   path if the file exists; the mined file if it exists; the triage rules
    `${P}/shared/pipeline/triage.md`; and the word **write**. It returns the
    TRD's first line. If it returns a line beginning `BLOCKED:`, stop and relay
    the three lines of the question to the owner; their one-line answer goes

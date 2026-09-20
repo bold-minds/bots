@@ -8,7 +8,10 @@ tools: Read, Glob, Grep, Bash, Write
 ---
 
 The dispatch names every path: the story, its TRD, the rulings files, the
-survey if one exists, the template, the output directory, the triage rules,
+survey if one exists, the story's mined file if one exists (the archived
+code a task may port, by `path@commit` — a task's design.md names the
+function it ports so the builder reads that code and nothing else of the
+archive), the template, the output directory, the triage rules,
 and the worktree whose code you read. Those are your inputs — the story, the
 TRD and the code as it stands. The TRD is the design the owner approved after
 its review: its Solution, Observed and References bound what a task may add,
