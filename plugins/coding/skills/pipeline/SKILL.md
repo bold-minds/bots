@@ -37,7 +37,12 @@ beside the key, and it must be passed back unchanged — except the one restart
 worktree and branch are gone. When more than one ruling is pending, pass
 `answerStep` as an object keyed like `answers` (`{ "<feature>/<task>":
 "review-1", "<feature>": "merge" }`), one step per key; `"*"` is for a task
-key in a fresh session only and never reaches a feature-level step. `size` is
+key in a fresh session only and never reaches a feature-level step. When one
+key needs a ruling at two steps — the feature's merge and then its
+practitioner — key the answer `"<key>@<step>"` (`"<feature>@merge"`,
+`"<feature>@practitioner"`), which needs no `answerStep` entry and keeps the
+earlier step's prompt unchanged, so it replays instead of returning to a
+stale halt. `size` is
 the repo's file-size limit in lines when `config.md` has a `size:` line;
 without it no step goes looking for one. **Both are required for a resume to work.** A
 finished call is cached by its exact prompt, and every call
@@ -220,12 +225,16 @@ const stepFor = (key) => (A.answerStep && typeof A.answerStep === 'object') ? A.
 // branch, where no verifier reads test history (pattern-kept, 15 Sept). A
 // feature-level ruling names its step or reaches nothing.
 const ANSWER = (key, step) => {
-  if (!(A.answers && A.answers[key])) return ''
-  const s = stepFor(key)
-  if (!(s === step || (s === '*' && key.includes('/')))) return ''
+  // "<key>@<step>" answers one step of one key on its own, so a feature can
+  // carry a ruling for its merge and another for its practitioner at once
+  // (06, 20 Sept: one answer per key sent the merge back to a stale halt
+  // every time the practitioner was answered).
+  const stepKey = `${key}@${step}`
+  const text = (A.answers && A.answers[stepKey]) || (A.answers && A.answers[key] && (stepFor(key) === step || (stepFor(key) === '*' && key.includes('/'))) ? A.answers[key] : '')
+  if (!text) return ''
   return stepHasNoBlockFile(step)
-    ? `The owner has ruled on the question this step raised: "${A.answers[key]}". Apply it as a ruling. Delete BLOCKED.md only if one is actually there — this step writes none. `
-    : `The owner has ruled on the question in BLOCKED.md: "${A.answers[key]}". Apply it as a ruling, then delete BLOCKED.md if it is there. `
+    ? `The owner has ruled on the question this step raised: "${text}". Apply it as a ruling. Delete BLOCKED.md only if one is actually there — this step writes none. `
+    : `The owner has ruled on the question in BLOCKED.md: "${text}". Apply it as a ruling, then delete BLOCKED.md if it is there. `
 }
 // A read-only probe carries a ruling only so that it re-reads live; the ruling
 // is never something for it to act on. Said in the prompt, after the ruling.
