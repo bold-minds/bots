@@ -80,7 +80,10 @@ Let `P` be `${CLAUDE_PLUGIN_ROOT}`, `HIL` be `${P}/shared/hil`, `root` be
    nothing. Then one `coding:premortem` dispatch with `TRD`, the story, the
    eight lens texts verbatim, the return format
    `${P}/shared/pipeline/templates/premortem.md` and the triage rules; it
-   returns its table as text.
+   returns its table as text. A review text kept on disk on its way to the
+   resolve lives in a folder named for this story alone — several stories
+   are reviewed at once, and a shared folder hands the resolve another
+   story's findings.
 
 3. **Resolve** — dispatch `coding:trd` with `TRD`, the story, the nine review
    texts verbatim, the template, the checker, the triage rules, the trail
