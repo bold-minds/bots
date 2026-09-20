@@ -60,5 +60,14 @@ Sept 2026, on story 02's PR: "put the logging back, split the func, same
 moving forward"). A function over its cap is split; its log lines survive
 the split in the same order with the same text.
 
+A second thing is never the rewrite: moving a program, a package or a file
+to a place the TRD or the owner's layout did not put it. The TRD's Solution
+names where each piece lives, and the layout (`internal/<app>/cmd/<exe>`,
+`pkg/…`) is the owner's ruling; a place you would choose differently is a
+finding *for the owner*, worded as a proposal, never applied. (Story 05, 19
+Sept 2026: the practitioner's rework moved the worker from
+`internal/website/cmd/worker`, where the TRD and the owner had put it, to
+`internal/hooks/cmd/worker`, and the owner had to order it back.)
+
 Return what you would refuse to approve, one line each, most embarrassing
 first, and the one-line rewrite for each. Silence means you would approve.
