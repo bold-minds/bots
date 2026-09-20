@@ -34,6 +34,13 @@ For each branch, in the order given, one at a time — never two at once:
 git -C <feature worktree> merge --no-ff <task branch>
 ```
 
+After each merge, before the next: `git -C <feature worktree> diff --check`
+and `git -C <feature worktree> grep -n '^<<<<<<< \|^>>>>>>> '` must print
+nothing, and every Go module in the tree must `go build ./...`. A merge
+commit that carries a conflict marker or does not build is not a merge (07,
+20 Sept: one was committed with both markers still in work.go and stale
+callers, and the owner cleaned it by hand); resolve it, or stop as below.
+
 Serial is the whole point. Two merges into one branch at the same time lose a
 commit or leave the index locked, and both failures are quiet.
 
