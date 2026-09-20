@@ -37,10 +37,22 @@ git -C <feature worktree> merge --no-ff <task branch>
 Serial is the whole point. Two merges into one branch at the same time lose a
 commit or leave the index locked, and both failures are quiet.
 
-**On the first conflict, stop there.** Do not resolve it and do not reach for a
-merge strategy — which behaviour wins is not yours to pick. Do not skip ahead to
-the next branch. Run `git -C <feature worktree> merge --abort` so the tree is
-left usable, then write `BLOCKED.md` in the feature directory the dispatch
+**A conflict where both sides add is not a disagreement.** Two tasks from one
+story each add to the same file — a field each on a config struct, a branch
+each in one function, a row each on a table — and git marks it a conflict
+because the lines touch, not because the behaviours contradict. Both tasks
+passed review against the same story, so the story wants both: keep every
+addition from both sides, in landing order, build and vet, and go on. Three
+such conflicts were posed to the owner as either/or on one night (06, 20
+Sept) and the answer was "both" every time. Stop only when the two sides
+change the same thing to two different values — one says a field is required,
+the other gives it a default; one posts an event where the other says none —
+and then:
+
+**On a true disagreement, stop there.** Do not resolve it and do not reach for
+a merge strategy — which behaviour wins is not yours to pick. Do not skip ahead
+to the next branch. Run `git -C <feature worktree> merge --abort` so the tree
+is left usable, then write `BLOCKED.md` in the feature directory the dispatch
 names:
 
 - first line: `BLOCKED: ` then **one** question, one sentence, in business
