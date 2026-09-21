@@ -224,6 +224,13 @@ const stepFor = (key) => (A.answerStep && typeof A.answerStep === 'object') ? A.
 // --theirs`, rewrote three test files and committed them on the feature
 // branch, where no verifier reads test history (pattern-kept, 15 Sept). A
 // feature-level ruling names its step or reaches nothing.
+// A BLOCKED.md committed on a task branch is met by the FIRST step of that
+// task, whatever step raised it, because a fresh run re-runs every step and
+// each one reads the file. So a ruling on a committed BLOCKED.md is keyed "*"
+// — or the owner deletes the file themselves, recording the ruling in the
+// task's rounds.md, which is the same answer written where the record lives
+// (09, 21 Sept: a ruling keyed to the rework step, then to the red-test step,
+// came straight back twice from the steps before it, two runs spent on it).
 const ANSWER = (key, step) => {
   // "<key>@<step>" answers one step of one key on its own, so a feature can
   // carry a ruling for its merge and another for its practitioner at once
