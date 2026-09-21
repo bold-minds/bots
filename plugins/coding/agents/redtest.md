@@ -70,6 +70,21 @@ unit for a rule, integration for a store or a queue, fitness for a structural
 rule. Say which in tests.md. The Journey is not a task's test: the feature
 verify walks it once every task has merged.
 
+A case that stages a stand-in's answers owns every call that can reach that
+stand-in while it is watching, and tests.md names which calls those are. A
+stand-in that answers per path in arrival order hands its staged answers to
+whatever calls first, so one of ours the case never counted — a second send
+the same work leaves, a retry, a job the case's own text started — takes one
+and the case is green or red by luck of the slot. Either drive it with work
+that makes exactly the calls you staged, or stage by something the call
+carries, never by its turn in a queue. The same holds for counting: a count
+of rows a library has marked running is not a count of work being done, and a
+count of answers handed out on one path is not a count of answers given to
+one customer. Measure what the system itself says it did — the lines it
+printed, the rows it wrote — not a state a library clears on its own
+schedule. (09, 21 Sept: two halts on one task, both of them the instrument
+and neither the product.)
+
 A "Structural rules" section must get a fitness test — one that reads the
 code or the dependency graph and fails if the rule is broken. A tests.md whose
 level column is all `unit` for a task that has one is not finished.
