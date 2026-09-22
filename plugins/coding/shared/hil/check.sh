@@ -209,6 +209,15 @@ check_trd() {
       || say "References item without 'ADR <n>', 'ADR pending' or 'existing, no ADR': ${line}"
   done < <(section References | grep -E '^- ')
 
+  # A proof names something that exists (Claire, 20 Sept 2026: four designs
+  # claimed a "test number" no one had, caught only after they were built).
+  # There is no test phone number and no test email door and never will be;
+  # proof is the unit tests, the integration suite, a local run, or the
+  # owner's own phone on the live number after a deploy.
+  while IFS= read -r line; do
+    say "Solution: a proof that names a stand-in this repo does not have; the routes are the unit tests, the integration suite, a local run, or the owner's phone on the live number after a deploy: ${line}"
+  done < <(section Solution | grep -iE 'test (phone )?number|test email|test inbox|sandbox number|a number of our own for test')
+
   # The review leaves one line — Reviewed: <date> — and nothing else: its
   # findings are folded into the sections, and the owner reads one draft.
   grep -qE '^## Review' "$page" && say "a Review section: the review's findings go into the sections, the trail goes to .claude/pipeline/reviews/, and nothing of it stays on the TRD"

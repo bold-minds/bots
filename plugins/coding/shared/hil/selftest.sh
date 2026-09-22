@@ -61,6 +61,9 @@ expect_fail "trd with a Review section" "a Review section" trd "$tmp/b10.trd.md"
 # trd: a References item with no ADR
 sed 's/^- Hosting: ADR 2$/- Hosting: DigitalOcean/' "$ex/01-text-answered.trd.md" > "$tmp/b6.trd.md"
 expect_fail "trd References without an ADR" "References item without" trd "$tmp/b6.trd.md" --reviewed
+# trd: a proof that names a stand-in the repo does not have (Claire, 20 Sept 2026)
+sed 's|^- Go package pkg/infra/texting$|- proven on the test number, both texts in order|' "$ex/01-text-answered.trd.md" > "$tmp/b11.trd.md"
+expect_fail "trd proof on a test number" "stand-in this repo does not have" trd "$tmp/b11.trd.md" --reviewed
 # trd: a vendor outside Observed/References
 sed 's/^- App: our Go service/- App: our Go service, watched by Datadog,/' "$ex/01-text-answered.trd.md" > "$tmp/b7.trd.md"
 expect_fail "trd vendor outside Observed" "outside Observed and References" trd "$tmp/b7.trd.md" --reviewed
