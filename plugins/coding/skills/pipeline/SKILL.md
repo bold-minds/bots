@@ -10,6 +10,12 @@ Input: an approved story and its approved TRD (`shared/hil/` shapes, both
 checked). This skill owns the Tasks and Building stops; whoever fires it
 relays what it returns.
 
+Nothing is built before the owner signs off: the story and the TRD each
+carry an `Approved: <YYYY-MM-DD>` line before the first run, and the coverage
+table carries one before the `startAt: "tasks"` run that builds. The caller
+writes that line only when the owner approves the doc in chat, in words; the
+run halts on a doc without one, and no answer lifts that halt.
+
 Call the Workflow tool with this script, verbatim, and `args` as a JSON object
 holding: `feature`, `root`, `plugin` (this plugin's root), `featureTree` (the
 worktree sitting on the feature branch), `story` (the approved story's
@@ -257,6 +263,20 @@ const isPassed = (r) => typeof r === 'string' && (/^\s*`?passed`?[.!]?\s*$/i.tes
 const BLOCK_RULE = (where, per = TRIAGE) =>
   `If ${where}/BLOCKED.md is already there and no ruling above names it, the owner has not answered yet: return its first line and change nothing — a resume re-runs every step after the one that changed, this one included. If you must stop per ${per}, write ${where}/BLOCKED.md — first line "BLOCKED: <one plain sentence>", then your best default in one sentence, drawn from the nearest existing thing in this repo and naming it, then what changes if the owner says otherwise — and return that first line as your whole result.`
 const FEATURE_BLOCK = (b, step) => ({ blocked: b, blockedPath: `${dir}/BLOCKED.md`, answerKey: f, answerStep: step, dispatches: tally })
+
+// Nothing is built before the owner has signed off every doc they read: the
+// story and its TRD before the breakdown, and the coverage table as well
+// before a run that builds the tasks (Claire, 22 Sept: "I have to have signed
+// off on each doc before coding begins"). A sign-off is an "Approved: <date>"
+// line, written on the doc when they approve it in chat. No answer lifts this
+// halt; only their sign-off does.
+const SIGNED = [SPEC, TRD, ...(A.startAt === 'tasks' ? [`${dir}/tasks/coverage.md`] : [])]
+count('haiku')
+const signedText = await agent(
+  `${PROBE_ONLY}Read each of these files: ${SIGNED.join(', ')}. Return exactly ${SIGNED.length} lines and nothing else — no prose, no heading, no code fence — one per file, in this order, the path copied exactly: "<path> yes" when the file has a line that is exactly "Approved: " and a date as YYYY-MM-DD, "<path> no" when it has no such line or is not there.`,
+  { agentType: 'coding:breakdown', phase: 'Break down', label: 'sign-off: the owner\'s Approved lines', model: 'haiku' })
+const unsigned = SIGNED.filter(p => !(signedText || '').split('\n').some(l => l.trim() === `${p} yes`))
+if (unsigned.length) return { halted: 'Break down', blocked: `BLOCKED: the owner has not signed off ${unsigned.join(', ')}, and nothing is built before they do.`, blockedPath: null, dispatches: tally }
 
 // A run may start at the tasks. The front half stops at the task list for the
 // owner, and a resume cannot cross sessions, so the run that builds is a new

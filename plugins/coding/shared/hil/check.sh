@@ -99,8 +99,18 @@ vendors_outside() {  # vendors_outside <text> <where> — a vendor named in <tex
   done
 }
 
+# The owner's sign-off: at most one "Approved: <YYYY-MM-DD>" line, written
+# when they approve the doc in chat; the pipeline builds nothing without it.
+signoff() {
+  local n; n="$(grep -cE '^Approved:' "$page" || true)"
+  [ "$n" -le 1 ] || say "$n 'Approved:' lines; one sign-off line at most"
+  grep -E '^Approved:' "$page" | grep -vqE '^Approved: [0-9]{4}-[0-9]{2}-[0-9]{2}$' && say "an 'Approved:' line that is not 'Approved: <YYYY-MM-DD>'"
+  return 0
+}
+
 check_story() {
   head -1 "$page" | grep -qE '^# .+' || say "first line is not the slice title"
+  signoff
   grep -qE '^Shows: .+' "$page" || say "no 'Shows:' line"
   headings_are Journey Scenarios Changelog
   for h in Flow Solution Observed References; do
@@ -134,7 +144,7 @@ check_story() {
   vendors_outside "$(cat "$page")" "on the story (observability lives on the TRD's Observed)"
 
   # Siblings that are TRDs are not stories; skip them.
-  local exempt='^(#|##|Shows:|[[:space:]]*(Given|When) |[[:space:]]*[0-9]+\. \[)'
+  local exempt='^(#|##|Shows:|Approved:|[[:space:]]*(Given|When) |[[:space:]]*[0-9]+\. \[)'
   shared_lines '*.md' "$exempt" "$(cat "$page")" '\.trd\.md$'
   local l; l="$(lines)"
   [ "$l" -le "$CAP_STORY" ] || say "$l lines; the story's cap is $CAP_STORY"
@@ -226,6 +236,8 @@ check_trd() {
   else
     grep -qE '^Reviewed: ' "$page" && say "a 'Reviewed:' line on a TRD that has not been reviewed"
   fi
+  signoff
+  grep -qE '^Approved: ' "$page" && ! grep -qE '^Reviewed: ' "$page" && say "an 'Approved:' line on a TRD that has not been reviewed"
 
   local outside
   outside="$(awk '
@@ -235,7 +247,7 @@ check_trd() {
   ' "$page")"
   vendors_outside "$outside" "outside Observed and References"
 
-  local exempt='^(#|##|Story:|Reviewed:|- None|None new\.|Nothing new is observed\.|None)'
+  local exempt='^(#|##|Story:|Reviewed:|Approved:|- None|None new\.|Nothing new is observed\.|None)'
   local body; body="$(awk '
     /^## Flow/ {skip=1; next}
     /^## / {skip=0}
@@ -249,6 +261,7 @@ check_trd() {
 check_coverage() {
   head -1 "$page" | grep -qE '^# Coverage — .+' || say "first line is not '# Coverage — <feature>'"
   grep -qE '^Story: .+' "$page" || say "no 'Story:' line"
+  signoff
   grep -qE '^\| *Scenario *\| *In the owner.s words' "$page" || say "table header is not '| Scenario | In the owner's words (short) | Task | Where in the task |'"
   grep -qE '^\| *Journey *\|' "$page" || say "no Journey row"
   local rows line n cell

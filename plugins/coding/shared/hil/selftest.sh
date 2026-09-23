@@ -64,6 +64,17 @@ expect_fail "trd References without an ADR" "References item without" trd "$tmp/
 # trd: a proof that names a stand-in the repo does not have (Claire, 20 Sept 2026)
 sed 's|^- Go package pkg/infra/texting$|- proven on the test number, both texts in order|' "$ex/01-text-answered.trd.md" > "$tmp/b11.trd.md"
 expect_fail "trd proof on a test number" "stand-in this repo does not have" trd "$tmp/b11.trd.md" --reviewed
+# sign-off: a reviewed TRD and a story carry one dated Approved line (Claire, 22 Sept 2026)
+# The passing copies sit apart, since a copy shares every line with its original.
+signed="$tmp/signed"; mkdir -p "$signed"; cp "$ex/01-text-answered.md" "$signed/"
+sed 's/^Reviewed: 2026-09-13$/Reviewed: 2026-09-13\nApproved: 2026-09-14/' "$ex/01-text-answered.trd.md" > "$signed/s1.trd.md"
+expect_pass "trd signed off" trd "$signed/s1.trd.md" --reviewed
+sed 's/^Reviewed: 2026-09-13$/Reviewed: 2026-09-13\nApproved: yes/' "$ex/01-text-answered.trd.md" > "$tmp/s2.trd.md"
+expect_fail "trd sign-off with no date" "not 'Approved: <YYYY-MM-DD>'" trd "$tmp/s2.trd.md" --reviewed
+sed 's/^Story: 02-stranger-texts.md$/Story: 02-stranger-texts.md\nApproved: 2026-09-14/' "$ex/02-stranger-texts.trd.md" > "$tmp/s3.trd.md"
+expect_fail "trd signed off before its review" "has not been reviewed" trd "$tmp/s3.trd.md"
+sed 's/^Shows: \(.*\)$/Shows: \1\nApproved: 2026-09-14/' "$ex/02-stranger-texts.md" > "$signed/s4.md"
+expect_pass "story signed off" story "$signed/s4.md"
 # trd: a vendor outside Observed/References
 sed 's/^- App: our Go service/- App: our Go service, watched by Datadog,/' "$ex/01-text-answered.trd.md" > "$tmp/b7.trd.md"
 expect_fail "trd vendor outside Observed" "outside Observed and References" trd "$tmp/b7.trd.md" --reviewed
