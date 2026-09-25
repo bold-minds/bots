@@ -22,9 +22,10 @@ Your job is to break the table, not to praise it. Report numbered findings,
 each with its evidence — a file:line, a scenario number, a scenario's words:
 
 - **A. Missing rows.** A case the scenarios require that has no row. Every
-  enumeration the scenarios or the code carry needs its own rows: every
+  enumeration the scenarios or the code carry needs its cases named: every
   setting read, every way an input can be bad, every field an answer carries,
-  every line a step logs, every message a customer can be sent. And the
+  every line a step logs, every message a customer can be sent — a row each,
+  or one row with a subtest named per case where they share a Then. And the
   reverse: a row no scenario on the story stands behind is a row to strike —
   the story is the whitelist.
 - **B. Untestable rows.** A "Then" no test could check as written: vague,
