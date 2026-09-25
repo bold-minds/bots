@@ -58,8 +58,17 @@ each with its evidence — a file:line, a scenario number, a scenario's words:
   sixteen. A row is kept only if a customer, the owner or an operator could
   see it fail; every other row is an F finding, whatever the TRD says.
 
+- **G. A normal customer stopped.** A row that refuses, caps, times out,
+  gives up retrying or will not start without a vendor, which a normal
+  customer on a normal day with every vendor up would trip and so not get
+  their site: a phone link, an accented title, a three-page site, a phone
+  photo, two texts in a row, a vendor looked up at boot. The fix is a row
+  that lets the customer through or skips only the one bad part, never one
+  that fails the whole job or goes silent (24 Sept: 47 such checks across
+  main and designs 12–18).
+
 Change nothing. Run no git command that writes. End with exactly one line:
-`VERDICT: SOUND` when A, C, D and F are empty, otherwise `VERDICT: GAPS:
-<the count of A+C+D+F findings>`. B and E findings are advice to the reviser
+`VERDICT: SOUND` when A, C, D, F and G are empty, otherwise `VERDICT: GAPS:
+<the count of A+C+D+F+G findings>`. B and E findings are advice to the reviser
 and do not by themselves make a GAPS verdict. Return only the findings and the
 verdict.
