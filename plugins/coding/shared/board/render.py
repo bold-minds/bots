@@ -6,8 +6,9 @@ The release file is the board. Its shape:
     # <title>
     Launch: <YYYY-MM-DD>
     Board: <artifact url>
-    Beta: <nn>–<nn>                                                 optional: the stories in the beta cut; each card
-                                                                    carries a beta or v1 tag top left (Claire, 19 Sept)
+    Beta: <nn>–<nn>[ except <nn>, <nn>]                             optional: the stories in the beta cut; each card
+                                                                    carries a beta or v1 tag top left (Claire, 19 Sept);
+                                                                    an excepted story is v1 (Claire, 27 Sept: 10)
 
     <nn> <stop> <state> <YYYY-MM-DD> — <sentence>. <sentence>.     one card line per story
     Next: <nn> — <title of the story not yet written>                optional, one
@@ -38,8 +39,8 @@ def main(path):
     beta_line = next((l.split(":", 1)[1].strip() for l in text if l.startswith("Beta:")), "")
     beta = set()
     if beta_line:
-        m = re.match(r"^(\d{2})\s*[–-]\s*(\d{2})$", beta_line) or die("Beta: is '<nn>–<nn>'")
-        beta = {f"{i:02d}" for i in range(int(m.group(1)), int(m.group(2)) + 1)}
+        m = re.match(r"^(\d{2})\s*[–-]\s*(\d{2})(?:\s+except\s+(\d{2}(?:\s*,\s*\d{2})*))?$", beta_line) or die("Beta: is '<nn>–<nn>[ except <nn>, <nn>]'")
+        beta = {f"{i:02d}" for i in range(int(m.group(1)), int(m.group(2)) + 1)} - set(re.findall(r"\d{2}", m.group(3) or ""))
     def tag(nn):
         if not beta_line: return ""
         return '<span class="tag beta">beta</span>' if nn in beta else '<span class="tag v1">v1</span>'
