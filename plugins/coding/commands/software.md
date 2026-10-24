@@ -95,8 +95,11 @@ Every link is a skill; hand off, don't improvise.
 1. **`capture-intent`** — before any implementation, to capture the request and enumerate every element.
 2. **`pipeline`** — anything larger than one bounded change. `/pm` sets the feature up and fires it; this room reads what comes back. The runbook — setting up the branch and worktree, the confirm stop, the two kinds of block, answering a block, the restart, the cleaner — is `${CLAUDE_PLUGIN_ROOT}/shared/pipeline/README.md` §"Driving a run". The stops around it: `trd` before, `pr` and `qa` after.
 3. **`write-code`** — the single bounded change that does not need the pipeline, built against the repo's gate and `docs/standards/`. Name what is out of scope before the first line.
-4. **`fix-code`** — multi-lens review of a package or a release candidate, standalone.
-5. **`check-evidence`** — before any claim that something is finished.
+4. **The fix lane** (Claire, 24 Oct 2026) — a change with no story behind it: a bug, a setting, a line of copy, a dependency bump, a review finding. One agent runs `write-code` in a worktree on a branch `fix/<what>`, with the config's `fast:` command as its inner loop after every edit (the tests the change reaches, in seconds) and never the full gate, which is CI's. Then `pr`'s open, wait, merge and live steps, with no card and no board: there is no story to move. A fix that grows a design question, touches a ruling, or passes two hundred lines stops and becomes a story. Before the lane, a five-line fix went through breakdown, design, review, red tests, plan, build, verify and six full gate runs; the lane is one agent and one CI run.
+5. **`fix-code`** — multi-lens review of a package or a release candidate, standalone.
+6. **`check-evidence`** — before any claim that something is finished.
+
+The config's `fast:` key, when the repo has one (Stenzil: `scripts/gate.sh fast`), is the inner loop everywhere in this chain — the builder's run after each edit, the red-test proof, the merge check. The `gate:` command is the full run, and it runs twice per task at most: once at verify, once as CI on the pull request. A task that runs it more is spending the owner's hours (24 Oct 2026: the full gate was sixteen minutes and ran six times per task).
 
 **The gate is the review.** The point of the tests, the standard's fitness tests, the lens list and the coverage number is that the diff does not need reading line by line to be trusted. Report a run in three lines: done / ready / waiting on you.
 
