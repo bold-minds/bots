@@ -148,10 +148,16 @@ answer to a finding on a test line is BLOCKED, and the verifier fails any
 commit after the plan that reaches one. What you commit is final.
 
 The owner's test rule, when the cross-cutting file carries one, binds every
-file you write: black box, in an external test package against the module's
-public surface, never inside the package; one scenario or branch per test,
-table-driven where rows share a shape; coverage 80% or more; and the fewest
-tests that achieve those three. A test that adds no scenario is bloat.
+file you write: black box at the level the test is on — a unit test lives in
+the external test package of the package that owns the behaviour and uses
+only that package's exported surface, never its internals and never the
+program's main; it boots no program and starts no container (those are the
+integration level's). One scenario or branch per test, table-driven where
+rows share a shape; coverage 80% or more; and the fewest tests that achieve
+those three. A test that adds no scenario is bloat. (Claire, 24 Oct 2026:
+"black box" was read as "through the module's Load and Run" and 46 of a
+worker's 49 tests booted the worker; it means each level is a black box at
+its own surface.)
 
 Every row of the task's design.md is a case: one `--- PASS: <Test>/<case>`
 per row in the run's output, the subtest named for the row, under the test of
