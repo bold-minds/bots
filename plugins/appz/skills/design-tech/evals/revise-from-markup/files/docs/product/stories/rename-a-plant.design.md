@@ -16,9 +16,9 @@ Story: rename-a-plant.md
 - `github.com/go-playground/validator/v10`: picked v10.22.1, newest v10.22.1; checks the name's length. (2)
 
 ## PRs
-1. Skeleton: CI is already in .github/workflows/ci.yml; a stub `web.RenamePlant` and a stub rename field on plant.html. Stub contract: PATCH /plants/{id} takes form field `name`; returns 200 with the name sent, 400 with the refusal text when name is "bad", 404 "That plant is gone" when id is 0. (1, 2, 3)
-2. Front end: the rename field on plant.html, the new heading after a rename, and the refusal message, against the stub. (1, 2, 3)
-3. Back end and data: `plants.Store.Rename`, `plants.ValidName` with the validator library, and the real `web.RenamePlant`. (1, 2, 3)
+Estimates, tests included: front end 180 lines, back end 340, infra 0 (CI is already in .github/workflows/ci.yml). The whole story is over the 400-line limit, so it is cut in two.
+1. Front end, about 180 lines: the rename field on plant.html, the new heading after a rename, and the refusal message, built against a stubbed `web.RenamePlant`. Stub contract: PATCH /plants/{id} takes form field `name`; returns 200 with the name sent, 400 with the refusal text when name is "bad", 404 "That plant is gone" when id is 0. (1, 2, 3)
+2. Back end and infra, about 340 lines: `plants.Store.Rename`, `plants.ValidName` with the validator library, and the real `web.RenamePlant`. (1, 2, 3)
 
 ## Tests
 - plants (package plants_test): Rename changes the name and Get returns it (1); Rename on a missing id returns ErrNotFound (3); ValidName refuses "" and a 41-character name and takes a 40-character one (2).

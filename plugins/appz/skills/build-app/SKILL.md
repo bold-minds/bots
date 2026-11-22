@@ -30,7 +30,7 @@ Each step runs in one subagent, on the model and effort named here.
 2. `appz:plan-milestones`: Sonnet, medium. Per app.
 3. `appz:write-stories`: Sonnet, high. Per milestone.
 4. `appz:design-tech`: Opus, high. Per story.
-5. `appz:build-story`: Sonnet, high. Per story.
+5. `appz:build-story`: Sonnet, high. Per PR the story's design lists.
 6. `appz:verify-story`: Sonnet, medium. Per story.
 7. `appz:open-pr`: Haiku, low. Per story.
 8. `appz:ship-milestone`: Sonnet, medium. Per milestone.
@@ -49,7 +49,7 @@ The plan cuts the requirements into milestones. Steps 1 and 2 run once for the a
 3. When asked where the build stands or what's next, return from the build state the current milestone, each story's step and status, and what waits on the caller, and this skill's Think answers apart from it, as with every return. Then stop.
 4. Load the step's skill, and any installed skill for that kind of work.
 5. Update the build state when a step starts and when it ends: the step, the story, its status, and what it produced. When a step ends, append one record to the build log: the step, the story, the Think answers its subagent returned, and this skill's own Think answers for that step, one line per question.
-6. Brief one subagent per step, on the model and effort `## Steps` names for it: only the inputs its step skill's `## In` lists, the skills to follow (including `skillz:settle-question`), where its skill says to write, and to return its Think answers apart from the work. Start independent steps at the same time: steps for different stories in a milestone can run side by side, and so can the parts of one story's build once its skeleton is in. Leave each step's work to its subagent. If a subagent returns that an input is missing, return that to the caller with what it must contain.
+6. Brief one subagent per step, on the model and effort `## Steps` names for it: only the inputs its step skill's `## In` lists, the skills to follow (including `skillz:settle-question`), where its skill says to write, and to return its Think answers apart from the work. Start independent steps at the same time: steps for different stories in a milestone can run side by side, and so can a story's PRs once the PR they build on is in. Leave each step's work to its subagent. If a subagent returns that an input is missing, return that to the caller with what it must contain.
 7. Run `skillz:check-work` at each handoff between steps, with the step's Think answers. Send the misses back to the step's subagent to fix once, check once more, and return any misses still left to the caller with the work, instead of looping.
 8. Return to the caller each question `skillz:settle-question` returns with its pick, and each draft that needs approval, such as write-requirements' draft. Return this skill's Think answers apart from them, as with every return. Stop work that depends on the answers; the next run picks up from the build state.
 9. Go to the next step that doesn't wait on the caller.

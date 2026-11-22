@@ -4,7 +4,8 @@ expected_outcome: |
   docs/product/stories/rename-a-plant.design.md is revised in place from review/markup.md. plants.Store.Rename is
   gone everywhere and the existing plants.Store.Update is used instead; the validator library is gone and ValidName
   checks the length by hand. Every line the markup doesn't touch is kept as it was: the Schema, routes, commands and
-  events section, PR 1, PR 2, the web.RenamePlant and plant.html lines and the web tests line. Nothing new is added.
+  events section, PR 1 (front end with its stub contract), the plant.html line (the web.RenamePlant line may change to name Update)
+  and the web tests line. PR 2 (back end and infra) changes only where the markup touches it. Nothing new is added.
   The revision is returned as a draft for approval with the Think answers apart.
 context:
   scaffold_script: place-files.sh

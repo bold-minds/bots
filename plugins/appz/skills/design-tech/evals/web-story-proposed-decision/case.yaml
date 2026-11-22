@@ -4,8 +4,9 @@ expected_outcome: |
   docs/product/stories/log-a-watering.design.md is written beside the story and returned as a draft for approval.
   It adds a waterings table as a new numbered migration and the POST /plants/{id}/waterings route, and reuses the
   existing plants.Store, SQLite and CI. The proposed htmx decision comes back as a question with a pick and is not
-  taken as a default. PR 1 holds CI, a stub front end and a stub back end with the stub's contract; PR 2 the front
-  end against the stub; PR 3 the back end and data. Tests are at each package's exported surface, each part names
+  taken as a default. With the prompt's limit of 200 changed lines per PR, the story is cut front end | back end with
+  data and infra, each PR with its estimate, the front end built against a stubbed back end with the stub's contract.
+  Tests are at each package's exported surface, each part names
   the scenarios it serves, and the Think answers come back apart from the design. No code is written.
 context:
   scaffold_script: place-files.sh
