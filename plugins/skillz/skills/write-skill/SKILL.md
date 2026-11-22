@@ -36,5 +36,5 @@ description: Write, revise, split or review a skill as a function, inputs in and
    - A question that needs deciding goes back to the caller, with a pick. So does anything that needs approval: the skill returns its work, and what follows approval is the caller's to do.
 6. Write `## Think`: the questions the model asks itself. They stay out of the work.
 7. Write `## Act`: short imperative steps, in order. Say what to do. Add a why only where a step would be misread without it. For each subagent the skill starts, name the smallest model and effort that does the job well, and the inputs it gets. Start independent steps at the same time.
-8. Run `skillz:check-work` against `skill-creator` and this skill, with this skill's Think answers; it starts its own fresh subagent. Fix what it finds.
+8. Run `skillz:check-work` against `skill-creator` and this skill, with this skill's Think answers; it starts its own fresh subagent. Fix the misses once, re-check once, and return any misses still left to the caller with the skill, instead of looping.
 9. Return the skill, and this skill's Think answers apart from it, to the caller.
