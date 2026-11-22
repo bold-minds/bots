@@ -22,7 +22,7 @@ description: Check work against the skill or skills it followed, from a fresh su
 ## Act
 1. Check the inputs against `## In`: each skill's full text, the work itself, whole, and the Think-answers record. If one is missing or falls short, return to the caller exactly which one is needed and what it lacks.
 2. Start one fresh subagent on Sonnet at medium effort. Give it only the skill's text, the work and the Think-answers record, so it judges the work and the answers against the skill and not against the reasoning that made them.
-3. Have it list every place the work doesn't follow the skill, and check that every Think question of the skill has an answer in the record and that the work matches each answer. A missing answer, or work that contradicts its answer, is a miss.
+3. Have it list every place the work doesn't follow the skill, and check that every Think question of the skill has an answer in the record and that the work matches each answer. Be skeptical: where an answer says the skill did something, such as cutting lines, confirm the work shows it was done. A missing answer, or work that doesn't match its answer, is a miss.
 4. Drop any listed miss the skill doesn't actually ask for.
 5. Fix every remaining miss before the work is handed on. Where a fix needs deciding, return it to the caller with a pick.
 6. Return the list of misses and the fixed work to the caller, and the Think answers apart from them.
