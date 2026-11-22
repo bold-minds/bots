@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-The returned list does not include the --timeout bullet, which now starts with 'Added'
+The reply does not return the --timeout bullet, which now starts with 'Added', as a miss still open (naming it as fixed is fine)

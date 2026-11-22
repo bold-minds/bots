@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-The returned list holds exactly one miss
+The reply returns exactly one miss still open (misses it names as fixed don't count)
