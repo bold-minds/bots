@@ -12,7 +12,7 @@ description: Take an app's design to shipped code by running each delivery step 
 - A folder for the build's own files: one the build can read and write.
 - The build state: the current milestone, each story's current step and its status, and what each step produced. On the first run there is none.
 - The caller's answers and approvals since the last run. May be empty.
-- The skills the build runs: the step skills named in `## Steps`, `skillz:check-work` and `skillz:settle-question`.
+- The skills the build runs: the step skills named in `## Steps`, `appz:design-app`, `skillz:check-work` and `skillz:settle-question`.
 
 ## Out
 - The shipped app in the repo, milestone by milestone.
@@ -44,7 +44,7 @@ The plan cuts the requirements into milestones. Steps 1 and 2 run once for the a
 - Does anything need the caller?
 
 ## Act
-1. Check every input against `## In` before anything else. If the repo or the build folder is missing, return to the caller which one, and that it must be a place the build can read and write. If a skill from `## In` isn't installed, first record the caller's answers and approvals in the build state, so a return doesn't lose them, then return to the caller each one that is missing and the work it must do. If what people said is missing or falls short, return to the caller exactly what to provide and what it must contain. If there is no design and no interface already running, live or in code, run `appz:design-app`, or, if it isn't installed, return to the caller exactly what to provide and what it must contain; otherwise read the interface from what runs. Once the other inputs pass, read the build state for the current milestone, each story's step, and what each step produced; if there is none yet, create it. If it is there but doesn't hold those, return to the caller what it lacks.
+1. If there is no build state, create it empty before recording anything. Check every input against `## In` before anything else. If the repo or the build folder is missing, return to the caller which one, and that it must be a place the build can read and write. If a skill from `## In` isn't installed, first record the caller's answers and approvals in the build state, so a return doesn't lose them, then return to the caller each one that is missing and the work it must do. If what people said is missing or falls short, return to the caller exactly what to provide and what it must contain. If there is no design and no interface already running, live or in code, run `appz:design-app`, or, if it isn't installed, return to the caller exactly what to provide and what it must contain; otherwise read the interface from what runs. Once the other inputs pass, read the build state for the current milestone, each story's step, and what each step produced. If it doesn't hold those, return to the caller what it lacks.
 2. Record the caller's answers and approvals in the build state; step 1 does this before any return it makes for a missing skill. When they approve the requirements draft, move it to the repo's requirements file. This run carries the approval; build-app never waits for it.
 3. When asked where the build stands or what's next, return from the build state the current milestone, each story's step and status, and what waits on the caller, and this skill's Think answers apart from it, as with every return. Then stop.
 4. Load the step's skill, and any installed skill for that kind of work.

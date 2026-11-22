@@ -17,8 +17,8 @@ Design: design/screens/rename-list.md
 5. TL-1: Saving a name another of their lists already has keeps the old name and tells the person that name is taken.
 6. TL-1: Saving the name the list already has changes nothing and shows no error.
 
-## Changelog
-- Approved.
-
 Defaults taken:
 - TL-2: the name limit is 40 characters (no source gave a number).
+
+## Changelog
+- Approved.

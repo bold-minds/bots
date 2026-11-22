@@ -42,6 +42,7 @@ description: Turn requirements into one story per action someone or something ta
    - For each thing that will obviously go wrong, write a scenario saying what they see and what to do (for example, sign in, or wait for the reset).
    - Where several causes lead to the same trouble, write one broad rule, in the words people used.
    - Account for the other stories that affect this one, keeping the story self-contained.
+   - Where it behaves differently the first time, the next time, or after closing, restarting or another change, write a scenario for each difference.
    - Over about ten scenarios, if it is no longer one action, split it into stories.
 10. `Defaults taken:` after `## Scenarios`, before `## Changelog`, if any.
 11. `## Changelog`: empty until approved.

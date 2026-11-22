@@ -31,7 +31,7 @@ description: Turn what people said the app should do and the design of what's be
 3. When revising, apply the caller's answers to the current draft and keep each requirement's id: stories point to them.
 4. Settle questions with `skillz:settle-question`. Write in what the sources settle. Mark each default.
 5. Group the requirements into sections by area, named in the vocabulary people used. Use technical terms only where people did.
-6. Write each requirement as `**A1. <one plain sentence in the terms people used>.**`, then, where a person said it, `Said: "<shortest quote>" (<date, time>)`. Where it comes from the design and not from what a person said, write `From: <link or path to that part of the design>` instead. The bold sentence says what its quote says, so `skillz:check-work` can confirm each sentence against its quote.
+6. Write each requirement as `**A1. <one plain sentence in the terms people used>.**`, then, where a person said it, `Said: "<shortest quote>" (<date, time>)`. Where it comes from the design and not from what a person said, write `From: <link or path to that part of the design>` instead. The bold sentence says what its quote says, so each sentence can be confirmed against its quote.
 7. End a line added by AI with ` *`. Give its reason in a short list at the bottom.
 8. Add a short list of the defaults taken.
 9. Return to the caller where the draft is, the ` *` lines with their reasons, the defaults taken, and the questions from step 4, each with its pick, and the Think answers apart from them. Not the whole draft.
