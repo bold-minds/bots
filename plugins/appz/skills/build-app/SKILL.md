@@ -10,29 +10,31 @@ description: Take an app's designs to shipped code by running each delivery step
 - The app's design boards: every screen the app shows, as drawn, each at a link a story can point to.
 - The app's design doc: what the screens do, and the rules, numbers and limits behind them.
 - The app's repo: where the code and the approved requirements go.
-- A folder for the build's own files: where `data/build-state.json`, `data/build-log.jsonl` and drafts go.
+- A folder for the build's own files: one the build can read and write.
 - The build's state: the current chunk, each story's current step and its status, and what each step produced. On the first run there is none.
 - The caller's answers and approvals since the last run. May be empty.
 - The skills the build runs: the step skills named in `## Steps`, `skillz:check-work` and `skillz:settle-question`.
 
 ## Out
-- The shipped app, chunk by chunk.
+- The shipped app in the repo, chunk by chunk.
 - The approved requirements file at the repo's `docs/product/requirements.md` by default, or where the caller says.
 - The build's state at `data/build-state.json` in the build folder, current after every step.
 - The build log at `data/build-log.jsonl` in the build folder: one record per step, holding that step's Think answers and this skill's own for that step.
 - Where the build stands, when asked: the current chunk, each story's step and status, and what waits on the caller.
 - The questions, each with its pick, and the drafts that need approval, returned to the caller.
+- This skill's Think answers, one line per question, each saying what it led the skill to do: kept in the build log and returned to the caller with each return.
+- That the app is done, when the last chunk ships.
 
 ## Steps
 Each step runs in one subagent, on the model and effort named here.
-1. write-requirements: Opus, high. Per app.
-2. plan-chunks: Sonnet, medium. Per app.
-3. write-stories: Sonnet, high. Per chunk.
-4. design-tech: Opus, high. Per story.
-5. build-story: Sonnet, high. Per story.
-6. verify-story: Sonnet, medium. Per story.
-7. open-pr: Haiku, low. Per story.
-8. ship-chunk: Sonnet, medium. Per chunk.
+1. `appz:write-requirements`: Opus, high. Per app.
+2. `appz:plan-chunks`: Sonnet, medium. Per app.
+3. `appz:write-stories`: Sonnet, high. Per chunk.
+4. `appz:design-tech`: Opus, high. Per story.
+5. `appz:build-story`: Sonnet, high. Per story.
+6. `appz:verify-story`: Sonnet, medium. Per story.
+7. `appz:open-pr`: Haiku, low. Per story.
+8. `appz:ship-chunk`: Sonnet, medium. Per chunk.
 
 The plan cuts the requirements into chunks. Steps 1 and 2 run once for the app. For each chunk, step 3 runs, then steps 4 to 7 run for each of its stories, then step 8 runs; the next chunk starts at step 3.
 
@@ -47,9 +49,9 @@ The plan cuts the requirements into chunks. Steps 1 and 2 run once for the app. 
 2. Record the caller's answers and approvals in the build state. When they approve the requirements draft, move it from the build folder's `data/requirements.md` to the repo's `docs/product/requirements.md` by default, or where the caller says. This run carries the approval; build-app never waits for it.
 3. When asked where the build stands or what's next, return from the state file the current chunk, each story's step and status, and what waits on the caller. Then stop.
 4. Load the step's skill, and any installed skill for that kind of work.
-5. Brief one subagent per step, on the model and effort `## Steps` names for it: the inputs, the skills to follow (including `skillz:settle-question`), where its skill says to write, and to return its Think answers apart from the work. Start independent steps at the same time: steps for different stories in a chunk can run side by side, and so can the parts of one story's build once its skeleton is in. Leave each step's work to its subagent.
+5. Brief one subagent per step, on the model and effort `## Steps` names for it: only the inputs its step skill's `## In` lists, the skills to follow (including `skillz:settle-question`), where its skill says to write, and to return its Think answers apart from the work. Start independent steps at the same time: steps for different stories in a chunk can run side by side, and so can the parts of one story's build once its skeleton is in. Leave each step's work to its subagent.
 6. Run `skillz:check-work` at each handoff between steps, with the step's Think answers. Send any misses back to the step's subagent to fix, then check again.
-7. Return to the caller each question `skillz:settle-question` returns with its pick, and each draft that needs approval, such as write-requirements' draft.
-8. Update `build-state.json` when a step starts and when it ends: the step, the story, its status, and what it produced. When a step ends, append one record to `build-log.jsonl`: the step, the story, the Think answers its subagent returned, and this skill's own Think answers for that step, one line per question.
+7. Return to the caller each question `skillz:settle-question` returns with its pick, and each draft that needs approval, such as write-requirements' draft. Return this skill's Think answers apart from them, as with every return.
+8. Update the build state when a step starts and when it ends: the step, the story, its status, and what it produced. When a step ends, append one record to the build log: the step, the story, the Think answers its subagent returned, and this skill's own Think answers for that step, one line per question.
 9. Go to the next step. After ship-chunk, start the next chunk at write-stories.
 10. When the last chunk ships, return to the caller that the app is done.
