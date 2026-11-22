@@ -20,7 +20,7 @@ description: Check work against the skill or skills it followed, from a fresh su
 - Does the work break a line the skill states, or is the miss something the skill doesn't say?
 
 ## Act
-1. Check the inputs against `## In`: each skill's full text, the work itself, whole, and the work's Think-answers record. If one is missing or falls short, return to the caller exactly which one is needed and what it lacks.
+1. Check the inputs against `## In`: each skill's full text, the work itself, whole, and the work's Think-answers record. If one is missing or falls short, return to the caller exactly which one is needed and what it must contain.
 2. Start one fresh subagent on Sonnet at medium effort. If a fresh subagent can't be started, return that to the caller and check nothing yourself. Give it only the skill's text, the work and the work's Think-answers record (on a re-check, also the earlier misses and what changed), so it judges the work and the answers against the skill and not against the reasoning that made them.
 3. Set what the checker returns:
    - On a re-check, have it check only the earlier misses and the lines changed to fix them. For each earlier miss, have it find the place in the work as it stands now and quote the line, or name the text it searched for that is no longer there, before calling the miss fixed; what the checker or the fixer says doesn't count.

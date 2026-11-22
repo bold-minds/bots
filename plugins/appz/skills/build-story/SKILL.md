@@ -32,10 +32,10 @@ Returned to the caller:
 2. Read the design's `## PRs` entry for this PR: what it holds, which PR it builds on, and the stub's contract when the design is split. Read its `## Tests` for this PR's tests, and the scenarios each serves.
 3. Throughout the build, when the work needs any line of the design changed (a package, function, schema, route, command, event, library, or the stub's contract), settle it with `skillz:settle-question` and return it to the caller as a question with its pick. Stop the work that depends on it, and go on with the rest. Below that level, decide yourself.
 4. Make the PR's branch in its own git worktree: from the main branch for the first PR, from the branch of the PR it builds on otherwise.
-5. Write the tests `## Tests` lists for this PR, each at its package's exported surface, each package a black box at its own surface. Run them and see each one fail.
+5. Write the tests `## Tests` lists for this PR, each at its package's exported surface, each package a black box at its own surface. Run them and see each one fail. A test the stub already passes counts once it fails with the stub's behaviour removed.
 6. If the repo has no CI or gate and this PR holds the infra, add them, with a Taskfile (`Taskfile.yml`) as the task runner.
 7. Write the code until the tests pass. When the design is split, build the front end against the stubbed back end, to the stub's contract; in the back-end PR, replace the stub with the real back end. Run the gate's fast checks (such as build, lint and the tests of the packages touched) while working.
-8. Commit locally. Never push; opening the PR is a separate step.
-9. Run the full gate once, at the end, and time it. At the same time, count the lines this PR changes against the branch it was cut from: code lines and test lines apart, config files left out.
-10. Evaluate the work against each `## Think` question, and fix what fails one. Answer each in one line that says what it led you to change, or that nothing changed.
+8. Evaluate the work against each `## Think` question, and fix what fails one. Answer each in one line that says what it led you to change, or that nothing changed.
+9. Commit locally. Never push; opening the PR is a separate step.
+10. Run the full gate once, at the end, and time it. At the same time, count the lines this PR changes against the branch it was cut from: code lines and test lines apart, config files left out.
 11. Return to the caller the branch and worktree, its commits, the gate result and how long it took, the line counts, each question with its pick, and the Think answers apart from the work.
