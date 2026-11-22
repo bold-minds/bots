@@ -32,7 +32,8 @@ description: Cut approved requirements into chunks that each leave the software 
 3. Cut the requirements into chunks that each leave the app working and let people do more than the chunk before.
 4. Put the part everything else is made or reached through first, and a part after the parts it needs. Where nothing forces the order, put first what the app is for, then what lets it act, then what keeps real work from stalling or data from piling up, then the rest. Write each such choice as a default with its reason.
 5. Place each requirement in one chunk. An id that names several parts sits in the chunk that makes it true for all of them; earlier chunks build the part they need. A standing rule sits where it first applies, and every later chunk keeps it.
-6. Leave out what people called later or only a thought. List each under `Not in any chunk yet` with its id and what they said.7. When revising, apply the caller's answers to the current chunks and keep each chunk's number and requirement ids that the answers don't touch: stories point to them. When an answer moves a chunk, say so.
+6. Leave out what people called later or only a thought. List each under `Not in any chunk yet` with its id and what they said.
+7. When revising, apply the caller's answers to the current chunks and keep each chunk's number and requirement ids that the answers don't touch: stories point to them. When an answer moves a chunk, say so.
 8. Settle questions with `skillz:settle-question`. Write in what the sources settle. Mark each default. Return only what's left, each with its pick.
 9. Write each chunk as `## Chunk N: <name in the terms people used>`, then:
    - `After it, <who> can: <what they can do now>`, using the interface's own words.
