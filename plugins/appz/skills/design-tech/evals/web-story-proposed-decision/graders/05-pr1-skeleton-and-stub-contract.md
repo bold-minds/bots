@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-PR 1 holds CI, a stub front end and a stub back end, and states the stub's contract for POST /plants/{id}/waterings: what it takes and what it returns, including the 201 body and the 404 "That plant is gone".
+PR 1 holds CI (keeping the existing workflow counts), a stub front end and a stub back end (a part that answers fixed values counts as a stub, whether or not it is called one), and states the stub's contract: what each stubbed call takes and returns. The stubbed calls may be POST /plants/{id}/waterings, the plants.Store watering methods, or both.

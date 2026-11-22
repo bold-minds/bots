@@ -29,7 +29,7 @@ description: Write and evaluate the technical design of one story, before any of
 3. Read the repo's code for what the story can reuse, and its decisions. Take the approved decisions as they are. Return a decision the repo marks proposed as a question via `skillz:settle-question`, never as a default.
 4. Settle the other questions with `skillz:settle-question`. Write in what the sources settle. Mark each default. Return only what's left, each with its pick.
 5. Write the design on one page, under these headings.
-   - `## Packages and functions`: each package and function it adds or changes, each with the scenario numbers it serves.
+   - `## Packages and functions`: each package and function it adds or changes, wiring included, each with the scenario numbers it serves.
    - `## Schema, routes, commands and events`: each it adds or changes, each with the scenario numbers it serves.
    - `## Libraries`: each, with the version picked, the newest available, and why.
    - `## PRs`:
@@ -39,5 +39,5 @@ description: Write and evaluate the technical design of one story, before any of
      Where a PR has nothing to hold for this kind of interface, say so in one line.
    - `## Tests`: for each package, the tests at its exported surface, each package a black box at that surface, each test with the scenario numbers it serves.
    - `Defaults taken:`, if any.
-6. Evaluate the design against each `## Think` question, and change any part that fails one. When revising, evaluate only the parts the markup changed.
+6. Evaluate the design against each `## Think` question, and change any part that fails one. Answer each question in one line that says what it led you to change, or that nothing changed. When revising, evaluate only the parts the markup changed.
 7. Write the design as `<story>.design.md` beside the story. Return where it is, as a draft for approval, each question with its pick, and the Think answers apart from it.
