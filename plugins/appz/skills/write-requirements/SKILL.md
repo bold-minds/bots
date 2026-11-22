@@ -1,6 +1,6 @@
 ---
 name: write-requirements
-description: Turn what people said the app should do and the design of what's being built into a draft of the app's requirements file, returned to the caller with its open questions. Use when `appz:build-app` runs its first step, and whenever an app's requirements are drafted.
+description: Turn what people said the app should do and the design of what's being built into a draft of the app's requirements file, returned to the caller with its open questions. Use whenever an app's requirements are drafted or revised.
 ---
 
 # Write requirements

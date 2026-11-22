@@ -8,7 +8,7 @@ Building apps from their designs. "App" means any software people or code use: a
 
 - `build-app` - take an app's design to shipped code by running each delivery step in order, one subagent per step.
 - `write-requirements` - turn what people said the app should do, and its design, into a draft requirements file for the caller.
-- `plan-chunks` - cut the approved requirements into chunks that each leave the app working and able to do more, in an order.
+- `plan-milestones` - cut the approved requirements into milestones that each leave the app working and able to do more, in an order.
 - `write-stories` - turn requirements into one story per action someone or something takes through the interface.
 
 `build-app` also refers to `appz:design-app`, which is not part of this plugin yet.

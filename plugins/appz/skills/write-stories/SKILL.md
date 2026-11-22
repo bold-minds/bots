@@ -1,12 +1,12 @@
 ---
 name: write-stories
-description: Turn requirements into one story per action someone or something takes through the interface. Use when drafting or revising a chunk's stories.
+description: Turn requirements into one story per action someone or something takes through the interface. Use when drafting or revising a milestone's stories.
 ---
 
 # Write stories
 
 ## In
-- The requirements the chunk's stories build: each with its id, in the terms people used, with lines added by AI marked ` *`.
+- The requirements the milestone's stories build: each with its id, in the terms people used, with lines added by AI marked ` *`.
 - What people said the app should do, in their own wording, in the order it was said. What people said is marked apart from anything AI added.
 - The design of what's being built, for the parts those stories touch: the interface, in whatever form people or code use it (screens, endpoints, commands, functions), each part at a link or path a story can point to, and the rules, numbers and limits behind it. An interface that already runs, live or in code, counts.
 - A folder it can write the stories in.
@@ -15,7 +15,7 @@ description: Turn requirements into one story per action someone or something ta
 - Optional, when revising: the caller's answers or changes.
 
 ## Out
-- The chunk's stories, one per action someone or something takes through the interface, each written as its own file in that folder, each in the form in `## Act`. The questions the sources didn't settle, each with a pick, returned to the caller.
+- The milestone's stories, one per action someone or something takes through the interface, each written as its own file in that folder, each in the form in `## Act`. The questions the sources didn't settle, each with a pick, returned to the caller.
 - The Think answers, one line per question, each saying what it led the skill to do, kept apart from the work, returned to the caller.
 
 ## Think
