@@ -6,9 +6,11 @@ description: Turn the owner's words and an app's designs into the app's requirem
 # App requirements
 
 ## In
-- The owner's words (`<project>/data/owner_words.md`), the app's design boards, and its design doc, from `appz:design-app` or the owner.
+- The owner's words about the app: what they want it to do, in their own wording, with the date and time they said each thing.
+- The app's design boards: every screen the app shows, as drawn.
+- The app's design doc: what the screens do, and the rules, numbers and limits behind them.
 - The `skillz:settle-question` skill.
-- If one is missing, stop and tell the owner exactly what to provide. Make none of these inputs yourself. A default value inside a requirement is fine.
+- Make none of these inputs yourself. A default value inside a requirement is fine.
 
 ## Out
 - The requirements file, drafted at `<project>/data/requirements.md`, then moved to the repo's `docs/product/requirements.md` once the owner approves it.
@@ -19,7 +21,7 @@ description: Turn the owner's words and an app's designs into the app's requirem
 - Would they ask "why is this here?" Then it's out.
 
 ## Act
-1. Read the owner's words, the design boards and the design doc.
+1. Read the owner's words, the design boards and the design doc, and check each input against `## In` before anything else. If one is missing or falls short, stop and tell the owner exactly what to provide and what it must contain.
 2. Include what the owner said, what's needed for it to work, and what they'd plainly expect. Take every number, limit and rule from the owner or the designs, or as a marked default. Cover the cases and problems the owner or the designs raise. Write each requirement for the app, not for a test.
 3. Settle questions with `skillz:settle-question`. Write in what the sources settle. Mark each default.
 4. Group the requirements into sections by area, named in the owner's vocabulary. Use technical terms only where the owner did.

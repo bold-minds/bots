@@ -6,9 +6,8 @@ description: Check work against the skill or skills it followed, from a fresh su
 # Skill check
 
 ## In
-- The text of the skill or skills the work followed, from whatever ran the work.
-- The work, from whatever is handing it on.
-- If either is missing, stop and tell the owner which one is needed.
+- The text of each skill the work followed: the whole skill, every section, not a summary of it.
+- The work: the whole of what was made under the skill, as it stands now, not a description of it.
 
 ## Out
 - The list of misses and the fixed work, returned to whatever asked for the check.
@@ -19,7 +18,8 @@ description: Check work against the skill or skills it followed, from a fresh su
 - Does each fix keep the rest of the work in line with the skill?
 
 ## Act
-1. Start one fresh subagent on Sonnet. Give it only the skill's text and the work, so it judges the work against the skill and not against the reasoning that made it.
-2. Have it list every place the work doesn't follow the skill.
-3. Drop any listed miss the skill doesn't actually ask for.
-4. Fix every remaining miss before the work is handed on.
+1. Check the inputs against `## In`: each skill's full text, and the work itself, whole. If either is missing or falls short, stop and tell the owner exactly which one is needed and what it lacks.
+2. Start one fresh subagent on Sonnet. Give it only the skill's text and the work, so it judges the work against the skill and not against the reasoning that made it.
+3. Have it list every place the work doesn't follow the skill.
+4. Drop any listed miss the skill doesn't actually ask for.
+5. Fix every remaining miss before the work is handed on.
