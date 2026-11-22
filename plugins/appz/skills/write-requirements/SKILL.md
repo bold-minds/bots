@@ -20,14 +20,14 @@ description: Turn what people said the app should do and the design of what's be
 - Where did a person say this?
 - If no one said it, would they be surprised it's missing?
 - Would they ask "why is this here?"
-- Does it still hold after it's closed, restarted, or something else happened?
+- For each thing people make or keep: how is it made, changed, finished and found again, is it still there after closing, and does it need the things it can belong to?
 
 ## Act
 1. Read what people said and the design, and check each input against `## In` before anything else. If one is missing or falls short, return to the caller exactly what's missing and what it must contain.
-2. Include what people said, what's needed for it to work, and what they'd plainly expect; that includes what must still hold after closing, restarting or another change, marked ` *`. When no one said it and they'd be surprised it's missing, AI adds it. When they'd ask "why is this here?", it's out. Take every number, limit and rule from what people said or the design, or as a marked default. Cover the cases and problems people or the design raise. Write each requirement for the app, not for a test.
-   - A requirement says what the software does and how it behaves. How it looks (layout, labels, colours, counts and marks on screen) stays in the design, so a line from the design that is only how it looks is not a requirement.
-   - Take only design decisions that are approved. A decision the design marks proposed comes back as a question via `skillz:settle-question`.
-   - What people called an idea, a thought, or "later" is not a requirement. List it in its own short section, `Not requirements yet`, with what they said.
+2. Include what people said, what's needed for it to work, and what they'd plainly expect. For each thing people make or keep, cover how it is made, changed, finished and found again, whether it is still there after closing or restarting, and whether it can exist without what it can belong to, each marked ` *` when no one said it. When no one said it and they'd be surprised it's missing, AI adds it. When they'd ask "why is this here?", it's out. Take every number, limit and rule from what people said or the design, or as a marked default. Cover the cases and problems people or the design raise. Write each requirement for the app, not for a test.
+   - A requirement says what the software does and how it behaves. Keep what people said as a requirement, including what they said about how it looks. Leave only the design's own look-only lines (layout, labels, colours, counts and marks on screen that no person said) in the design, not in requirements.
+   - Take only design decisions that are approved. Return a decision the design marks proposed as a question via `skillz:settle-question`, not as a default.
+   - Keep what people said should come later as a requirement; planning leaves it out of milestones. List what people called an idea or a thought, not as a requirement, in its own short section, `Not requirements yet`, with what they said.
 3. When revising, apply the caller's answers to the current draft and keep each requirement's id: stories point to them.
 4. Settle questions with `skillz:settle-question`. Write in what the sources settle. Mark each default.
 5. Group the requirements into sections by area, named in the vocabulary people used. Use technical terms only where people did.

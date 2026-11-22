@@ -12,6 +12,9 @@ Everything under "People said" is in their own words, in the order said. Everyth
 - Dev, Nov 4, 8:15am: "Only people on my street should see my stuff."
 - Dev, Nov 4, 8:30am: "I don't want a points or rating thing. Just lend and borrow."
 - Mara, Nov 5, 11:00am: "When I get a request I want to say yes or no from my phone."
+- Mara, Nov 5, 1:15pm: "I want the Ask to borrow button to be big and green so my dad can find it."
+- Dev, Nov 5, 1:30pm: "Later on, I'd like neighbors to be able to see a tool's history of past loans."
+- Mara, Nov 5, 1:45pm: "Just an idea: maybe a map of the street someday."
 
 ## AI notes (not from people)
 

@@ -34,12 +34,12 @@ description: Turn requirements into one story per action someone or something ta
 2. Include what people said, what's needed for it to work, and what they'd plainly expect. Take every number, limit, rule or behaviour from what people said or the design, or as a marked default.
 3. When revising an approved story, apply the caller's answers, keep its scenario numbers, and add one Changelog line saying what changed.
 4. Settle questions with `skillz:settle-question`. Write in what the sources settle. Mark each default. Return only what's left, each with its pick.
-5. Title: the action, in the words people used.
+5. Title: the action, in the words people used. In the Shows line, Journey and Scenarios, name the action, not the control or gesture: a tap, swipe, button or chip belongs to the design.
 6. `Shows:` one line, the happy path.
 7. `Design:` a link or path to the part of the interface the story touches, kept for the life of the story. Put how the interface looks or is shaped in the design.
 8. `## Journey`: the happy path as Given/When/Then, behaviour only.
 9. `## Scenarios`: numbered, with requirement id(s), ` *` if added by AI, behaviour only.
-   - For each thing that will obviously go wrong, write a scenario saying what they see and what to do (for example, sign in, or wait for the reset).
+   - For each thing that will obviously go wrong, write a scenario saying what they see or get back, and what to do (for example, sign in, wait for the reset, or handle the error).
    - Where several causes lead to the same trouble, write one broad rule, in the words people used.
    - Account for the other stories that affect this one, keeping the story self-contained.
    - Where it behaves differently the first time, the next time, or after closing, restarting or another change, write a scenario for each difference.
