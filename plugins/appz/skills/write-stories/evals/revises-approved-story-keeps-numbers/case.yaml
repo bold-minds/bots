@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: revises-approved-story-keeps-numbers
+expected_outcome: |
+  stories/rename-a-list.md is edited in place. Scenarios 1 to 6 keep their numbers and order; scenario 4 now says 30
+  and the 40 default is gone from the scenarios and from Defaults taken. The other scenarios are unchanged. The
+  Changelog keeps its approved line and gains exactly one new line saying the name limit changed from 40 to 30.
+context:
+  scaffold_script: place-files.sh

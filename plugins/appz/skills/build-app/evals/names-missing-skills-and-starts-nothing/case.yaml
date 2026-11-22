@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: names-missing-skills-and-starts-nothing
+expected_outcome: |
+  The next step would be design-tech for the two stories, but the step skills design-tech, build-story,
+  verify-story, open-pr and ship-milestone are not installed. The run returns each missing skill with the work it
+  must do and starts nothing: no step, no subagent, no code in the repo, build state unchanged.

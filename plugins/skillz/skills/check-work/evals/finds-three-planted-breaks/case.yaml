@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: finds-three-planted-breaks
+expected_outcome: |
+  The note has exactly three breaks of lines the skill states: the heading date is not YYYY-MM-DD, the summary is over 20 words, and one Changed bullet starts with a present-tense verb. The check returns those three, each with where it is and what the skill asks for. It returns nothing for the two things the skill does not say: the mixed trailing periods on bullets and the closing "Full diff" line.
+context:
+  scaffold_script: place-files.sh

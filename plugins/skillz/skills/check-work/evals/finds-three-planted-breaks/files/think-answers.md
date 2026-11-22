@@ -1,0 +1,3 @@
+- Is any change breaking? Yes, the rename of `--out` to `--dest`.
+- Which change will a user notice most? The halved startup time.
+- Does any change repeat another? No; none cut.

@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: release-notes-from-diff
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  A new universal skill that turns a code diff into release notes, written as a function: a two-word action-object name, an In that describes each input by its contents, an Out, a Think of questions only, and an Act whose first step checks the inputs. The skill names no caller, person, project or date. The Think answers come back apart from the skill, and check-work has been run on the skill.

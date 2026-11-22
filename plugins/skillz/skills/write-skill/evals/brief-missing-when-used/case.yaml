@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: brief-missing-when-used
+expected_outcome: |
+  No skill is written. The response says exactly what is missing from the brief (when the skill is used, the situation that calls for it) and what that must contain, without flagging things the brief already gave (the work, and the kind of work).

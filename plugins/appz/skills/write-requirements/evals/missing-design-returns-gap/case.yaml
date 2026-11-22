@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: missing-design-returns-gap
+expected_outcome: |
+  No design was supplied, so the skill's first step stops: no data/requirements.md is written. The reply names the design as the missing input and says what it must contain: the interface in whatever form people or code use it, each part at a link or path a story can point to, plus the rules, numbers and limits behind it (an interface that already runs counts). It does not invent screens, endpoints or limits to fill the gap.
+context:
+  scaffold_script: place-files.sh

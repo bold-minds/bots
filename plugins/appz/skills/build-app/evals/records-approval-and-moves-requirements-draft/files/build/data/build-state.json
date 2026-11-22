@@ -1,0 +1,6 @@
+{
+  "requirements": {"status": "draft awaiting approval", "draft": "data/requirements.md"},
+  "plan": {"status": "not started"},
+  "current_milestone": null,
+  "milestones": []
+}

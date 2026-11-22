@@ -1,0 +1,25 @@
+diff --git a/src/cart.py b/src/cart.py
+--- a/src/cart.py
++++ b/src/cart.py
+@@ -12,7 +12,11 @@ class Cart:
+     def total(self):
+-        return sum(i.price for i in self.items)
++        subtotal = sum(i.price * i.qty for i in self.items)
++        return round(subtotal - self.discount, 2)
++
++    def apply_code(self, code):
++        self.discount = CODES.get(code, 0)
+diff --git a/src/export.py b/src/export.py
+--- a/src/export.py
++++ b/src/export.py
+@@ -3,6 +3,6 @@
+ def to_csv(cart):
+-    rows = [i.name for i in cart.items]
++    rows = [f"{i.name},{i.qty}" for i in cart.items]
+     return "\n".join(rows)
+diff --git a/src/cli.py b/src/cli.py
+--- a/src/cli.py
++++ b/src/cli.py
+@@ -20,3 +20,4 @@ def main():
+     args = parser.parse_args()
++    parser.add_argument("--code", help="discount code")

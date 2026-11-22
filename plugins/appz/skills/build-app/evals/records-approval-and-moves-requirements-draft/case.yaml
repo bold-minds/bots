@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: records-approval-and-moves-requirements-draft
+expected_outcome: |
+  The draft build/data/requirements.md is moved to repo/docs/product/requirements.md with its content unchanged,
+  the approval is recorded in build/data/build-state.json, and the run stops before plan-milestones, returning that
+  appz:plan-milestones is not installed. No milestone plan is produced.

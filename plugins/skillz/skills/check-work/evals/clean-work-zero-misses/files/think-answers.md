@@ -1,0 +1,3 @@
+- Is any change breaking? No, so there is no Breaking section.
+- Which change will a user notice most? The new `tidepool doctor` command.
+- Does any change repeat another? No; none cut.

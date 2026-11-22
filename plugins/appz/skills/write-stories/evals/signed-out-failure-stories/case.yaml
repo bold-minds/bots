@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: signed-out-failure-stories
+expected_outcome: |
+  Four story files in stories/, one per action (save a link, mark as read, add a tag, remove a link). Each has a title in
+  the people's words, Shows, a Design path under design/, a Journey in Given/When/Then, numbered Scenarios tagged with
+  requirement ids, and an empty Changelog. Every story has a scenario for the Pagebox sign-in failing, saying what the
+  person sees and what to do, written as one broad rule. No number or limit appears that the inputs do not give, and
+  nothing about how the app looks is in a scenario.
+context:
+  scaffold_script: place-files.sh

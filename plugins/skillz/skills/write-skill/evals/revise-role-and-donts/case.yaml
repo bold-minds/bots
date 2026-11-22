@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: revise-role-and-donts
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  The revised skill keeps the name review-config, opens with no role preamble, has no list of things not to do, and describes its input by its contents instead of a file path, while still saying what it does and when to use it, as a function with In, Out, Think and Act.

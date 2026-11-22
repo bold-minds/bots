@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: revise-moves-one-id-keeps-rest
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  data/milestones.md keeps Milestones 1 to 4 with their numbers, names and ids, except that R12 moves from Milestone 3 into Milestone 2 (borrowing), as the answer says. The reply says R12 moved and from where to where. R11 stays under Not in any milestone yet and every id still appears once.

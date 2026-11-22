@@ -1,0 +1,12 @@
+{
+  "requirements": {"status": "approved", "path": "repo/docs/product/requirements.md"},
+  "plan": {"status": "done", "produced": "data/milestones.md"},
+  "current_milestone": "M1 Save and find links",
+  "milestones": [
+    {"id": "M1", "name": "Save and find links", "status": "in progress",
+     "stories": [
+       {"id": "add-link", "step": "write-stories", "status": "done", "produced": {"write-stories": "data/stories/add-link.md"}},
+       {"id": "list-links", "step": "write-stories", "status": "done", "produced": {"write-stories": "data/stories/list-links.md"}}
+     ]}
+  ]
+}

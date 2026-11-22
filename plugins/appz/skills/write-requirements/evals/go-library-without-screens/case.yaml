@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: go-library-without-screens
+expected_outcome: |
+  data/requirements.md exists and describes a library with no UI: requirements are about calling Add, Count, Top and Reset, the sliding window, dropped idle keys and safety from many goroutines. Each requirement has a Said: line with a verbatim quote from said.md, or a From: line pointing at a function or rule in design.md, or ends in " *" with its reason listed. No screens, pages, buttons, endpoints, CLI commands or configuration files are invented. Numbers (1 minute default, 2 windows) come from design.md. The reply gives the draft location, starred lines with reasons, defaults and questions, not the whole draft.
+context:
+  scaffold_script: place-files.sh

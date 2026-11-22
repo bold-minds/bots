@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: default-for-two-way-door
+expected_outcome: |
+  The question is returned as a Default: a specific number (any sensible one, such as 10 to 25) marked clearly as a default, with a reason that it is easy to change later and nothing downstream depends on it. It is not returned as a question for the caller, and no uninstalled MCP is claimed to be needed.
+context:
+  scaffold_script: place-files.sh

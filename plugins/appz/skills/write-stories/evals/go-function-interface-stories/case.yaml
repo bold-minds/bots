@@ -1,0 +1,9 @@
+schema_version: "1.1"
+name: go-function-interface-stories
+expected_outcome: |
+  Story files in stories/, each covering one function call (Make or Unique). The action is a call, the Journey is written as a
+  call and what it returns, and each Design line points to design/slug.go. No screen, button or click is invented.
+  Make has a scenario for a title with no letters or digits returning ErrEmpty and what the caller should do. No cap or
+  number is invented for Unique when every name is taken; if it matters, it comes back as a question with a pick.
+context:
+  scaffold_script: place-files.sh

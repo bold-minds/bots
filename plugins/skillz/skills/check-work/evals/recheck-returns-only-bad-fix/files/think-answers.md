@@ -1,0 +1,3 @@
+- Is any change breaking? Yes, dropping the `.tide` config format.
+- Which change will a user notice most? Parallel uploads.
+- Does any change repeat another? Yes. Cut: "Sped up uploads", because it repeats "Uploads now run in parallel".

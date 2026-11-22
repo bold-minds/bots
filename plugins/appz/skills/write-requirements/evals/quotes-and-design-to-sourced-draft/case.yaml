@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: quotes-and-design-to-sourced-draft
+expected_outcome: |
+  data/requirements.md exists. Every requirement is a bold one-sentence line with an id, followed by a Said: line whose quote appears word for word in said.md, or a From: line pointing at a path in design.md, or it ends in " *" with its reason listed at the bottom. Numbers (5 days, 9am, 3 times) come from design.md; any number not in the inputs is listed as a default. Nothing is added for the damage deposit, blocking, points or ratings. The reply gives where the draft is, the starred lines with reasons, the defaults and the questions with picks, plus the Think answers, and does not paste the whole draft. Whether each bold sentence says what its quote says is read by a grader subagent.
+context:
+  scaffold_script: place-files.sh

@@ -1,0 +1,18 @@
+{
+  "requirements": {"status": "approved", "path": "repo/docs/product/requirements.md"},
+  "plan": {"status": "done", "produced": "data/milestones.md"},
+  "current_milestone": "M1 Save and find links",
+  "milestones": [
+    {"id": "M1", "name": "Save and find links", "status": "in progress",
+     "stories": [
+       {"id": "add-link", "step": "verify-story", "status": "waiting on caller",
+        "waiting_on": "Caller must answer: can the same link be saved twice? Pick offered: no, saving a link that exists prints `already saved <id>`.",
+        "produced": {"write-stories": "data/stories/add-link.md", "design-tech": "data/tech/add-link.md", "build-story": "branch add-link, 14 commits"}},
+       {"id": "list-links", "step": "design-tech", "status": "done",
+        "produced": {"write-stories": "data/stories/list-links.md", "design-tech": "data/tech/list-links.md"}},
+       {"id": "tag-link", "step": "write-stories", "status": "done",
+        "produced": {"write-stories": "data/stories/tag-link.md"}}
+     ]},
+    {"id": "M2", "name": "Tidy up", "status": "not started", "stories": []}
+  ]
+}

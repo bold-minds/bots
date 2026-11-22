@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: clean-work-zero-misses
+expected_outcome: |
+  The note follows every line of the skill and the Think-answers record matches it (no Breaking section, doctor command first, nothing repeated). The check returns zero misses and says so. The mixed trailing periods and uneven bullet lengths are not misses.
+context:
+  scaffold_script: place-files.sh

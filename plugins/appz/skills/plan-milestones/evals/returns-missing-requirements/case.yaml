@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: returns-missing-requirements
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  There is no requirements file. The run returns that the approved requirements are missing and what they must contain (each with its id, in the terms people used, AI-added lines marked with an asterisk), and does not write milestones or invent requirements from said.md.

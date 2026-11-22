@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: question-hard-to-undo-with-mcp
+expected_outcome: |
+  The question is returned as a Question (not settled, not a default) because choosing the settlement currency is hard to undo and changes what comes next. It states what must be decided, gives a pick with a reason, and names the Stripe MCP, which is not installed, as something that would answer what the account's current settlement currency and country settings are. No account is changed.
+context:
+  scaffold_script: place-files.sh

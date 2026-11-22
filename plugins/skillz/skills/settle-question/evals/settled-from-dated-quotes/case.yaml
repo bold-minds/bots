@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: settled-from-dated-quotes
+expected_outcome: |
+  The question is returned as Settled: the digest goes out Monday 8am in each subscriber's own timezone, sourced to Priya's 2026-10-03 statement, which replaced Dan's earlier 8am UTC line. No question is returned to the caller.
+context:
+  scaffold_script: place-files.sh
