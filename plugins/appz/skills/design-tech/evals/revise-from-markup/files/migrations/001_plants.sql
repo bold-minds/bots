@@ -1,0 +1,4 @@
+CREATE TABLE plants (
+  id   INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);

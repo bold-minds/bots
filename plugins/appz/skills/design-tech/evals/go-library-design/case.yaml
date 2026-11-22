@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: go-library-design
+expected_outcome: |
+  docs/product/stories/merge-tag-lists.design.md is written beside the story and is returned as a draft for approval.
+  It names Merge as the function added to package tagset and reuses the existing Normalize. It adds no third-party
+  library, per the accepted decision. It lays out the three PRs (skeleton with CI and a stub Merge, then the Merge
+  interface, then back end and data), saying in one line where a PR has nothing to hold rather than inventing a
+  server, screen or database. Tests are at the tagset package's exported surface. Each part names the scenario it
+  serves. No Go code is written. The Think answers come back one line per question, apart from the design.
+context:
+  scaffold_script: place-files.sh
