@@ -1,7 +1,7 @@
 {
   "name": "skillz",
   "version": "1.0.0",
-  "description": "How to write skills and run them well: write a skill, check work against the skills it followed, and decide whether to ask the owner or settle a question yourself.",
+  "description": "How to write skills and run them well: write a skill, check work against the skills it followed, and decide whether to settle a question yourself or return it to the caller.",
   "author": {
     "name": "Bold Minds"
   },
