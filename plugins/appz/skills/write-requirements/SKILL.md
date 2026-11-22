@@ -13,6 +13,7 @@ description: Turn what people said the app should do and an app's designs into a
 
 ## Out
 - The draft requirements file at `<project>/data/requirements.md`, and the questions from `skillz:settle-question`, each with its pick, returned to the caller.
+- The Think answers, one line per question, kept apart from the work, returned to the caller.
 
 ## Think
 - Where did a person say this?
@@ -28,4 +29,4 @@ description: Turn what people said the app should do and an app's designs into a
 6. End a line added by AI with ` *`. Give its reason in a short list at the bottom.
 7. Add a short list of the defaults taken.
 8. Leave out Success lines: a requirement's test belongs in the story that builds it.
-9. Return the draft and the questions from step 3, each with its pick, to the caller.
+9. Return the draft and the questions from step 3, each with its pick, to the caller, and the Think answers apart from the draft.

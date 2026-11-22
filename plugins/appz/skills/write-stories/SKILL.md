@@ -13,6 +13,7 @@ description: Turn requirements into one story per user action. Use when drafting
 
 ## Out
 - The chunk's stories, one per user action, each in the form below, and any questions they raise, each with a pick, returned to the caller.
+- The Think answers, one line per question, kept apart from the work, returned to the caller.
 
 ## Think
 - What single action is this?
@@ -25,13 +26,13 @@ description: Turn requirements into one story per user action. Use when drafting
 - Over about ten scenarios: is it still one action?
 
 ## Act
-- Check each input against `## In` before anything else. If one falls short, or one other than the story being revised is missing, return to the caller exactly what's missing and what it must contain.
-- Include what people said, what's needed for it to work, and what they'd plainly expect.
-- Title: the action, in the words people used.
-- `Shows:` one line, the happy path.
-- `Design:` a link to the design board(s), kept for the life of the ticket.
-- `## Journey`: the happy path as Given/When/Then.
-- `## Scenarios`: numbered, with requirement id(s), ` *` if added by AI, behaviour only.
-- `## Changelog`: empty until approved.
-- `Defaults taken:` under the story, if any.
-- Return the stories, and each question that needs deciding with a pick, to the caller.
+1. Check each input against `## In` before anything else. If one falls short, or one other than the story being revised is missing, return to the caller exactly what's missing and what it must contain.
+2. Include what people said, what's needed for it to work, and what they'd plainly expect.
+3. Title: the action, in the words people used.
+4. `Shows:` one line, the happy path.
+5. `Design:` a link to the design board(s), kept for the life of the ticket.
+6. `## Journey`: the happy path as Given/When/Then.
+7. `## Scenarios`: numbered, with requirement id(s), ` *` if added by AI, behaviour only.
+8. `## Changelog`: empty until approved.
+9. `Defaults taken:` under the story, if any.
+10. Return the stories, and each question that needs deciding with a pick, to the caller, and the Think answers apart from the stories.

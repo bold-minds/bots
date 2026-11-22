@@ -12,6 +12,7 @@ description: Write, revise, split or review a skill as a function, inputs in and
 
 ## Out
 - `<skills folder>/<name>/SKILL.md`, checked by `skillz:check-work`, returned to the caller.
+- This skill's Think answers, one line per question, kept apart from the work, returned to the caller.
 
 ## Think
 - What does the skill take in, and what must each input contain for the skill to do its job?
@@ -30,10 +31,10 @@ description: Write, revise, split or review a skill as a function, inputs in and
 4. Decide the skill's scope: universal, or one kind of work. Write the frontmatter: `name`, and a `description` saying what the skill does and when to use it, across that whole scope. Name the skill `[action]-[object]`, two words, even when the plugin's name matches the object.
 5. Write the skill as a function. Whoever runs it is its caller, a person or another skill, and the skill reads the same either way. Call them "the caller".
    - `## In`: its parameters. Each input and what it must contain for the skill to do its job, not a file name, location or source. A default value for an input is fine.
-   - `## Out`: what it returns to its caller, and where it writes it.
+   - `## Out`: what it returns to its caller, and where it writes it. Return the skill's Think answers to the caller, one line per question, kept apart from the work.
    - Make its first Act step check its inputs against `## In`. When one is missing or falls short, the skill hands off to the skill that makes it, or returns to its caller exactly what's missing and what it must contain.
    - A question that needs deciding goes back to the caller, with a pick. So does anything that needs approval: the skill returns its work, and what follows approval is the caller's to do.
-6. Write `## Think`: the questions the model asks itself. They stay out of the skill's output.
+6. Write `## Think`: the questions the model asks itself. They stay out of the work. Each must lead to something visible in the work. If one can't, cut it, or make it an Act step.
 7. Write `## Act`: short imperative steps, in order. Say what to do. Add a why only where a step would be misread without it. For each subagent the skill starts, name the smallest model and effort that does the job well, and the inputs it gets. Start independent steps at the same time.
-8. Run `skillz:check-work` against `skill-creator` and this skill; it starts its own fresh subagent. Fix what it finds.
-9. Return the skill to the caller.
+8. Run `skillz:check-work` against `skill-creator` and this skill, with this skill's Think answers; it starts its own fresh subagent. Fix what it finds.
+9. Return the skill, and this skill's Think answers apart from it, to the caller.
