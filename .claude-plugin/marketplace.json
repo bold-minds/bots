@@ -22,6 +22,18 @@
       "description": "The engineering room and the tools it runs. Release scope, architecture, and the ship date — then build it, gate it, prove it. Surround the agent with constraints instead of reading its diffs.",
       "source": "./plugins/coding",
       "category": "productivity"
+    },
+    {
+      "name": "skillz",
+      "description": "How to write skills and run them well: write a skill, check work against the skills it followed, and decide whether to ask the owner or settle a question yourself.",
+      "source": "./plugins/skillz",
+      "category": "productivity"
+    },
+    {
+      "name": "appz",
+      "description": "Building apps from their designs: requirements, stories, and a build skill that runs each delivery step in order. Needs the skillz plugin installed.",
+      "source": "./plugins/appz",
+      "category": "productivity"
     }
   ]
 }

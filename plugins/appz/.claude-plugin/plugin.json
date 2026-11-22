@@ -1,0 +1,15 @@
+{
+  "name": "appz",
+  "version": "1.0.0",
+  "description": "Building apps from their designs: requirements, stories, and a build skill that runs each delivery step in order. Needs the skillz plugin installed.",
+  "author": {
+    "name": "Bold Minds"
+  },
+  "license": "MIT",
+  "keywords": [
+    "app",
+    "requirements",
+    "stories",
+    "build"
+  ]
+}
