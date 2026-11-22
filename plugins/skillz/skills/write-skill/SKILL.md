@@ -12,9 +12,10 @@ description: Write, revise, split or review a skill as a function, inputs in and
 
 ## Out
 - `<skills folder>/<name>/SKILL.md`, checked by `skillz:check-work`, returned to the caller.
-- This skill's Think answers, one line per question, kept apart from the work, returned to the caller.
+- This skill's Think answers, one line per question, each saying what it led the skill to do, if anything, kept apart from the work, returned to the caller.
 
 ## Think
+- Is this one job that comes out excellent and complete, and does any part need splitting off?
 - What does the skill take in, and what must each input contain for the skill to do its job?
 - What does it return to its caller, and where does it write it?
 - What should the model ask itself while doing the work?
@@ -30,6 +31,9 @@ description: Write, revise, split or review a skill as a function, inputs in and
 2. Load `skill-creator` and follow it. Where it differs from these steps, these win.
 3. When revising, splitting or reviewing, read the existing skill first and keep its `name`.
 4. Decide the skill's scope: universal, or one kind of work. Write the frontmatter: `name`, and a `description` saying what the skill does and when to use it, across that whole scope. Name the skill `[action]-[object]`, two words, even when the plugin's name matches the object.
+   - A skill holds as much as its job needs to come out excellent and complete; the number of steps doesn't matter.
+   - Split a part into its own skill only when it needs a different model or a fresh context, can run alongside the rest, is used by another skill too, or needs an approval or check between it and the rest.
+   - Keep the skill file under about 500 lines. Past that, move detail into reference files the skill loads when needed.
 5. Write the skill as a function. Whoever runs it is its caller, a person or another skill, and the skill reads the same either way. Call them "the caller".
    - `## In`: its parameters. Each input and what it must contain for the skill to do its job, not a file name, location or source. A default value for an input is fine. Name a skill only when this skill uses it, and list it here. Never name a caller.
    - `## Out`: what it returns to its caller, and where it writes it. Return the skill's Think answers to the caller, one line per question, kept apart from the work. Each answer says what it led the skill to do, if anything, so a reviewer can check the work did it.
