@@ -19,7 +19,7 @@ description: Check work against the skill or skills it followed, from a fresh su
 - Does each fix keep the rest of the work in line with the skill?
 
 ## Act
-1. Start one fresh subagent. Give it only the skill's text and the work, so it judges the work against the skill and not against the reasoning that made it.
+1. Start one fresh subagent on Sonnet. Give it only the skill's text and the work, so it judges the work against the skill and not against the reasoning that made it.
 2. Have it list every place the work doesn't follow the skill.
 3. Drop any listed miss the skill doesn't actually ask for.
 4. Fix every remaining miss before the work is handed on.
