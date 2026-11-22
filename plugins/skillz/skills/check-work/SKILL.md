@@ -13,7 +13,7 @@ description: Check work against the skill or skills it followed, from a fresh su
 
 ## Out
 - The list of misses, each with where it is and what the skill asks for, returned to the caller.
-- This skill's own Think answers, one line per question, kept apart from the list.
+- This skill's own Think answers, one line per question, each saying what it led the skill to do, kept apart from the list.
 
 ## Think
 - Do I have the skill's text, the work and the work's Think-answers record?

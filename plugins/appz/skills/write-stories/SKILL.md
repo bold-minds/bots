@@ -30,20 +30,20 @@ description: Turn requirements into one story per action someone or something ta
 - Did a number, limit, rule or behaviour come from no one?
 
 ## Act
-1. Check each input against `## In` before anything else. If one falls short, or one other than the story being revised is missing, return to the caller exactly what's missing and what it must contain.
+1. Check each input against `## In` before anything else. If one falls short, or one other than the story being revised and the caller's answers is missing, return to the caller exactly what's missing and what it must contain.
 2. Include what people said, what's needed for it to work, and what they'd plainly expect. Take every number, limit, rule or behaviour from what people said or the design, or as a marked default.
 3. When revising an approved story, apply the caller's answers, keep its scenario numbers, and add one Changelog line saying what changed.
 4. Settle questions with `skillz:settle-question`. Write in what the sources settle. Mark each default. Return only what's left, each with its pick.
-5. Title: the action, in the words people used. In the Shows line, Journey and Scenarios, name the action, not the control or gesture: a tap, swipe, button or chip belongs to the design.
-6. `Shows:` one line, the happy path.
-7. `Design:` a link or path to the part of the interface the story touches, kept for the life of the story. Put how the interface looks or is shaped in the design.
-8. `## Journey`: the happy path as Given/When/Then, behaviour only.
-9. `## Scenarios`: numbered, with requirement id(s), ` *` if added by AI, behaviour only.
+5. Title the story with the action, in the words people used. In the Shows line, Journey and Scenarios, name the action, not the control or gesture: a tap, swipe, button or chip belongs to the design.
+6. Write `Shows:` as one line, the happy path.
+7. Write `Design:` as a link or path to the part of the interface the story touches, kept for the life of the story. Put how the interface looks or is shaped in the design.
+8. Write `## Journey` as the happy path in Given/When/Then, behaviour only.
+9. Write `## Scenarios` numbered, each with requirement id(s) and ` *` if added by AI, behaviour only.
    - For each thing that will obviously go wrong, write a scenario saying what they see or get back, and what to do (for example, sign in, wait for the reset, or handle the error).
    - Where several causes lead to the same trouble, write one broad rule, in the words people used.
    - Account for the other stories that affect this one, keeping the story self-contained.
    - Where it behaves differently the first time, the next time, or after closing, restarting or another change, write a scenario for each difference.
    - Over about ten scenarios, if it is no longer one action, split it into stories.
-10. `Defaults taken:` after `## Scenarios`, before `## Changelog`, if any.
-11. `## Changelog`: empty until approved.
+10. If any defaults were taken, write `Defaults taken:` after `## Scenarios` and before `## Changelog`.
+11. Write `## Changelog`, and leave it empty until approved.
 12. Write each story as its own file in the folder. Return where they are, each question that needs deciding with a pick, and the Think answers apart from the stories.
