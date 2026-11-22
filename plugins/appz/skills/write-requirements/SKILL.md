@@ -1,14 +1,13 @@
 ---
 name: write-requirements
-description: Turn what people said the app should do and an app's designs into a draft of the app's requirements file, returned to the caller with its open questions. Use when `appz:build-app` runs its first step, and whenever an app's requirements are drafted.
+description: Turn what people said the app should do and the design of what's being built into a draft of the app's requirements file, returned to the caller with its open questions. Use when `appz:build-app` runs its first step, and whenever an app's requirements are drafted.
 ---
 
 # App requirements
 
 ## In
 - What people said the app should do, in their own wording, in the order it was said, with the date and time of each thing. What people said is marked apart from anything AI added.
-- The app's design boards: every screen the app shows, as drawn.
-- The app's design doc: what the screens do, and the rules, numbers and limits behind them.
+- The design of what's being built: its interface, in whatever form people or code use it (screens, endpoints, commands, functions), each part at a link or path a story can point to, and the rules, numbers and limits behind it. An interface that already runs, live or in code, counts.
 - The `skillz:settle-question` skill.
 
 ## Out
@@ -21,7 +20,7 @@ description: Turn what people said the app should do and an app's designs into a
 - Would they ask "why is this here?" Then it's out.
 
 ## Act
-1. Read what people said, the design boards and the design doc, and check each input against `## In` before anything else. If one is missing or falls short, return to the caller exactly what's missing and what it must contain.
+1. Read what people said and the design, and check each input against `## In` before anything else. If one is missing or falls short, return to the caller exactly what's missing and what it must contain.
 2. Include what people said, what's needed for it to work, and what they'd plainly expect. Take every number, limit and rule from what people said or the designs, or as a marked default. Cover the cases and problems people or the designs raise. Write each requirement for the app, not for a test.
 3. Settle questions with `skillz:settle-question`. Write in what the sources settle. Mark each default.
 4. Group the requirements into sections by area, named in the vocabulary people used. Use technical terms only where people did.

@@ -1,14 +1,13 @@
 ---
 name: build-app
-description: Take an app's designs to shipped code by running each delivery step in order, one subagent per step. Use when asked to build an app, continue a build, start the next chunk, ship it, or say where a build stands or what's next.
+description: Take an app's design to shipped code by running each delivery step in order, one subagent per step. "App" means any software people or code use: an app, a service, a library. Use when asked to build an app, continue a build, start the next chunk, ship it, or say where a build stands or what's next.
 ---
 
 # Build app
 
 ## In
 - What people said the app should do, in their own wording, in the order it was said, with the date and time of each thing. What people said is marked apart from anything AI added.
-- The app's design boards: every screen the app shows, as drawn, each at a link a story can point to.
-- The app's design doc: what the screens do, and the rules, numbers and limits behind them.
+- The design of what's being built: its interface, in whatever form people or code use it (screens, endpoints, commands, functions), each part at a link or path a story can point to, and the rules, numbers and limits behind it. An interface that already runs, live or in code, counts.
 - The app's repo: where the code and the approved requirements go.
 - A folder for the build's own files: one the build can read and write.
 - The build's state: the current chunk, each story's current step and its status, and what each step produced. On the first run there is none.
@@ -45,7 +44,7 @@ The plan cuts the requirements into chunks. Steps 1 and 2 run once for the app. 
 - Does anything need the caller?
 
 ## Act
-1. Check every input against `## In` before anything else. Read the build's state for the current chunk, each story's step, and what each step produced; if there is none yet, create it. If the state is there but doesn't hold those, return to the caller what it lacks. If the repo or the build folder is missing, return to the caller which one, and that it must be a place the build can read and write. If a skill from `## In` isn't installed, return to the caller each one that is missing and the work it must do. If what people said, the boards or the doc are missing or fall short, run `appz:design-app` for them. If `appz:design-app` isn't installed, return to the caller exactly what to provide and what each must contain.
+1. Check every input against `## In` before anything else. Read the build's state for the current chunk, each story's step, and what each step produced; if there is none yet, create it. If the state is there but doesn't hold those, return to the caller what it lacks. If the repo or the build folder is missing, return to the caller which one, and that it must be a place the build can read and write. If a skill from `## In` isn't installed, return to the caller each one that is missing and the work it must do. If what people said is missing or falls short, return to the caller exactly what to provide and what it must contain. If there is no design and no interface already running, live or in code, run `appz:design-app`, or, if it isn't installed, return to the caller exactly what to provide and what it must contain; otherwise read the interface from what runs.
 2. Record the caller's answers and approvals in the build state. When they approve the requirements draft, move it from the build folder's `data/requirements.md` to the repo's `docs/product/requirements.md` by default, or where the caller says. This run carries the approval; build-app never waits for it.
 3. When asked where the build stands or what's next, return from the state file the current chunk, each story's step and status, and what waits on the caller. Then stop.
 4. Load the step's skill, and any installed skill for that kind of work.
