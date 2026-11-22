@@ -1,5 +1,5 @@
 ---
-name: stories
+name: write-stories
 description: Turn requirements into one story per user action. Use when drafting or revising a chunk's stories.
 ---
 

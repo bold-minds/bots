@@ -1,5 +1,5 @@
 ---
-name: ask-or-decide
+name: settle-question
 description: Decide whether to settle a question yourself or ask the owner. Use before asking the owner anything, in any work, and whenever a choice comes up that the work can't go on without.
 ---
 

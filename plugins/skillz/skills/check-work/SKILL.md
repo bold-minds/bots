@@ -1,5 +1,5 @@
 ---
-name: check
+name: check-work
 description: Check work against the skill or skills it followed, from a fresh subagent, and fix every miss before the work is handed on. Use whenever work done under a skill is about to go to the owner, to another skill, or to the next piece of work.
 ---
 
