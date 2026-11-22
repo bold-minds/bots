@@ -20,10 +20,14 @@ description: Turn what people said the app should do and the design of what's be
 - Where did a person say this?
 - If no one said it, would they be surprised it's missing?
 - Would they ask "why is this here?"
+- Does it still hold after it's closed, restarted, or something else happened?
 
 ## Act
 1. Read what people said and the design, and check each input against `## In` before anything else. If one is missing or falls short, return to the caller exactly what's missing and what it must contain.
-2. Include what people said, what's needed for it to work, and what they'd plainly expect. When no one said it and they'd be surprised it's missing, AI adds it. When they'd ask "why is this here?", it's out. Take every number, limit and rule from what people said or the design, or as a marked default. Cover the cases and problems people or the design raise. Write each requirement for the app, not for a test.
+2. Include what people said, what's needed for it to work, and what they'd plainly expect; that includes what must still hold after closing, restarting or another change, marked ` *`. When no one said it and they'd be surprised it's missing, AI adds it. When they'd ask "why is this here?", it's out. Take every number, limit and rule from what people said or the design, or as a marked default. Cover the cases and problems people or the design raise. Write each requirement for the app, not for a test.
+   - A requirement says what the software does and how it behaves. How it looks (layout, labels, colours, counts and marks on screen) stays in the design, so a line from the design that is only how it looks is not a requirement.
+   - Take only design decisions that are approved. A decision the design marks proposed comes back as a question via `skillz:settle-question`.
+   - What people called an idea, a thought, or "later" is not a requirement. List it in its own short section, `Not requirements yet`, with what they said.
 3. When revising, apply the caller's answers to the current draft and keep each requirement's id: stories point to them.
 4. Settle questions with `skillz:settle-question`. Write in what the sources settle. Mark each default.
 5. Group the requirements into sections by area, named in the vocabulary people used. Use technical terms only where people did.
