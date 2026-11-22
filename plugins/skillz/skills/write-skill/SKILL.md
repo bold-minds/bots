@@ -14,7 +14,7 @@ description: Write, revise, split or review a skill, using skill-creator plus th
 - `<skills folder>/<name>/SKILL.md`, checked by `skillz:check-work`.
 
 ## Think
-- What does the skill take in, and where does each input come from?
+- What does the skill take in, and what must each input contain for the skill to do its job?
 - What does it put out, and where?
 - What should the model ask itself while doing the work?
 - What does it do, step by step?
@@ -27,7 +27,7 @@ description: Write, revise, split or review a skill, using skill-creator plus th
 1. Load `skill-creator` and follow it. Where it differs from these steps, these win.
 2. When revising, splitting or reviewing, read the existing skill first and keep its `name`.
 3. Decide the skill's scope: universal, or one kind of work. Write the frontmatter: `name`, and a `description` saying what the skill does and when to use it, across that whole scope. Name the skill `[action]-[object]`, two words, even when the plugin's name matches the object.
-4. Write `## In`: each input and where it comes from. Inputs come only from the sources named there. If one is missing, the skill hands off to the skill that makes it, or stops and says exactly what the owner must provide. A default value for an input is fine.
+4. Write `## In`: each input and what it must contain for the skill to do its job, not a file name or location. Make the skill's first Act step check its inputs against that. If one falls short, the skill hands off to the skill that makes it, or stops and says exactly what the owner must provide. The skill never makes its own inputs. A default value for an input is fine.
 5. Write `## Out`: what the skill produces, and where.
 6. Write `## Think`: the questions the model asks itself. They stay out of the skill's output.
 7. Write `## Act`: short imperative steps, in order. Say what to do. Add a why only where a step would be misread without it. For each subagent the skill starts, name the smallest model and effort that does the job well, and the inputs it gets. Start independent steps at the same time.
