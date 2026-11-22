@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: backend-infra-split
+expected_outcome: |
+  PR 2 of pin-a-note (back end and infra) is built on a new branch cut from pin-a-note/pr-1, in its own git
+  worktree, committed locally and never pushed. The repo had no CI, so the PR adds Taskfile.yml with a check gate
+  and a CI workflow that runs it. The store tests the design lists are written at store's exported surface and run
+  failing before the file-backed store is written; then they pass. store/stub.go is replaced by a real store that
+  keeps the stub contract's names and signatures and keeps notes across a reopen. The front end is left as PR 1
+  built it. The full gate passes; the message gives its time, code and test lines apart with config left out, and
+  the Think answers apart.
+context:
+  scaffold_script: place-files.sh

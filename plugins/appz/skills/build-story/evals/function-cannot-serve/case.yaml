@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: function-cannot-serve
+expected_outcome: |
+  The design's approved Parse ([]int) and Sum (int) cannot serve scenario 2 (1.50 + 2.25 prints 3.75) as written.
+  That is a change to a line of the design, so the run returns it as a question with a pick (for example amounts as
+  cents or a decimal type), and builds nothing that depends on it: no Parse or Sum, with whatever signature, is
+  committed or left in a worktree, and the design file is not edited. Nothing is pushed. The Think answers come back
+  apart, the design-change one naming this question.
+context:
+  scaffold_script: place-files.sh

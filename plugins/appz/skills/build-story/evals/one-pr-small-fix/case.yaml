@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: one-pr-small-fix
+expected_outcome: |
+  PR 1 of show-book-count is built on a new branch cut from main, in its own git worktree, committed locally and
+  never pushed: origin still holds only main. The tests the design lists (store TestCount, web TestPageShowsCount)
+  are written at each package's exported surface and run failing before the code that makes them pass. Count is
+  added to store and the page shows the count line. The full gate (task check) passes at the end. The returned
+  message gives the branch, worktree, gate result and how long it took, code lines and test lines changed counted
+  apart with config left out, and the Think answers apart from the work.
+context:
+  scaffold_script: place-files.sh

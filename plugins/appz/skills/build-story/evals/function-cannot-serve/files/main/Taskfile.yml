@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+  fast:
+    cmds:
+      - go build ./...
+      - go test ./...
+
+  check:
+    cmds:
+      - test -z "$(gofmt -l .)"
+      - go vet ./...
+      - go test -count=1 ./...

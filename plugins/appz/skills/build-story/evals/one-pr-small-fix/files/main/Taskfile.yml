@@ -1,0 +1,16 @@
+version: '3'
+
+tasks:
+  fast:
+    desc: Build and test, for use while working.
+    cmds:
+      - go build ./...
+      - go test ./...
+
+  check:
+    desc: The full gate, run by CI on every change.
+    cmds:
+      - test -z "$(gofmt -l .)"
+      - go vet ./...
+      - go test -count=1 ./...
+      - go build -o /dev/null ./cmd/shelf
