@@ -17,7 +17,9 @@ Returned to the caller, one of:
 
 Beside it, any other question that came up while settling it and meets the bar in `## In`, named as a new question to settle with what the work can't do until it is answered, and left unsettled: no answer, default or pick.
 
-With a default or a question, any MCP that isn't installed but would answer it, and what it would answer. And this skill's Think answers, one line per question, each saying what it led the skill to do, kept apart from the answer.
+With a default or a question, any MCP that isn't installed but would answer it, and what it would answer.
+
+With every result, settled, default or question, this skill's Think answers, one line per question, each saying what it led the skill to do, kept apart from the answer.
 
 ## Think
 - Does anything people have said or decided, or the work's inputs, settle it?
@@ -34,3 +36,4 @@ With a default or a question, any MCP that isn't installed but would answer it, 
 5. Otherwise, return a default, marked as a default, with its reason.
 6. With a question or a default, name any MCP that isn't installed but would answer it, and what it would answer.
 7. Answer only the question you were given. Return another question beside the answer only when it came up while settling this one and meets the bar in `## In`: what must be chosen, and what the work can't do until it is. Name it as a new question to settle, say what the work can't do until it is answered, and leave it unsettled, because answering it here would commit the caller to a choice it never saw. Anything the work can go on without stays out.
+8. Return this skill's Think answers with the result every time, whether it is settled, a default or a question: one line per question, kept apart from the answer.
