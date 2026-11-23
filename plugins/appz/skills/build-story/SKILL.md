@@ -17,9 +17,9 @@ description: Build one PR of a story from its approved technical design, in its 
 Returned to the caller:
 - The PR's branch and the git worktree it was built in, with its commits, committed locally and not pushed.
 - The gate result, and how long the full gate took.
-- The code lines and the test lines changed in this PR, counted apart, config left out (the Taskfile, the CI workflow and any other build or CI config).
+- The code lines and the test lines changed in this PR, counted apart, config left out (the Taskfile, the CI workflow and any other build or CI config), summed from the rows the counting command gives, with the command.
 - The questions from `skillz:settle-question`, each with its pick.
-- This skill's Think answers, one line per question, each naming what it led the skill to change, or what it checked and found to need no change, kept apart from the work.
+- This skill's Think answers, one line per question, each naming what it looked at (the test, file, function or line) and what it found, or the change it made; where nothing was built, each names what was checked and what stopped the work. Kept apart from the work.
 
 ## Think
 - Does each test serve a scenario?
@@ -35,7 +35,7 @@ Returned to the caller:
 5. Write the tests `## Tests` lists for this PR, each at its package's exported surface, each package a black box at its own surface. Run them and see each one fail before any code is written; a test the stub already passes counts once it fails with the stub's behaviour removed.
 6. If the repo has no CI or gate and this PR holds the infra, add them, with a Taskfile (`Taskfile.yml`) as the task runner.
 7. Write the code until the tests pass. When the design is split, build the front end against the stubbed back end, to the stub's contract; in the back-end PR, replace the stub with the real back end. Run the gate's fast checks (such as build, lint and the tests of the packages touched) while working.
-8. Evaluate the work against each `## Think` question, and fix what fails one. Answer each in one line naming what it led to: the change made, or the thing checked and found to need no change.
+8. Evaluate the work against each `## Think` question, and fix what fails one. Answer each in one line that names what you looked at (the test, file, function or line) and what you found, or the change you made. Where nothing was built, name what you checked and what stopped the work.
 9. Commit locally. Never push; opening the PR is a separate step.
-10. Run the full gate once, at the end, and time it. At the same time, count the lines this PR changes against the branch it was cut from: code lines and test lines apart, config left out (the Taskfile, the CI workflow and any other build or CI config).
-11. Return to the caller the branch and worktree, its commits, the gate result and how long it took, the line counts, each question with its pick, and the Think answers, each naming its change or its check, apart from the work.
+10. Run the full gate once, at the end, and time it. At the same time, take the line counts from a command run against the branch it was cut from, for example `git diff --numstat <base>...HEAD`: split its rows into code files, test files and config files (the Taskfile, the CI workflow and any other build or CI config), and sum added and removed per group. Keep the command and the numbers it gave; config is left out of the returned counts.
+11. Return to the caller the branch and worktree, its commits, the gate result and how long it took, the code and test line counts as summed from the command's rows (config left out), with the command, each question with its pick, and the Think answers, each naming what it looked at and found, or its change, apart from the work.
