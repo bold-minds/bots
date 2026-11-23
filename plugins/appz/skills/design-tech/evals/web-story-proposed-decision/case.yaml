@@ -7,7 +7,10 @@ expected_outcome: |
   taken as a default. With the prompt's aim of 100 changed lines per PR, the story is cut front end | back end with
   data (infra in its own PR only if it has changed lines), each PR with its estimate, the front end built against a
   stubbed back end with the stub's contract. A PR still over 100 after that cut stays one PR, with no question about it.
-  Tests are at each package's exported surface, each part names
+  Unit tests are at each package's exported surface; integration tests run against a real SQLite database; end-to-end
+  tests run in a browser against the running app, one per scenario 1 to 5 plus the Journey, with the command that
+  starts the app and what it needs; a chaos test breaks the database for scenario 5; no perf test, since no number is
+  given; each PR names its test layers, with the real end-to-end tests in the last PR. Each part names
   the scenarios it serves, and the Think answers come back apart from the design. No code is written.
 context:
   scaffold_script: place-files.sh

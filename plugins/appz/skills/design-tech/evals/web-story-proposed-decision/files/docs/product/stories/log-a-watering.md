@@ -14,5 +14,6 @@ Then the watering is kept with its time, and Fern's page shows "Last watered: ju
 2. A plant never watered shows "Not watered yet". (SP4)
 3. After a watering, the plant's page shows when it was last watered, and it is still shown after the page is opened again. (SP4)
 4. Logging a watering for a plant that no longer exists says "That plant is gone", and nothing is kept. (SP5)
+5. When the app can't save to its database, logging a watering says "Couldn't save that, try again", and the plant's page still shows the last watering it had. (SP6)
 
 ## Changelog

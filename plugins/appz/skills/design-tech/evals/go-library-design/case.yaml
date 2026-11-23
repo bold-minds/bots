@@ -5,7 +5,9 @@ expected_outcome: |
   It names Merge as the function added to package tagset and reuses the existing Normalize. It adds no third-party
   library, per the accepted decision. The story is small, so it fits in one PR (Merge and its tests) with an estimate
   within the default 400 lines, with no skeleton, no stub, and no invented server, screen or database. Tests are at
-  the tagset package's exported surface. Each part names the scenario it
+  the tagset package's exported surface for unit tests; end-to-end tests run through a small calling program, one per
+  scenario plus the Journey, with the command that runs it; a perf test checks scenario 4 against TG5's 20 ms; no chaos
+  test, since no dependency can fail; the PR names the layers it holds. Each part names the scenario it
   serves. No Go code is written. The Think answers come back one line per question, apart from the design.
 context:
   scaffold_script: place-files.sh

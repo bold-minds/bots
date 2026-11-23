@@ -5,7 +5,9 @@ expected_outcome: |
   gone everywhere and the existing plants.Store.Update is used instead; the validator library is gone and ValidName
   checks the length by hand. Every line the markup doesn't touch is kept as it was: the Schema, routes, commands and
   events section, PR 1 (front end with its stub contract), the plant.html line (the web.RenamePlant line may change to name Update)
-  and the web tests line. PR 2 (back end and infra) changes only where the markup touches it. Nothing new is added.
+  and the web tests line, the Taskfile line and the E2E lines. PR 2 (back end and infra) changes only where the markup
+  touches it and still names the layers it holds; the integration tests name Update; no perf or chaos test is added.
+  Nothing new is added.
   The revision is returned as a draft for approval, with a change list naming the markup note or forced change
   behind each change, and the Think answers apart.
 context:
