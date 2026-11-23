@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: recheck-returns-only-bad-fix
 expected_outcome: |
-  Fix 1 (past-tense "Added") is done right. Fix 2 is claimed but not done: the Think answer says "Sped up uploads" was cut and the change log says it was cut, yet the bullet is still in the note. The re-check returns only miss 2. It checks only the earlier misses and the changed lines, so it does not return the heading date "2026/05/20" (a real break in a line nobody changed).
+  Fix 1 (past-tense "Added") is done right. Fix 2 is claimed but not done: the Think answer says "Sped up uploads" was cut and the change log says it was cut, yet the bullet is still in the note. Fix 3 adds a summary line that was missing, and is done right: it is called fixed with a quoted literal search that finds the added summary in the note (for an absent thing, an empty search proves nothing). The re-check returns only miss 2 as open. It checks only the earlier misses and the changed lines, so it does not return the heading date "2026/05/20" (a real break in a line nobody changed).
 context:
   scaffold_script: place-files.sh
