@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: stacked-stub-new-pattern
+expected_outcome: |
+  Two PRs in the design's order. PR 1 (mark-a-chore-done/pr-1, on main) is the chore page on a stubbed
+  store: it names scenarios 1, 2, 3 and 5, unit and E2E tests against the stub, the two new routes, says the
+  stub keeps chores in memory only and that PR 2 replaces it. PR 2 (mark-a-chore-done/pr-2, on PR 1's
+  branch) replaces the stub with the litesql store, keeping the contract; names scenarios 1 to 5 and unit,
+  integration, E2E and chaos tests; gives example.org/litesql/v2 at v2.3.1, behind v2.4.0 because of its
+  WAL default; and has a short section on the repo's first schema migrations: what, why, how, where to
+  look. Each gives the CI trigger, one line of checks, its total time (24.6 s, 61.3 s) and the slow part,
+  without per-step times, and code and test lines apart with their command. Every claim comes from the
+  inputs. Nothing is pushed or opened. The Think answers come apart from the PR text.
+context:
+  scaffold_script: place-files.sh

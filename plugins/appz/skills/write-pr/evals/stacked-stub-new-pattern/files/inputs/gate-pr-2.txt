@@ -1,0 +1,20 @@
+Gate for mark-a-chore-done/pr-2, run once at the end of the build: `time task check` in the PR's worktree.
+
+task: [check] test -z "$(gofmt -l .)"
+task: [check] go vet ./...
+task: [check] go test -race ./...
+?   	chorelist/cmd/chorelist	[no test files]
+ok  	chorelist/e2e	6.112s
+ok  	chorelist/store	14.873s
+ok  	chorelist/web	1.301s
+
+real	1m1.3s
+user	2m4.7s
+sys	0m11.8s
+
+Per command:
+gofmt         0.2s
+go vet        3.0s
+go test -race 57.4s (chorelist/store's integration tests on real chore files are the longest package)
+
+Result: PASS (exit 0). Full gate: 61.3 s.

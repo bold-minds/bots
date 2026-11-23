@@ -1,0 +1,22 @@
+version: "3"
+
+tasks:
+  fmt:
+    cmds:
+      - test -z "$(gofmt -l .)"
+  vet:
+    cmds:
+      - go vet ./...
+  lint:
+    cmds:
+      - go run honnef.co/go/tools/cmd/staticcheck@2024.1.1 ./...
+  test:
+    cmds:
+      - go test -race ./...
+  check:
+    desc: The gate every change must pass.
+    cmds:
+      - task: fmt
+      - task: vet
+      - task: lint
+      - task: test

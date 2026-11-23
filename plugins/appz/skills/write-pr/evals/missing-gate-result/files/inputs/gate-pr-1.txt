@@ -1,0 +1,20 @@
+Gate for mark-a-chore-done/pr-1, run once at the end of the build: `time task check` in the PR's worktree.
+
+task: [check] test -z "$(gofmt -l .)"
+task: [check] go vet ./...
+task: [check] go test -race ./...
+?   	chorelist/cmd/chorelist	[no test files]
+ok  	chorelist/e2e	1.406s
+?   	chorelist/store	[no test files]
+ok  	chorelist/web	1.288s
+
+real	0m24.6s
+user	0m51.0s
+sys	0m6.2s
+
+Per command:
+gofmt         0.2s
+go vet        2.1s
+go test -race 21.9s
+
+Result: PASS (exit 0). Full gate: 24.6 s.

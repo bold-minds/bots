@@ -1,0 +1,14 @@
+Line counts for mark-a-chore-done/pr-1, against main.
+
+Command:
+git diff --numstat main...mark-a-chore-done/pr-1 | awk '
+  $3 ~ /(^|\/)(Taskfile\.yml|go\.mod|go\.sum)$/ || $3 ~ /^\.github\// { next }
+  $3 ~ /_test\.go$/ { ta += $1; tr += $2; next }
+  { ca += $1; cr += $2 }
+  END { printf "code +%d -%d\ntest +%d -%d\n", ca, cr, ta, tr }'
+
+Output:
+code +119 -1
+test +117 -0
+
+Config left out: none changed.

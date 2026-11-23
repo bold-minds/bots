@@ -1,0 +1,12 @@
+version: "3"
+
+tasks:
+  run:
+    cmds:
+      - go run ./cmd/chorelist
+  check:
+    desc: The gate every change must pass.
+    cmds:
+      - test -z "$(gofmt -l .)"
+      - go vet ./...
+      - go test -race ./...

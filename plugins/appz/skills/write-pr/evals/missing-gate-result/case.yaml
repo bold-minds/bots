@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: missing-gate-result
+expected_outcome: |
+  PR 2's gate result is not given. The return tells the caller that PR 2's (mark-a-chore-done/pr-2) gate
+  result is missing and what it must contain (the gate's output, pass or fail, and how long the full gate
+  took), and writes no title or description for either PR. The gate is not run to make the missing input.
+  Nothing is pushed or opened. Think answers come back apart, each quoting what was checked and what
+  stopped the work.
+context:
+  scaffold_script: place-files.sh

@@ -1,0 +1,22 @@
+Gate for save-a-link/pr-1, run once at the end of the build: `time task check` in the PR's worktree.
+
+task: [fmt] test -z "$(gofmt -l .)"
+task: [vet] go vet ./...
+task: [lint] go run honnef.co/go/tools/cmd/staticcheck@2024.1.1 ./...
+task: [test] go test -race ./...
+ok  	linkshelf/e2e	1.904s
+?   	linkshelf/cmd/linkshelf	[no test files]
+ok  	linkshelf/store	1.122s
+ok  	linkshelf/web	1.317s
+
+real	0m46.2s
+user	1m38.4s
+sys	0m9.1s
+
+Per task (from `task --summary`-style timing wrapper):
+fmt   0.3s
+vet   2.7s
+lint  9.8s
+test  33.4s
+
+Result: PASS (exit 0). Full gate: 46.2 s.

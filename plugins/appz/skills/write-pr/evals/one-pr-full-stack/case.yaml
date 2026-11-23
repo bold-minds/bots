@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: one-pr-full-stack
+expected_outcome: |
+  One PR, save-a-link/pr-1 on main, holding front end, back end and infra. Its description is grouped by
+  area in a few bullets each; names scenarios 1, 2 and 3 and the unit and E2E test layers; names the three
+  new routes and the repo's first gate (Taskfile and CI workflow) as new; gives the CI trigger (push and pull
+  request), one line of what it checks, the 46.2 s total and the test step as the slow part, without listing
+  each step's time; gives example.org/tinyslug at v0.9.3 as the diff requires, behind v1.0.0 because that
+  needs Go 1.24; says the workflow does not deploy; and gives code and test lines apart with their command.
+  The design's v0.9.2 against the diff's v0.9.3 is returned to the caller as a question with a pick. Every
+  claim comes from the story, design, diff, gate output or counts. Nothing is pushed or opened. The Think
+  answers come apart from the PR text.
+context:
+  scaffold_script: place-files.sh
