@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: before-release-two-stories
+expected_outcome: |
+  The before-release call for a two-story milestone of a small command-line app released to a test place,
+  then a live place, by Taskfile tasks. The return confirms split-a-bill/pr-1 and add-a-tip/pr-1 are merged
+  into main, each with the command and its output; runs the gate (task check) once on main's tip and gives
+  it passed, unit and E2E layers, with the commit; writes release notes by story in plain words (split a bill
+  between people, refused with no people; add a tip percent, refused over the most allowed), each line shown
+  with its source; and returns the release steps in order: task deploy:test with COMMIT set to main's tip,
+  then the E2E check against places/test, then task deploy:live with the same commit only once that check
+  passes, then the check against places/live. Nothing is pushed, merged, tagged or deployed: origin.git,
+  repo/'s main and tags, and places/ stay as the fixture left them. The Think answers come apart, each with
+  a quote.
+context:
+  scaffold_script: place-files.sh

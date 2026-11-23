@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: verify-test-one-scenario-fails
+expected_outcome: |
+  The call after the test release step. The run runs the milestone's E2E suite (task e2e) against the test
+  place, places/test, and returns a result per scenario: split-a-bill 1 and 2 pass, add-a-tip 2 passes, and
+  add-a-tip 1 fails ("Tip must be 0 to 15" against the expected "15.00 each (tip 10.00)", the test place's
+  tipjar.conf sets max_tip=15), each with the command and its output. It returns "do not release live" with
+  the failing scenario. It fixes nothing and releases nothing: places/ (the test place's tipjar.conf too),
+  repo/'s tracked files, main and tags, and origin.git stay as the fixture left them. The Think answers come
+  apart, each with a quote.
+context:
+  scaffold_script: place-files.sh

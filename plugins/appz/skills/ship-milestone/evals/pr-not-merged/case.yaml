@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: pr-not-merged
+expected_outcome: |
+  The before-release call, where the caller says both PRs are merged but add-a-tip/pr-1 was pushed and never
+  merged into main. The return says add-a-tip/pr-1 is not merged into main, with the command and its output,
+  and that split-a-bill/pr-1 is. It runs no gate, writes no release notes and returns no release steps.
+  Nothing is merged, pushed, tagged or deployed: origin.git, repo/'s main and tags, and places/ stay as the
+  fixture left them. The Think answers come apart, each quoting what was checked and what stopped the work.
+context:
+  scaffold_script: place-files.sh

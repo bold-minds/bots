@@ -1,0 +1,43 @@
+version: '3'
+
+vars:
+  PLACES: '{{.PLACES | default "../places"}}'
+
+tasks:
+  check:
+    desc: The gate every change must pass. Runs the unit tests, then the E2E suite against this folder's tipjar.py.
+    cmds:
+      - task: unit
+      - task: e2e
+        vars:
+          TARGET: '{{.ROOT_DIR}}'
+
+  unit:
+    desc: Unit tests.
+    cmds:
+      - python3 -m unittest discover -s tests -v
+
+  e2e:
+    desc: E2E suite against the tipjar in TARGET, a folder holding tipjar.py (for example TARGET=../places/test).
+    requires:
+      vars: [TARGET]
+    env:
+      TIPJAR_DIR: '{{.TARGET}}'
+    cmds:
+      - python3 -m unittest discover -s e2e -v
+
+  deploy:test:
+    desc: Release COMMIT to the test place.
+    requires:
+      vars: [COMMIT]
+    cmds:
+      - git archive {{.COMMIT}} tipjar.py | tar -x -C {{.PLACES}}/test
+      - git rev-parse {{.COMMIT}} > {{.PLACES}}/test/RELEASED
+
+  deploy:live:
+    desc: Release COMMIT to the live place.
+    requires:
+      vars: [COMMIT]
+    cmds:
+      - git archive {{.COMMIT}} tipjar.py | tar -x -C {{.PLACES}}/live
+      - git rev-parse {{.COMMIT}} > {{.PLACES}}/live/RELEASED
