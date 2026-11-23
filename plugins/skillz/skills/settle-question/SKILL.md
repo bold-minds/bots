@@ -15,6 +15,8 @@ Returned to the caller, one of:
 - Default: the answer taken, marked as a default, and why.
 - Question: what must be decided, your pick, and why.
 
+Beside it, each other question that came up while settling it, named as a new question to settle and left unsettled: no answer, default or pick.
+
 With a default or a question, any MCP that isn't installed but would answer it, and what it would answer. And this skill's Think answers, one line per question, each saying what it led the skill to do, kept apart from the answer.
 
 ## Think
@@ -22,6 +24,7 @@ With a default or a question, any MCP that isn't installed but would answer it, 
 - Could an installed MCP or other tool look up the answer?
 - Would an MCP that isn't installed answer it?
 - Is it hard to undo, and does it change what comes next?
+- Is everything I am about to answer the question I was given, or has another question come up?
 
 ## Act
 1. Check the question against `## In`: it says what must be chosen and what the work can't do until it is. If it doesn't, return it to the caller, saying exactly what's missing and what it must contain.
@@ -30,3 +33,4 @@ With a default or a question, any MCP that isn't installed but would answer it, 
 4. If it's both hard to undo and changes what comes next, return it as a question, with your pick.
 5. Otherwise, return a default, marked as a default, with its reason.
 6. With a question or a default, name any MCP that isn't installed but would answer it, and what it would answer.
+7. Answer only the question you were given. Any other question that came up while settling it (a gap, an edge, a next choice) goes back beside the answer, named as a new question to settle and left unsettled, because answering it here would commit the caller to a choice it never saw.
