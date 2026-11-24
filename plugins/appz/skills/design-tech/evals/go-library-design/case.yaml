@@ -3,7 +3,8 @@ name: go-library-design
 expected_outcome: |
   docs/product/stories/merge-tag-lists.design.md is written beside the story and is returned as a draft for approval.
   It names Merge as the function added to package tagset and reuses the existing Normalize. It adds no third-party
-  library, per the accepted decision. The story is small, so it fits in one PR (Merge and its tests) with an estimate
+  library, per the accepted decision. The story is small, so it fits in one PR (Merge and its tests, and the standard
+  checks, since the repo has no CI or gate) with an estimate
   within the default 400 lines, with no skeleton, no stub, and no invented server, screen or database. Tests are at
   the tagset package's exported surface for unit tests; end-to-end tests run through a small calling program, one per
   scenario plus the Journey, with the command that runs it; a perf test checks scenario 4 against TG5's 20 ms; no chaos

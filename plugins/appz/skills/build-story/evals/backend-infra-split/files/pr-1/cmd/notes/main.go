@@ -8,6 +8,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"time"
 
 	"example.com/pinboard/store"
 	"example.com/pinboard/web"
@@ -21,5 +22,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Fatal(http.ListenAndServe(*addr, web.Handler(s)))
+	srv := &http.Server{Addr: *addr, Handler: web.Handler(s), ReadHeaderTimeout: 5 * time.Second}
+	log.Fatal(srv.ListenAndServe())
 }

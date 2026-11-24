@@ -1,0 +1,69 @@
+# The standard Go lint, run by `task lint` with golangci-lint v2 (the version is pinned in scripts/checks.sh).
+version: "2"
+
+run:
+  relative-path-mode: wd
+  # Integration and E2E test files carry these tags; lint them too.
+  build-tags:
+    - integration
+    - e2e
+
+linters:
+  default: none
+  enable:
+    - depguard
+    - errcheck
+    - godox
+    - gosec
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+  settings:
+    depguard:
+      rules:
+        main:
+          files:
+            - $all
+          allow:
+            - $gostd
+            # PER-REPO: this module's own path, then each library the code imports (as the design's Libraries
+            # names them). The standard's install.sh writes the module path on the line below.
+            - FILL-ME/module/path
+    errcheck:
+      check-type-assertions: true
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+      settings:
+        shadow:
+          strict: true
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      # A test may ignore an error it does not check and build commands and paths from its own fixtures.
+      - linters:
+          - errcheck
+          - gosec
+        path: _test\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+
+issues:
+  max-same-issues: 50
+
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

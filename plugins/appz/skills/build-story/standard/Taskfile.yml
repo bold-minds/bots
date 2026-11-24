@@ -1,0 +1,72 @@
+# The standard checks: one task per step, each runnable alone; `task validate` runs them all in order, as CI does.
+# Override a setting on the command line, for example `task validate COVERAGE_MIN=85` or `task unit TEST_TIMEOUT=2m`.
+#
+# Where each test layer goes, so its step finds it:
+#   Go unit tests          no build tag; counted for coverage
+#   Go integration tests   files starting `//go:build integration`
+#   Go E2E tests           files starting `//go:build e2e`, starting the app through the start task below
+#   web unit tests         *.test.ts under WEB_DIR's tests/ or src/; counted for coverage
+#   web E2E tests          run by the playwright.config.ts in WEB_DIR
+version: '3'
+
+silent: true
+
+vars:
+  MODE: local # local or ci; CI runs `task validate MODE=ci`
+  COVERAGE_MIN: 80 # percent, for Go and for the web page
+  TEST_TIMEOUT: 10m
+  WEB_DIR: web # the folder holding the web page's package.json
+  COVERAGE_EXCLUDE: /cmd/ # Go file paths left out of the coverage number: wiring with no behaviour
+
+env:
+  MODE: '{{.MODE}}'
+  COVERAGE_MIN: '{{.COVERAGE_MIN}}'
+  TEST_TIMEOUT: '{{.TEST_TIMEOUT}}'
+  WEB_DIR: '{{.WEB_DIR}}'
+  COVERAGE_EXCLUDE: '{{.COVERAGE_EXCLUDE}}'
+
+tasks:
+  env:
+    desc: 'Environment: git, the toolchains and the pinned tools, the web packages installed'
+    cmds: [scripts/checks.sh env]
+
+  lint:
+    desc: 'Lint: formatting (gofmt, prettier), golangci-lint, eslint'
+    cmds: [scripts/checks.sh lint]
+
+  build:
+    desc: 'Build: web types (svelte-check, tsc) and vite build, then go build and go.mod tidy'
+    cmds: [scripts/checks.sh build]
+
+  unit:
+    desc: 'Unit tests: go test -race, vitest'
+    cmds: [scripts/checks.sh unit]
+
+  integration:
+    desc: 'Integration tests: Go test files tagged integration'
+    cmds: [scripts/checks.sh integration]
+
+  e2e:
+    desc: 'E2E tests: Go test files tagged e2e, Playwright'
+    cmds: [scripts/checks.sh e2e]
+
+  coverage:
+    desc: 'Coverage: Go and web unit-test coverage at or above COVERAGE_MIN'
+    cmds: [scripts/checks.sh coverage]
+
+  docs:
+    desc: 'Docs: a README.md at the root'
+    cmds: [scripts/checks.sh docs]
+
+  validate:
+    desc: 'Every step in order, with a summary: what CI runs, and what says a change is ready to ship'
+    cmds: [scripts/checks.sh env lint build unit integration e2e coverage docs]
+
+  # PER-REPO: the command the design's E2E tests start the app with, or run the program that calls it.
+  # Name the task as the design does and replace the line under cmds; take settings as vars with a default, for
+  # example `go run ./cmd/<app> -addr={{.ADDR}}` with `vars: {ADDR: '{{.ADDR | default ":8080"}}'}` (a plain
+  # task var would override the one given on the command line).
+  start:
+    desc: 'Start the app (or run the program that calls it), as the E2E tests do'
+    cmds:
+      - FILL-ME the command that starts the app

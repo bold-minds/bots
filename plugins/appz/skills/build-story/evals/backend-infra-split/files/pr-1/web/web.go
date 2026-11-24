@@ -36,6 +36,7 @@ func Handler(s *store.Store) http.Handler {
 	}
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) { render(w, "") })
 	mux.HandleFunc("POST /pin", func(w http.ResponseWriter, r *http.Request) {
+		r.Body = http.MaxBytesReader(w, r.Body, 1<<16)
 		_, err := s.Add(r.FormValue("text"))
 		if errors.Is(err, store.ErrEmpty) {
 			render(w, "Note is empty")

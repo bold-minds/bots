@@ -1,16 +1,24 @@
 """Check build-story's Think answers by command.
 
 Usage: python3 check-answers.py <answers file> <tests file> <base branch> <worktree>
-  answers: one line per ## Think question, in the form
+  answers: one line per ## Think question, in this form only
            <question> <verdict>: «<quote>» (<where>); «<quote>» (<where>)
            verdict: Yes | No | Not reached | Changed <a few words>
-           where:   <path>:<line> | <saved file>: `<command>`   (either may end ", <name>")
+           Every other word is a quote, so an answer claims only what its quotes show.
+           where:   <path>:<line> | <saved file>: `<command>`   (either may end ", <test name>")
            A quote is one whole line of that file, or of the command's output; a saved file
-           holds the command's whole output with the command as its first line.
+           holds the command's whole output with the command as its first line, for example
+           { echo '<command>'; <command>; } > out.txt 2>&1; cat out.txt
            The last question's answer quotes «FAILS: 0», this check's own final line; its where
            names a saved file that exists and starts with this check's command: python running
            check-answers.py with this run's four arguments.
   tests:   one name per line, the tests this PR adds.
+It fails: any text outside the form; any quote that isn't a whole line found where it says; any added test
+missing from either test answer; in the scenario-check answer, any added test whose lines (a where ending
+", <test>") come before every scenario's story line, or after the story line ("<n>. ...") of a scenario that
+the numbers after the test's name in its quoted ## Tests line don't include (a ## Tests line with no numbers
+after the name is noted, not failed); any changed file missing from the
+design-scope answer; and a last answer not in its form.
 Paths are tried beside the answers file, in the worktree, then as given.
 Prints each check and what it found, then "FAILS: <n>"; exits 1 when n > 0."""
 import os
@@ -19,6 +27,9 @@ import shlex
 import subprocess
 import sys
 
+if len(sys.argv) != 5:
+    print(__doc__)
+    sys.exit(2)
 answers_path, tests_path, base, wt = sys.argv[1:5]
 skill = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "SKILL.md")
 here = os.path.dirname(os.path.abspath(answers_path))
@@ -240,6 +251,48 @@ for t in [t.strip() for t in open(tests_path, encoding="utf-8") if t.strip()]:
         fail(f"{t} not in the serve-a-scenario answer")
     if chk not in hit:
         fail(f"{t} not in the check-its-scenario answer")
+
+# In the check-its-scenario answer, a test's lines (a where ending ", <test>") sit after the story line of the
+# scenario they check (a quote from a .md file starting "<n>. "). That scenario must be one the test's own
+# ## Tests line, as the serve-a-scenario answer quotes it, gives: the scenario numbers after its name.
+print("## each test beside a scenario its ## Tests line serves")
+added = {t.strip() for t in open(tests_path, encoding="utf-8") if t.strip()}
+SCEN = re.compile(r"[Ss]cenarios?\s+(\d+(?:\s*(?:,|and)\s*\d+)*)")
+
+
+def served(t):
+    for qu, _ in items_on.get(serve, []):
+        m = re.search(r"`%s`" % re.escape(t), qu) or re.search(r"\b%s\b" % re.escape(t), qu)
+        if not m:
+            continue
+        seg = qu[m.end():]
+        nxt = re.search(r"`Test\w*`", seg)
+        seg = seg[:nxt.start()] if nxt else seg
+        s = SCEN.search(seg)
+        if s:
+            return {int(x) for x in re.findall(r"\d+", s.group(1))}
+    return None
+
+
+cur = None
+for qu, wh in items_on.get(chk, []):
+    m = re.match(r"\s*(\d+)\.\s", qu)
+    if wh.split(":")[0].endswith(".md") and m:
+        cur = int(m.group(1))
+        continue
+    t = wh.rsplit(", ", 1)[1].strip() if ", " in wh else None
+    if t not in added:
+        continue
+    if cur is None:
+        fail(f"{t}'s lines come before every scenario's story line in the check-its-scenario answer")
+        continue
+    sv = served(t)
+    if sv is None:
+        print(f"note: no scenario numbers found after {t} in the serve-a-scenario answer's quotes")
+    elif cur not in sv:
+        fail(f"{t} sits beside scenario {cur}'s story line, but its ## Tests line serves {', '.join(map(str, sorted(sv)))}")
+    else:
+        print(f"ok {t} beside scenario {cur}")
 
 print("## every file this PR changes, quoted in the design-scope answer")
 scope = at.get(qs[2])

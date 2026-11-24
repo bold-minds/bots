@@ -3,7 +3,7 @@ name: web-story-proposed-decision
 expected_outcome: |
   docs/product/stories/log-a-watering.design.md is written beside the story and returned as a draft for approval.
   It adds a waterings table as a new numbered migration and the POST /plants/{id}/waterings route, and reuses the
-  existing plants.Store, SQLite and CI. The proposed htmx decision comes back as a question with a pick and is not
+  existing plants.Store, SQLite and CI (so it plans no standard checks). The proposed htmx decision comes back as a question with a pick and is not
   taken as a default. With the prompt's aim of 100 changed lines per PR, the story is cut front end | back end with
   data (infra in its own PR only if it has changed lines), each PR with its estimate, the front end built against a
   stubbed back end with the stub's contract. A PR still over 100 after that cut stays one PR, with no question about it.

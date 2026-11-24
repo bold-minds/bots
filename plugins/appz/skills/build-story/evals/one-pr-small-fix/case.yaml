@@ -8,7 +8,8 @@ expected_outcome: |
   Chrome through chromedp against the app started by `task serve` (TestJourney, TestEmptyShelf, TestThreeBooks,
   TestOneBook), and perf (TestPageSpeed, 1000 books within 100 ms); no integration or chaos test, as the design
   says. Each is seen failing before the code that makes it pass. Count is added to store and the page shows the
-  count line. The full gate (task check) runs every layer and passes at the end. The returned message gives the
+  count line. The repo has its own gate, so the standard checks are not installed. The full gate (task check) runs
+  every layer and passes at the end. The returned message gives the
   branch, worktree, gate result and how long it took, code lines and test lines changed counted apart with config
   left out, and the Think answers apart from the work, the scenario-check answer quoting each test's scenario line
   and test line.
