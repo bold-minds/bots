@@ -2,10 +2,15 @@ schema_version: "1.1"
 name: one-pr-small-fix
 expected_outcome: |
   PR 1 of show-book-count is built on a new branch cut from main, in its own git worktree, committed locally and
-  never pushed: origin still holds only main. The tests the design lists (store TestCount, web TestPageShowsCount)
-  are written at each package's exported surface and run failing before the code that makes them pass. Count is
-  added to store and the page shows the count line. The full gate (task check) passes at the end. The returned
-  message gives the branch, worktree, gate result and how long it took, code lines and test lines changed counted
-  apart with config left out, and the Think answers apart from the work.
+  never pushed: origin still holds only main. The design's start command becomes real: a `serve` task in
+  Taskfile.yml that starts the app on ADDR with the titles in BOOKS. Every test the design lists is written, in
+  each layer it names: unit (store TestCount, web TestPageShowsCount at each package's exported surface), E2E in
+  Chrome through chromedp against the app started by `task serve` (TestJourney, TestEmptyShelf, TestThreeBooks,
+  TestOneBook), and perf (TestPageSpeed, 1000 books within 100 ms); no integration or chaos test, as the design
+  says. Each is seen failing before the code that makes it pass. Count is added to store and the page shows the
+  count line. The full gate (task check) runs every layer and passes at the end. The returned message gives the
+  branch, worktree, gate result and how long it took, code lines and test lines changed counted apart with config
+  left out, and the Think answers apart from the work, the scenario-check answer quoting each test's scenario line
+  and test line.
 context:
   scaffold_script: place-files.sh

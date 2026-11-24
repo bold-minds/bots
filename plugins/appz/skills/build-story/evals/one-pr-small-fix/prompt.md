@@ -1,7 +1,7 @@
 ---
 tags: [build-story]
-max_turns: 60
-timeout_seconds: 1500
+max_turns: 100
+timeout_seconds: 2400
 allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash]
 ---
 

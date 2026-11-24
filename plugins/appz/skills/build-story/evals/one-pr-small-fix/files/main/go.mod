@@ -1,3 +1,3 @@
 module example.com/shelf
 
-go 1.22
+go 1.26
