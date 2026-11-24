@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: revise-round-from-markup
+expected_outcome: |
+  A revision of a marked-up first round. The next round is written as new files beside round 1, and every
+  file of round 1 stays byte for byte as it was. The three notes are applied: a search box on the list, the
+  item's button reads "Mark claimed", and the confirm screen is gone with nothing linking to it, the button
+  going straight back to the list. The screen no note touches (adding a found item) is the same as in
+  round 1, and every screen is still reachable by clicking. A change list traces each change to the note
+  that asks for it, quoted, or to the change that forced it. The Think answers come apart, each quoting the
+  line it rests on. Whether the revision is good is left to a human reader.
+context:
+  scaffold_script: place-files.sh

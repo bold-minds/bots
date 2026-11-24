@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: screens-from-quotes
+expected_outcome: |
+  A first design round for a small phone-and-laptop app, from a page of what people said. The screens come
+  as one self-contained HTML file that plays: each screen at phone and at desktop width, every screen
+  reachable by clicking from the first, loading states playing out on a timer, the fold marked and a status
+  bar on each phone, and only words the app itself says or accepts. A system page names the parts that run
+  and how they talk, with a decisions table whose every row comes from a quote in said.md or is marked ` *`,
+  and the open questions each with a pick. Numbers nobody gave are marked defaults. The Think answers come
+  apart, each quoting the line it rests on. Whether it is a good design is left to a human reader.
+context:
+  scaffold_script: place-files.sh

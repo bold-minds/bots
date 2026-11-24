@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: library-functions-only
+expected_outcome: |
+  A first design round for a Go library from what people said, where the interface is its functions. The
+  design holds no screens and no HTML: one page per exported function, each with its Go signature, inputs,
+  outputs, errors and an example call with its result. The 60-character cut at a word boundary, the -2, -3
+  suffixes and the empty-title error trace to quotes; any other number, limit or rule is marked ` *`. A system
+  page names the parts (the library and the program that calls it, in-process) and how they talk, with a
+  decisions table traced to quotes or ` *`, and the open question on scripts with no Latin form with a pick.
+  The Think answers come apart, each quoting the line it rests on. Whether it is a good design is left to a
+  human reader.
+context:
+  scaffold_script: place-files.sh
