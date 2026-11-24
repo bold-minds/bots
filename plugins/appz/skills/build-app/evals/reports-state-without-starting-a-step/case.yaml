@@ -2,6 +2,6 @@ schema_version: "1.1"
 name: reports-state-without-starting-a-step
 expected_outcome: |
   The run reads build/data/build-state.json and returns the current milestone (M1 Save and find links),
-  each of the three stories with its step and status (add-link at verify-story, waiting on caller; list-links at
-  design-tech, done; tag-link at write-stories, done), and what waits on the caller (the question whether the same
+  each of the three stories with its step and status (add-link at build-story, waiting on caller; list-links at
+  design-tech, done; tag-link at design-app, done), and what waits on the caller (the question whether the same
   link can be saved twice, with its offered pick). It starts no step: build state, build log and repo are unchanged.

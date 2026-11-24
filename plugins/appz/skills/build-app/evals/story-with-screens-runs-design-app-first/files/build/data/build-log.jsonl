@@ -1,0 +1,6 @@
+{"record": "step", "step": "write-requirements", "for": "app", "model": "opus", "effort": "high", "duration_ms": 380000, "tokens": 150000, "check_misses_first": [], "fix_round": false, "misses_left": [], "questions": [], "think": ["Where did a person say this? Every requirement quotes said.md."], "own_think": ["Current: no requirements yet; ran write-requirements."]}
+{"record": "caller", "kind": "approval", "step": "write-requirements", "for": "app"}
+{"record": "step", "step": "plan-milestones", "for": "app", "model": "sonnet", "effort": "medium", "duration_ms": 90000, "tokens": 52000, "check_misses_first": [], "fix_round": false, "misses_left": [], "questions": [], "think": ["Adding first: ticking needs items."], "own_think": ["Current: requirements approved; ran plan-milestones."]}
+{"record": "caller", "kind": "approval", "step": "plan-milestones", "for": "app"}
+{"record": "step", "step": "write-stories", "for": "M1", "model": "sonnet", "effort": "high", "duration_ms": 140000, "tokens": 81000, "check_misses_first": [], "fix_round": false, "misses_left": [], "questions": [], "think": ["One action: add an item."], "own_think": ["Current: M1 has no stories; ran write-stories."]}
+{"record": "caller", "kind": "approval", "step": "write-stories", "for": "add-item"}

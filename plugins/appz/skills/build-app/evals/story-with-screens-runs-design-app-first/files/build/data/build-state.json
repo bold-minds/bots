@@ -1,0 +1,13 @@
+{
+  "requirements": {"status": "approved", "path": "repo/docs/product/requirements.md"},
+  "plan": {"status": "approved", "produced": "data/milestones.md"},
+  "current_milestone": "M1 Add items",
+  "milestones": [
+    {"id": "M1", "name": "Add items", "status": "in progress",
+     "stories": [
+       {"id": "add-item", "step": "write-stories", "status": "done, approved by the caller",
+        "produced": {"write-stories": "repo/docs/product/stories/add-item.md"}}
+     ]},
+    {"id": "M2", "name": "Tick and clear", "status": "not started", "stories": []}
+  ]
+}

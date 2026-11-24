@@ -1,0 +1,9 @@
+$ test -z "$(git status --short)" && git rev-parse HEAD && time task validate
+@SHA@
+✅ lint
+✅ build
+✅ unit (2 tests)
+✅ integration (1 test)
+✅ e2e (2 tests, 41s)
+Summary: 5 passed, 0 failed, 0 skipped
+real	1m52.004s

@@ -1,0 +1,7 @@
+schema_version: "1.1"
+name: story-with-screens-runs-design-app-first
+expected_outcome: |
+  The milestone's one story, add-item, has screens and its stories are approved, so the next step is design-app for
+  add-item, even though the app already has a design. The run starts design-app for add-item on the model and effort
+  build-app's step list names, runs check-work on its work, records the step in the build state and build log, and
+  returns round 1 to the caller for markup or approval. It starts no design-tech: that waits on the caller's approval.

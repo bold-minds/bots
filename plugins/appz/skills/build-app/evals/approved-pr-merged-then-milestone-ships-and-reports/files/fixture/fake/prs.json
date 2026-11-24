@@ -1,0 +1,3 @@
+{"next": 3, "prs": {
+ "1": {"head": "add-item/pr-1", "base": "main", "title": "Add an item to the shared list", "state": "MERGED"},
+ "2": {"head": "clear-ticked/pr-1", "base": "main", "title": "Clear ticked items for everyone", "state": "OPEN"}}}

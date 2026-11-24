@@ -1,0 +1,9 @@
+schema_version: "1.1"
+name: pr-written-by-write-pr-opened-by-build-app
+expected_outcome: |
+  add-item's one PR is built on add-item/pr-1, its gate passed and check-work passed, so the next step is write-pr.
+  The run starts write-pr on the model and effort build-app's step list names, with the story, the approved design,
+  the branch and its base, the diff, the gate result and the line counts; runs check-work on its work; then, itself,
+  pushes add-item/pr-1 to origin and opens the PR with fake/gh against main, with write-pr's title and description.
+  It records the PR's address and returns it to the caller for approval. It merges nothing, and no subagent is asked
+  to push or open a PR.

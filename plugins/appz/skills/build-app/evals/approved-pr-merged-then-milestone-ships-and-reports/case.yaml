@@ -1,0 +1,16 @@
+schema_version: "1.1"
+name: approved-pr-merged-then-milestone-ships-and-reports
+expected_outcome: |
+  The caller approves PR 2, the last open PR of M1 (the only milestone); build-app merges PRs by default. The run
+  merges it with fake/gh, then starts ship-milestone before release, runs the test release itself, starts
+  ship-milestone against places/test, runs the live release only after that call returns "release live", starts
+  ship-milestone against places/live, and, once it returns that the milestone shipped, writes
+  build/data/build-report-M1.md (or named for the milestone) from the build log and state, per the build report
+  definition, and returns the report's path and its questions with picks, and that the app is done.
+  Report facts from the log: design-app 3 runs, 740000 ms, 340000 tokens, Opus high; design-tech 2 runs, 510000 ms,
+  235000 tokens; build-story 2 runs, 2000000 ms, 660000 tokens, Sonnet high; write-pr 2 runs, 130000 ms, 62000 tokens;
+  ship-milestone 3 runs this time. check-work misses first: design-app 1, design-tech 2 (the same kind, an E2E test
+  missing for a numbered scenario, in both stories), build-story 1; 4 fix rounds; 1 miss left after its fix round
+  (build-story, clear-ticked); 1 markup (design-app, add-item round 1), no rejections; 3 questions sent, 2 a source
+  could have answered; add-item/pr-1 230 lines against 200 estimated (near); clear-ticked/pr-1 310 against 120 (off
+  by more than half); no E2E failures on test or live.

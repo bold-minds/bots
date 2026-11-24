@@ -5,13 +5,13 @@
   "milestones": [
     {"id": "M1", "name": "Save and find links", "status": "in progress",
      "stories": [
-       {"id": "add-link", "step": "verify-story", "status": "waiting on caller",
+       {"id": "add-link", "step": "build-story", "status": "waiting on caller",
         "waiting_on": "Caller must answer: can the same link be saved twice? Pick offered: no, saving a link that exists prints `already saved <id>`.",
-        "produced": {"write-stories": "data/stories/add-link.md", "design-tech": "data/tech/add-link.md", "build-story": "branch add-link, 14 commits"}},
+        "produced": {"write-stories": "data/stories/add-link.md", "design-app": "data/design/add-link/round-2/", "design-tech": "data/tech/add-link.md", "build-story": "branch add-link/pr-1, 14 commits"}},
        {"id": "list-links", "step": "design-tech", "status": "done",
-        "produced": {"write-stories": "data/stories/list-links.md", "design-tech": "data/tech/list-links.md"}},
-       {"id": "tag-link", "step": "write-stories", "status": "done",
-        "produced": {"write-stories": "data/stories/tag-link.md"}}
+        "produced": {"write-stories": "data/stories/list-links.md", "design-app": "data/design/list-links/round-1/", "design-tech": "data/tech/list-links.md"}},
+       {"id": "tag-link", "step": "design-app", "status": "done",
+        "produced": {"write-stories": "data/stories/tag-link.md", "design-app": "data/design/tag-link/round-1/"}}
      ]},
     {"id": "M2", "name": "Tidy up", "status": "not started", "stories": []}
   ]

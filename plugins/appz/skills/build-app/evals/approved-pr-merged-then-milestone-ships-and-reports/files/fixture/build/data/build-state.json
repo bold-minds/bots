@@ -1,0 +1,25 @@
+{
+  "requirements": {"status": "approved", "path": "repo/docs/product/requirements.md"},
+  "plan": {"status": "approved", "produced": "data/milestones.md"},
+  "merges": "build-app, once the caller approves each PR (default)",
+  "current_milestone": "M1 Keep a list",
+  "milestones": [
+    {"id": "M1", "name": "Keep a list", "status": "in progress",
+     "stories": [
+       {"id": "add-item", "step": "write-pr", "status": "done; PR merged",
+        "produced": {"write-stories": "repo/docs/product/stories/add-item.md",
+                     "design-app": "data/design/add-item/round-2/ (approved)",
+                     "design-tech": "repo/docs/product/stories/add-item.design.md (approved)",
+                     "build-story": "add-item/pr-1 (gate passed)",
+                     "write-pr": "title and description for add-item/pr-1"},
+        "prs": [{"pr": "add-item/pr-1", "builds_on": "main", "address": "https://example.invalid/pantry/pull/1", "state": "merged by build-app after the caller approved it"}]},
+       {"id": "clear-ticked", "step": "write-pr", "status": "PR opened; waiting on the caller's approval",
+        "produced": {"write-stories": "repo/docs/product/stories/clear-ticked.md",
+                     "design-app": "data/design/clear-ticked/round-1/ (approved)",
+                     "design-tech": "repo/docs/product/stories/clear-ticked.design.md (approved)",
+                     "build-story": "clear-ticked/pr-1 (gate passed; one check-work miss left, returned to the caller)",
+                     "write-pr": "title and description for clear-ticked/pr-1"},
+        "prs": [{"pr": "clear-ticked/pr-1", "builds_on": "main", "address": "https://example.invalid/pantry/pull/2", "state": "open, waiting on the caller's approval"}]}
+     ]}
+  ]
+}

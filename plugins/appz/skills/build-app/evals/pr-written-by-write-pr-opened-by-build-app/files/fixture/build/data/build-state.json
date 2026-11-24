@@ -1,0 +1,21 @@
+{
+  "requirements": {"status": "approved", "path": "repo/docs/product/requirements.md"},
+  "plan": {"status": "approved", "produced": "data/milestones.md"},
+  "current_milestone": "M1 Add items",
+  "milestones": [
+    {"id": "M1", "name": "Add items", "status": "in progress",
+     "stories": [
+       {"id": "add-item", "step": "build-story", "status": "done; check-work passed",
+        "produced": {
+          "write-stories": "repo/docs/product/stories/add-item.md",
+          "design-app": "data/design/add-item/round-2/ (approved by the caller)",
+          "design-tech": "repo/docs/product/stories/add-item.design.md (approved by the caller)",
+          "build-story": {"pr": "add-item/pr-1", "branch": "add-item/pr-1", "builds_on": "main",
+                          "worktree": "repo (branch add-item/pr-1, committed, not pushed)",
+                          "gate": "data/gates/add-item-pr-1.txt", "gate_result": "pass, full gate 1m 52s",
+                          "lines": "code +36 -0, tests +51 -0, config left out",
+                          "lines_command": "git diff --numstat main...add-item/pr-1"}}}
+     ]},
+    {"id": "M2", "name": "Tick and clear", "status": "not started", "stories": []}
+  ]
+}

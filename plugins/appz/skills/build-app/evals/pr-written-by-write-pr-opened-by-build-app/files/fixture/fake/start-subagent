@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""start-subagent <skill> <model> <effort> <brief file>
+
+Stands in for starting a subagent in this test. Records the call in fake/calls.jsonl, copies any files the
+subagent writes, and prints the subagent's reply, then its completion notice with tokens and time."""
+import json, os, shutil, sys
+
+here = os.path.dirname(os.path.abspath(__file__))
+root = os.path.dirname(here)
+if len(sys.argv) != 5:
+    print("usage: fake/start-subagent <skill> <model> <effort> <brief file>")
+    sys.exit(2)
+skill, model, effort, brief = sys.argv[1:]
+name = skill.split(":")[-1].strip().lower()
+text = open(brief).read() if os.path.isfile(brief) else brief
+log = os.path.join(here, "calls.jsonl")
+calls = [json.loads(l) for l in open(log)] if os.path.exists(log) else []
+same = [c for c in calls if c.get("kind") == "subagent" and c.get("skill") == name and c.get("brief") == text]
+# the same brief sent again gets the same reply, as a real subagent would give
+n = same[0]["n"] if same else 1 + len({c["n"] for c in calls if c.get("kind") == "subagent" and c.get("skill") == name})
+rec = {"kind": "subagent", "seq": len(calls) + 1, "skill": name, "skill_arg": skill, "model": model,
+       "effort": effort, "n": n, "brief_file": brief, "brief": text}
+with open(log, "a") as f:
+    f.write(json.dumps(rec) + "\n")
+rep = os.path.join(here, "replies")
+reply = None
+earlier = tuple(f"{name}-{k}.md" for k in range(n - 1, 0, -1))  # a fix round gets the last reply again
+for cand in (f"{name}-{n}.md", f"{name}.md") + earlier + (("check-work.md",) if "check" in name else ()):
+    if os.path.isfile(os.path.join(rep, cand)):
+        reply = open(os.path.join(rep, cand)).read().strip()
+        break
+pay = os.path.join(here, "payloads", f"{name}-{n}")
+if os.path.isdir(pay):
+    shutil.copytree(pay, root, dirs_exist_ok=True)
+if reply is None:
+    print(f"No subagent ran: no skill named {skill} is installed in this run.")
+    sys.exit(1)
+tokens, ms = (12000, 20000) if "check" in name else (40000, 60000)
+saved = os.path.join(here, "out", f"{rec['seq']}-{name}.md")
+os.makedirs(os.path.dirname(saved), exist_ok=True)
+open(saved, "w").write(reply + "\n")
+print(reply)
+print(f"\n(this reply is also saved at fake/out/{os.path.basename(saved)})")
+print(f"\n[completion] total_tokens: {tokens}, duration_ms: {ms}")
