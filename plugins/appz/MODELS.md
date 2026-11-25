@@ -12,7 +12,7 @@ For each step: the model named before trials, the model its proof ran on, the ne
 | build-story | Sonnet, high | claude-sonnet-5-5, 3 runs per case | Haiku, high | 6 | run-2 of one-pr-small-fix scores 13/14 | Sonnet, high |
 | write-pr | Sonnet, medium | claude-sonnet-5-5, 3 runs per case | Haiku, medium | 2 | stacked-stub-new-pattern scores 14/15, trial stopped | Sonnet, medium |
 | ship-milestone | Sonnet, medium | claude-sonnet-5-5, 3 runs per case | Haiku, medium | 1 | 8/9, trial stopped | Sonnet, medium |
-| build-app | Sonnet | | | | | The result of its final test round is added when it finishes. |
+| build-app | Sonnet | claude-sonnet-5-5, medium, 3 runs per case (final round) | none: the approved trial covered the eight steps only | 24 in the final round (18 with skill, 6 previous version) | 125/126; one miss left (approved-pr case run-1, "app is done" not said) | Sonnet |
 
 Haiku is claude-haiku-5-5. A trial is staged: one run per case, then two more per case for a model that passes every case. A trial stops at the first failed assertion.
 
