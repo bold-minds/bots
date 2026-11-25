@@ -7,8 +7,8 @@ For each step: the model named before trials, the model its proof ran on, the ne
 | write-requirements | Opus, high | claude-opus-5-5, 1 run per case | Sonnet, high | 9 (3 per case) | 9 of 9 pass every assertion (10/10, 6/6, 16/16 each x3) | Sonnet, high |
 | design-app | Opus, high | claude-sonnet-5-5, 3 runs per case | Sonnet (the proof model) | none new | proof: 9 of 9 runs pass every assertion | Sonnet, high |
 | design-tech | Opus, high | claude-sonnet-5-5, 3 runs per case | Sonnet (the proof model) | none new | proof: 9 of 9 runs pass every assertion | Sonnet, high |
-| plan-milestones | Sonnet, medium | claude-sonnet-5-5, 1 run per case | Haiku, medium | 5 | run-3 of the cuts case scores 10/11 | Sonnet, medium |
-| write-stories | Sonnet, high | claude-sonnet-5-5, 1 run per case | Haiku, high | 1 | 7/9, trial stopped | Sonnet, high |
+| plan-milestones | Sonnet, medium | claude-sonnet-5-5, 3 runs per case (9 of 9 runs pass every assertion) | Haiku, medium | 5 | run-3 of the cuts case scores 10/11 | Sonnet, medium |
+| write-stories | Sonnet, high | claude-sonnet-5-5, 3 runs per case (7 of 9 runs pass every assertion; 2 miss the Think-answers line) | Haiku, high | 1 | 7/9, trial stopped | Sonnet, high |
 | build-story | Sonnet, high | claude-sonnet-5-5, 3 runs per case | Haiku, high | 6 | run-2 of one-pr-small-fix scores 13/14 | Sonnet, high |
 | write-pr | Sonnet, medium | claude-sonnet-5-5, 3 runs per case | Haiku, medium | 2 | stacked-stub-new-pattern scores 14/15, trial stopped | Sonnet, medium |
 | ship-milestone | Sonnet, medium | claude-sonnet-5-5, 3 runs per case | Haiku, medium | 1 | 8/9, trial stopped | Sonnet, medium |

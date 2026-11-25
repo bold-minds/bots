@@ -1,6 +1,6 @@
 ---
 name: plan-milestones
-description: Cut approved requirements into milestones that each leave the software working and able to do more, in an order, returned to the caller as a milestones file. "App" means any software people or code use, such as an app, a service or a library. Use when asked to plan or revise how a build is cut and ordered, once per app after the requirements are approved.
+description: Cut approved requirements into milestones that each leave the software working and able to do more, in an order, returned to the caller as a milestones file. "App" means any software people or code use, such as an app, a service or a library. Use when asked to plan or revise how a build is cut and ordered, once per app after the requirements are approved, whether the ask says milestones, phases, releases or a build order.
 ---
 
 # Plan milestones
