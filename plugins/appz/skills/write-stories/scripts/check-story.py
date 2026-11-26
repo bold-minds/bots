@@ -2,13 +2,15 @@
 in each broad scenario.
 
 Usage: python3 check-story.py <story file> <file holding what people said> <requirements> <source> ...
-                              [--wrong <scenario number> ...] [--broad <scenario number> ...] [--approved]
+                              [--wrong <scenario number> ...] [--broad <scenario number> ...]
+                              [--named <scenario number> ...] [--approved]
   requirements: a file, or the text itself; a line that starts with an id (SM-3, R5) gives that id, and a ` *` after
                 the id or at the end of the line marks it as added by AI.
   sources:      the design and, when revising, the caller's answers: each a file, a folder (every file under it is
                 read) or, when it is no path, the text itself.
   --wrong:      the number of each scenario for a thing that goes wrong.
   --broad:      the number of each scenario that covers several causes of one trouble (read as --wrong too).
+  --named:      the number of each broad scenario whose trouble people named (read as --broad too).
   --approved:   the story was approved before this revision, so its Changelog keeps its lines.
 It fails:
 - Form: no `# <title>` first line; no `Shows:` line, or one holding more than one sentence; no `Design:` line naming
@@ -30,7 +32,7 @@ It fails:
   ("Top 10 Tips") are left out.
 - Things that go wrong: for each --wrong or --broad number, a scenario that does not say what to do as
   `so they <do this>` (or "so the caller", "so I" and the like).
-- Broad scenarios: for each --broad number, a scenario whose text after its first "Given" does not open with a quoted
+- Named troubles: for each --named number, a scenario whose text after its first "Given" does not open with a quoted
   phrase ("..." or “...”) found word for word in what people said (case and spacing aside). The causes may follow the
   quote, for example in brackets.
 Prints each check and what it found, then "FAILS: <n>"; exits 1 when n > 0."""
@@ -41,7 +43,7 @@ import sys
 args = sys.argv[1:]
 approved = "--approved" in args
 args = [a for a in args if a != "--approved"]
-lists, rest_args, current = {"--broad": [], "--wrong": []}, [], None
+lists, rest_args, current = {"--broad": [], "--wrong": [], "--named": []}, [], None
 for a in args:
     if a in lists:
         current = a
@@ -49,7 +51,8 @@ for a in args:
         lists[current].append(a)
     else:
         rest_args.append(a)
-broad, args = lists["--broad"], rest_args
+named, args = lists["--named"], rest_args
+broad = list(dict.fromkeys(lists["--broad"] + named))  # a named trouble is a broad scenario too
 wrong = list(dict.fromkeys(lists["--wrong"] + broad))  # a broad scenario is a thing that goes wrong too
 if len(args) < 3:
     print(__doc__)
@@ -93,7 +96,7 @@ ID = re.compile(r"\b([A-Z][A-Z0-9]*-\d+)\b")
 # Requirement ids, and which ones AI added.
 req_ids, ai_ids = set(), set()
 for line in req_text.split("\n"):
-    m = re.match(r"^\s*(?:[-*]\s+)?\**([A-Z][A-Z0-9]*-\d+|R\d+)\**(\s*\*)?[:.\s]", line + " ")
+    m = re.match(r"^\s*(?:[-*]\s+)?\**([A-Z][A-Z0-9]*-\d+|[A-Z]{1,2}\d+)\**(\s*\*)?[:.\s]", line + " ")
     if m:
         req_ids.add(m.group(1))
         if m.group(2) or line.rstrip().endswith(" *"):
@@ -255,8 +258,8 @@ for number in wrong:
     else:
         print(f"ok: scenario {number} says what to do")
 
-# Broad scenarios.
-for number in broad:
+# Troubles people named: the Given opens with their words.
+for number in named:
     scenario = scenario_text(number)
     if scenario is None:
         continue

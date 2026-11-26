@@ -1,7 +1,7 @@
 {
   "name": "appz",
   "version": "1.0.0",
-  "description": "Building apps from their designs, where "app" means any software people or code use (an app, a service, a library): requirements, stories, and a build skill that runs each delivery step in order. Needs the skillz plugin installed.",
+  "description": "Building apps from their designs, where \"app\" means any software people or code use (an app, a service, a library): requirements, stories, and a build skill that runs each delivery step in order. Needs the skillz plugin installed.",
   "author": {
     "name": "Bold Minds"
   },
