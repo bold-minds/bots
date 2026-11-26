@@ -1,0 +1,17 @@
+{
+  "requirements": {"status": "approved", "path": "repo/docs/product/requirements.md"},
+  "plan": {"status": "approved", "produced": "data/milestones.md"},
+  "merges": "build-app",
+  "current_milestone": "M1 Watering",
+  "milestones": [
+    {"id": "M1", "name": "Watering", "status": "in progress",
+     "stories": [
+       {"id": "log-a-watering", "step": "design-app", "status": "round 1 approved by the caller",
+        "produced": {"write-stories": "repo/docs/product/stories/log-a-watering.md",
+                     "design-app": "build/design/log-a-watering/round-1/"}},
+       {"id": "show-thirsty-plants", "step": "design-app", "status": "round 1 approved by the caller",
+        "produced": {"write-stories": "repo/docs/product/stories/show-thirsty-plants.md",
+                     "design-app": "build/design/show-thirsty-plants/round-1/"}}
+     ]}
+  ]
+}

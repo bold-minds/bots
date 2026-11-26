@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: side-by-side-designs-get-one-contract
+expected_outcome: |
+  Milestone M1's two stories, log-a-watering and show-thirsty-plants, have their design-app rounds approved, so
+  design-tech runs for both side by side, on the model and effort build-app's step list names. The two designs come
+  back naming the same parts differently and each numbering its own questions. Once both have returned, the run starts
+  one subagent for the milestone's contract, briefed with both designs and both stories, where to write
+  (build/data/contract-M1.md) and what it holds: the build order, one name and owner per shared part with what later
+  stories add, and one numbered question list with picks and the stories resting on each, anything hard to undo as a
+  question. Then check-work runs on each design; each design's subagent gets the contract with its check-work misses as
+  its one fix round; check-work runs once more on each. The build state and log record the contract and the steps.
+  The return gives both designs as drafts for approval and the contract's questions under its one numbering, with
+  picks, in place of each design's own. No build-story starts.
+context:
+  scaffold_script: place-files.sh

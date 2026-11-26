@@ -10,7 +10,7 @@ numbers, as in "(Journey, 1, 3)", "(all, 2)" or "1, 2 and the Journey". An item 
 that a part is unchanged, that a helper is exercised by the tests above, or that a layer has no tests, is noted,
 not failed: it names no part. So is an item ending ":" that heads the items under it.
 With --earlier it also fails: a line of the earlier design that named a part now gone from the revision (a dotted
-name such as plants.Store.Rename) whose revised line, the closest one in the same section, names no part new to
+name such as pkg.Type.Method) whose revised line, the closest one in the same section, names no part new to
 the design, where it should name the part that takes the gone part's place. It then lists, as "words" lines, the
 words each added or changed line adds (+) and drops (-) against its closest earlier line, for the change list.
 Prints each failing item, then "FAILS: <n>"; exits 1 when n > 0."""
@@ -64,7 +64,7 @@ for n, line in items(design):
         fails += 1
         print(f"FAIL line {n}: Journey or all beside its scenario numbers: {near}")
 
-# Revising: a line of the earlier design that named a part now gone (a dotted name such as plants.Store.Rename,
+# Revising: a line of the earlier design that named a part now gone (a dotted name such as pkg.Type.Method,
 # found nowhere in the revision) must, in its revised line (the closest line in the same section), name a part
 # new to the design: the one that takes its place.
 if earlier:
@@ -93,7 +93,7 @@ if earlier:
             cands = new_secs.get(sec, [])
             best = max(cands, key=lambda c: difflib.SequenceMatcher(None, line, c).ratio(), default=None)
             if best is None or difflib.SequenceMatcher(None, line, best).ratio() < 0.5:
-                continue  # the line is gone; step 9 then asks for another line in the section
+                continue  # the line is gone; step 10 then asks for another line in the section
             new = [n for n in NAME.findall(best) if n not in old_names]
             if not new:
                 fails += 1

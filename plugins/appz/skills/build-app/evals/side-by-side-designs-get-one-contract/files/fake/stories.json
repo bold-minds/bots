@@ -1,0 +1,4 @@
+{
+  "log-a-watering": {"design": "repo/docs/product/stories/log-a-watering.design.md", "fixed_when": "read-only"},
+  "show-thirsty-plants": {"design": "repo/docs/product/stories/show-thirsty-plants.design.md", "fixed_when": "plantstest.NewDB"}
+}

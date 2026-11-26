@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+"""start-subagent <skill, or none when it follows no skill> <model> <effort> <brief file>
+
+Stands in for starting a subagent in this test. Records the call in fake/calls.jsonl, copies any files the
+subagent writes, and prints the subagent's reply, then its completion notice with tokens and time.
+design-tech and check-work answer for the one story the brief names by its file path; a subagent that follows no
+skill and is briefed on the milestone's contract writes the contract."""
+import json, os, re, shutil, sys
+
+here = os.path.dirname(os.path.abspath(__file__))
+root = os.path.dirname(here)
+if len(sys.argv) != 5:
+    print("usage: fake/start-subagent <skill, or none> <model> <effort> <brief file>")
+    sys.exit(2)
+skill, model, effort, brief = sys.argv[1:]
+name = skill.split(":")[-1].strip().lower()
+text = open(brief).read() if os.path.isfile(brief) else brief
+stories = json.load(open(os.path.join(here, "stories.json")))
+rep = os.path.join(here, "replies")
+
+
+def story_of(t):
+    """The one story the brief names by its paths (story, design or design-app round); None when not one."""
+    counts = {s: len(re.findall(rf"(?:/|\b){re.escape(s)}(?:\.design)?\.md|{re.escape(s)}/round-", t)) for s in stories}
+    top = max(counts.values())
+    best = [s for s, c in counts.items() if c == top]
+    return best[0] if top and len(best) == 1 else None
+
+
+story = story_of(text) if name in ("design-tech", "check-work") else None
+reply_file, payload = None, None
+if name == "design-tech" and story:
+    design = os.path.join(root, stories[story]["design"])
+    if not os.path.exists(design):
+        reply_file, payload = f"design-tech-{story}-1.md", f"design-tech-{story}-1"
+    else:
+        reply_file = f"design-tech-{story}-fix.md"
+        if stories[story]["fixed_when"] not in open(design).read():
+            payload = f"design-tech-{story}-2"
+elif name == "check-work":
+    design = os.path.join(root, stories[story]["design"]) if story else None
+    if design and os.path.exists(design):
+        fixed = stories[story]["fixed_when"] in open(design).read()
+        reply_file = f"check-work-{story}-recheck.md" if fixed else f"check-work-{story}.md"
+    else:
+        reply_file = "check-work.md"
+elif os.path.isfile(os.path.join(rep, f"{name}.md")) and name != "contract":
+    reply_file = f"{name}.md"
+elif "contract" in (skill + " " + text).lower() and name != "design-tech":
+    reply_file, payload = "contract.md", "contract-1"
+
+log = os.path.join(here, "calls.jsonl")
+calls = [json.loads(l) for l in open(log)] if os.path.exists(log) else []
+rec = {"kind": "subagent", "seq": len(calls) + 1, "skill": name, "skill_arg": skill, "model": model,
+       "effort": effort, "story": story, "reply": reply_file, "brief_file": brief, "brief": text}
+with open(log, "a") as f:
+    f.write(json.dumps(rec) + "\n")
+if reply_file is None:
+    why = "its brief names no one story by its file path" if name == "design-tech" else f"no skill named {skill} is installed in this run"
+    print(f"No subagent ran: {why}.")
+    sys.exit(1)
+if payload and os.path.isdir(os.path.join(here, "payloads", payload)):
+    shutil.copytree(os.path.join(here, "payloads", payload), root, dirs_exist_ok=True)
+reply = open(os.path.join(rep, reply_file)).read().strip()
+tokens, ms = (12000, 20000) if name == "check-work" else (40000, 60000)
+saved = os.path.join(here, "out", f"{rec['seq']}-{name}.md")
+os.makedirs(os.path.dirname(saved), exist_ok=True)
+open(saved, "w").write(reply + "\n")
+print(reply)
+print(f"\n(this reply is also saved at fake/out/{os.path.basename(saved)})")
+print(f"\n[completion] total_tokens: {tokens}, duration_ms: {ms}")

@@ -28,3 +28,16 @@ Latest round: iteration 7, round 4 (the last round run), one with-skill miss lef
 - approved-pr-merged-then-milestone-ships-and-reports, with_skill run-1, "The response tells the caller the app is done (its last milestone shipped).": the return opens "M1 "Keep a list" shipped: PR 2 is merged, and the test release and the live release both passed." and never says the app is done.
 
 **Grader notes left open:** several assertions pass for both versions and so do not tell them apart (report numbers come from the report script; "app is done" passes on a plain statement); the Think-answer count is checked only in the status case, and some runs in other cases return five of the six answers.
+
+## November 26th, 2026: the milestone's contract (Act step 7)
+
+New case `side-by-side-designs-get-one-contract`: two stories' design-tech runs side by side, then one contract subagent, check-work on each design, one fix round per design with the contract and its misses, check-work once more, and the contract's questions returned under one numbering. Subagents are fakes (`fake/start-subagent`, picking each reply by the story the brief names by path). Run with `claude plugin eval plugins/appz --eval-dir <copy> --case side-by-side-designs-get-one-contract --model sonnet --runs 1 --ablation none --scaffold --trust-plugin --allow-tools Bash Write Edit --max-cost-usd 3 --no-publish`, Claude Code 2.1.332, model claude-sonnet-5-5, judge haiku.
+
+| Run | Score | Cost (agent + judge) | What happened |
+|---|---|---|---|
+| 1 | 0/9 | $0.22 + $0.09 | The eval's Bash mounted the working folder (`build/`, `repo/`, `fake/`) and `$TMPDIR` read-only, so no brief could be written and `fake/start-subagent` could not record or copy anything. The run started no subagent and returned the read-only folder to the caller, with the next steps it would take: design-tech for both stories side by side, then the M1 contract, then check-work on each design. |
+| 2 (outer sandbox off) | 0/9 | $0.24 + $0.09 | The same: the case's working folder is mounted read-only by the eval harness itself, and the case format has no setting to make it writable. |
+
+**Not tested yet:** the case could not run its steps, so no assertion here says anything about the new lines. The same read-only Bash would also stop the earlier cases, whose fakes write through Bash; they were not re-run. Re-run this case on a harness where the case's Bash can write.
+
+**Model:** the contract's subagent is named Sonnet, high, the smallest model that has passed steps of this size (Haiku failed every comparable trial in MODELS.md). It is untested: this case runs it as a fake, so its own model needs a case that runs the real subagent before the pick stands.
